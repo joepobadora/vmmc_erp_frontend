@@ -31,7 +31,8 @@ body {
 }
 
 .custom-row:hover {
-	box-shadow: inset 3px 0 0 0 lightgray; /* X offset = +2px → left side */
+	box-shadow: inset 3px 0 0 0 lightgray;
+	/* X offset = +2px → left side */
 	background-color: #f6f8fa !important;
 }
 
@@ -41,38 +42,64 @@ body {
 }
 
 .custom-filter-wrapper {
-	background-color: #f8f9fa; /* Bootstrap's bg-light */
-	padding-top: 0.5rem; /* pt-2 */
-	padding-bottom: 1rem; /* pb-3 */
-	border: 1px solid #dee2e6; /* border */
-	border-bottom: none; /* border-bottom-0 */
-	border-radius: 0.3rem; /* rounded-3 */
-	border-bottom-left-radius: 0; /* rounded-bottom-0 */
-	border-bottom-right-radius: 0; /* rounded-bottom-0 */
+	background-color: #f8f9fa;
+	/* Bootstrap's bg-light */
+	padding-top: 0.5rem;
+	/* pt-2 */
+	padding-bottom: 1rem;
+	/* pb-3 */
+	border: 1px solid #dee2e6;
+	/* border */
+	border-bottom: none;
+	/* border-bottom-0 */
+	border-radius: 0.3rem;
+	/* rounded-3 */
+	border-bottom-left-radius: 0;
+	/* rounded-bottom-0 */
+	border-bottom-right-radius: 0;
+	/* rounded-bottom-0 */
 }
 
 .custom-table-wrapper {
-	border: 1px solid #dee2e6; /* border */
-	border-top: none; /* border-top-0 */
-	border-radius: 0.3rem; /* rounded-3 */
-	border-top-left-radius: 0; /* rounded-top-0 */
-	border-top-right-radius: 0; /* rounded-top-0 */
+	border: 1px solid #dee2e6;
+	/* border */
+	border-top: none;
+	/* border-top-0 */
+	border-radius: 0.3rem;
+	/* rounded-3 */
+	border-top-left-radius: 0;
+	/* rounded-top-0 */
+	border-top-right-radius: 0;
+	/* rounded-top-0 */
 }
 
 /* Baby Blue (Male) */
 .custom-badge-male {
-	background-color: #d6f0fa !important; /* very light blue */
-	color: #31708f; /* muted teal/blue text */
+	background-color: #d6f0fa !important;
+	/* very light blue */
+	color: #31708f;
+	/* muted teal/blue text */
 	/* border: 1px solid #31708f; */
 }
 
 /* Pastel Pink (Female) */
 .custom-badge-female {
-	background-color: #ffe4ec !important; /* very light pastel pink */
-	color: #8a3c5a; /* muted rose text */
+	background-color: #ffe4ec !important;
+	/* very light pastel pink */
+	color: #8a3c5a;
+	/* muted rose text */
 	/* border: 1px solid #8a3c5a; */
 }
 
 .custom-bg-light {
 	background-color: #f0f4f8;
+}
+
+:root {
+	--bs-border-radius: 0 !important;
+	--bs-border-radius-sm: 0 !important;
+	--bs-border-radius-lg: 0 !important;
+	--bs-border-radius-xl: 0 !important;
+	--bs-border-radius-xxl: 0 !important;
+	--bs-border-radius-pill: 0 !important;
 }
