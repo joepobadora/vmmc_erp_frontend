@@ -1,3 +1,7 @@
+<script>
+	// @ts-check
+</script>
+
 <div class="container-fluid h-100 pt-4">
 	<div class="row justify-content-center">
 		<div class="col-12 col-sm-6">
@@ -52,7 +56,7 @@
 						</div>
 					</div>
 					<div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-						<button type="button" class="btn btn-primary btn-sm px-3" onclick={Logout}
+						<button type="button" class="btn btn-primary btn-sm px-3"
 							><i class="bi bi-arrow-repeat me-2"></i>Update</button
 						>
 					</div>
