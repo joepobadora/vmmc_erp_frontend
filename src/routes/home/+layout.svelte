@@ -12,7 +12,7 @@
 		<Navbar />
 	</div>
 	<!-- main -->
-	<div class="flex-grow-1">
+	<div class="flex-grow-1 bg-light">
 		<slot />
 	</div>
 </div>

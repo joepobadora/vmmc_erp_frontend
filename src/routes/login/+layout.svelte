@@ -3,7 +3,7 @@
 </svelte:head>
 
 <div class="d-flex flex-column vh-100">
-	<div class="flex-grow-1">
+	<div class="flex-grow-1 bg-light">
 		<slot />
 	</div>
 </div>

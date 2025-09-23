@@ -56,7 +56,7 @@
 {#snippet ModuleCard({ abbr, name, desc, icon, link, mainte })}
 	<div
 		class={!mainte
-			? 'module-card bg-white border shadow d-flex flex-column'
+			? 'module-card bg-white shadow-sm d-flex flex-column'
 			: 'bg-light border d-flex flex-column'}
 		style:width="300px"
 		style:height="275px"
@@ -87,6 +87,9 @@
 <!-- style -->
 <style>
 	a .module-card:hover {
+		box-shadow:
+			0px 3px 6px rgba(0, 0, 0, 0.16),
+			0px 3px 6px rgba(0, 0, 0, 0.23) !important;
 	}
 
 	a .module-card:hover .module-link {

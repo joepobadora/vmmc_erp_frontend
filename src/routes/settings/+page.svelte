@@ -2,7 +2,7 @@
 	<div class="row justify-content-center">
 		<div class="col-12 col-sm-6">
 			<!-- account -->
-			<div class="row card shadow-sm p-2 m-4">
+			<div class="row card shadow-sm border-0 p-2 m-4">
 				<div class="card-body">
 					<div class="mb-4">
 						<h5>Account</h5>
@@ -59,7 +59,7 @@
 				</div>
 			</div>
 			<!-- personal information -->
-			<div class="row card shadow-sm p-2 m-4">
+			<div class="row card border-0 shadow-sm p-2 m-4">
 				<div class="card-body">
 					<div class="mb-4">
 						<h5>Personal Information</h5>
@@ -154,7 +154,7 @@
 				</div>
 			</div>
 			<!-- personal information -->
-			<div class="row card shadow-sm p-2 m-4">
+			<div class="row card border-0 shadow-sm p-2 m-4">
 				<div class="card-body">
 					<div class="mb-4">
 						<h5>Personal Information</h5>

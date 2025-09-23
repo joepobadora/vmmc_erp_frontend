@@ -49,7 +49,7 @@
 	<!-- wrapper -->
 
 	<form onsubmit={HandleSubmit}>
-		<div class="card shadow-sm p-2" style:min-width="375px">
+		<div class="card border-0 shadow-sm p-2" style:min-width="375px">
 			<div class="card-body d-flex flex-column gap-3">
 				<div class="d-flex flex-column align-items-center justify-content-center mt-3">
 					<!-- icon -->
