@@ -1,0 +1,26 @@
+/* Primary Palette */
+$primary: #336699; // medium blue
+$secondary: #6c757d; // muted gray
+$success: #2e8b57; // medium green
+$info: #2980b9; // medium cyan-blue
+$warning: #d6901e; // medium amber
+$danger: #c0392b; // deep red
+$light: #f8f9fa;
+$dark: #212529;
+
+/* Border radius reset */
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
+$border-radius-xl: 0;
+$border-radius-xxl: 0;
+$border-radius-pill: 0;
+
+/* Shadows (subtle flat shadows) */
+$box-shadow-sm: 0 .125rem .25rem rgba(0, 0, 0, 0.08);
+$box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.08);
+$box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+
+
+
+@import "bootstrap/scss/bootstrap";

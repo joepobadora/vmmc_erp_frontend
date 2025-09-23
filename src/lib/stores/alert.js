@@ -19,11 +19,11 @@ function alertStore() {
         hour12: true     // 12-hour format with AM/PM
     };
 
-    function show(variant = 'info', title = '', subtitle = '', message = '') {
+    function show(variant = 'info', title = '', message = '') {
         const activeId = Date.now();
 
         variant = icons.get(variant);
-        subtitle = new Date().toLocaleString('en-CA', options);
+        const subtitle = new Date().toLocaleString('en-CA', options);
         update(alertList => [...alertList, { activeId, variant, title, subtitle, message }]);
 
         setTimeout(() => {

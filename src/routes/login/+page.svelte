@@ -6,6 +6,8 @@
 	let user = $state('');
 	let pass = $state('');
 	let rememberMe = $state(false);
+	let passIcon = $state('bi-eye-slash-fill');
+	let passType = $state('password');
 	let userInput;
 	let passInput;
 
@@ -20,7 +22,7 @@
 		}
 	});
 
-	function handleSubmit(e) {
+	function HandleSubmit(e) {
 		e.preventDefault();
 
 		rememberMe && user
@@ -28,7 +30,17 @@
 			: localStorage.removeItem('username');
 
 		goto('/');
-		Alert.show('success', 'Login Success', 'Now', 'You are successfully logged in!');
+		Alert.show('info', 'Welcome back', 'You are successfully logged in!');
+	}
+
+	function TogglePasswordVisibility() {
+		if (passType === 'password') {
+			passType = 'text';
+			passIcon = 'bi-eye-fill';
+		} else {
+			passType = 'password';
+			passIcon = 'bi-eye-slash-fill';
+		}
 	}
 </script>
 
@@ -36,7 +48,7 @@
 <div class="h-100 d-flex justify-content-center align-items-center">
 	<!-- wrapper -->
 
-	<form onsubmit={handleSubmit}>
+	<form onsubmit={HandleSubmit}>
 		<div class="card shadow-sm p-2" style:min-width="375px">
 			<div class="card-body d-flex flex-column gap-3">
 				<div class="d-flex flex-column align-items-center justify-content-center mt-3">
@@ -47,9 +59,9 @@
 					<!-- subtitle -->
 					<p>
 						Get access to you
-						<abbr title="Veterans Memorial Medical Center" class="initialism">VMMC</abbr>-<abbr
-							title="Enterprise Resource Planning"
-							class="initialism">ERP</abbr
+						<abbr
+							title="Veterans Memorial Medical Center - Enterprise Resource Planning"
+							class="initialism">VMMC-ERP</abbr
 						>
 						modules.
 					</p>
@@ -66,7 +78,7 @@
 				<!-- password input -->
 				<div class="input-group input-group-sm">
 					<input
-						type="password"
+						type={passType}
 						class="form-control border border-end-0"
 						placeholder="Password"
 						name="passwordInput"
@@ -78,8 +90,9 @@
 						type="button"
 						id="button-addon2"
 						aria-label="toggle password visibility"
+						onclick={TogglePasswordVisibility}
 					>
-						<i class="bi bi-eye-slash-fill text-secondary"></i>
+						<i class="bi {passIcon} text-secondary"></i>
 					</button>
 				</div>
 				<!-- remember me -->
@@ -95,7 +108,9 @@
 				<!-- login button -->
 				<div class="row">
 					<div class="col-12 col-sm-auto ms-sm-auto">
-						<button type="submit" class="btn btn-primary btn-sm px-3 w-100 w-sm-auto">Login</button>
+						<button type="submit" class="btn btn-primary btn-sm px-3 w-100 w-sm-auto"
+							>Login<i class="bi bi-chevron-right ms-2"></i></button
+						>
 					</div>
 				</div>
 			</div>

@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Don’t rewrite real files or dirs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Send everything else to 200.html
+RewriteRule . /index.html [L]
