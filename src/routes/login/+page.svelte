@@ -61,7 +61,7 @@
 						Get access to you
 						<abbr
 							title="Veterans Memorial Medical Center - Enterprise Resource Planning"
-							class="initialism">VMMC-ERP</abbr
+							class="initialism">VMMC ERP</abbr
 						>
 						modules.
 					</p>
