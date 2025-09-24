@@ -1,4 +1,11 @@
-<div class="row bg-warning h-100 mb-5" style:min-height="200px">test</div>
-<div class="row bg-warning h-100 mb-5" style:min-height="200px">test</div>
+<!-- +page.svelte -->
+<script>
+    import TreeView from './TreeView.svelte';
+</script>
 
-<div class="row bg-warning h-100 mb-5" style:min-height="200px">test</div>
+<div class="row">
+    <div class="col">
+        <h3>Sample Tree View</h3>
+        <TreeView />
+    </div>
+</div>

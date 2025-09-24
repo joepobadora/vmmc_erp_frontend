@@ -18,6 +18,6 @@
 
 <Alerts />
 
-<div class="d-flex flex-column min-vh-100">
+<div class="container-fluid min-vh-100 bg-light">
     <slot />
 </div>
