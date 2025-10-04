@@ -1,9 +1,10 @@
 <svelte:head>
-	<title>VMMC ERP - Login</title>
+    <title>VMMC ERP - Login</title>
 </svelte:head>
 
-<div class="d-flex flex-column vh-100">
-	<div class="flex-grow-1 bg-light">
-		<slot />
-	</div>
+<!-- main -->
+<div class="container flex-grow-1">
+    <div class="row vh-100">
+        <div class="col-sm-12"><slot /></div>
+    </div>
 </div>

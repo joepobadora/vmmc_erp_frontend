@@ -1,18 +1,21 @@
 <script>
-	import Navbar from './components/Navbar.svelte';
+    import Navbar from './components/Navbar.svelte';
 </script>
 
 <svelte:head>
-	<title>VMMC ERP - Home</title>
+    <title>VMMC ERP - Home</title>
 </svelte:head>
 
-<div class="d-flex flex-column vh-100">
-	<!-- navbar -->
-	<div style:height="48px">
-		<Navbar />
-	</div>
-	<!-- main -->
-	<div class="flex-grow-1 bg-light">
-		<slot />
-	</div>
+<!-- navbar -->
+<div class="row mb-5">
+    <div class="col px-0">
+        <Navbar />
+    </div>
+</div>
+
+<!-- main -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12"><slot /></div>
+    </div>
 </div>
