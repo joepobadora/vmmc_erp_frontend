@@ -33,7 +33,7 @@
             desc: 'A centralized dashboard for system administrator. Provides full control over system settings.',
             icon: 'bi-person-fill-lock',
             link: '/admin',
-            mainte: true,
+            mainte: false,
         },
     ];
 </script>

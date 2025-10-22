@@ -28,14 +28,25 @@
 
         rememberMe && user ? localStorage.setItem('username', user) : localStorage.removeItem('username');
 
-        const result = await App.API.post('http://127.0.0.1:8000/api/login', {
-            username: user,
-            password: pass,
-        });
+        try {
+            const result = await App.API.post(
+                'http://127.0.0.1:8000/api/login',
+                {
+                    username: user,
+                    password: pass,
+                },
+                false
+            );
 
-        if (result.success) {
-            console.log(result.data);
-        } else {
+            if (result.success) {
+                App.API.setToken(result.token);
+                goto('/');
+                Alert.show('success', 'Login successful.', 'Welcome back, ' + result.username + '!');
+            } else {
+                Alert.show('error', 'Login failed.', result.message);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
         }
     }
 

@@ -1,10 +1,35 @@
 class API {
-    static async request(endpoint, method = 'GET', data = null) {
+    static setToken(token) {
+        if (token) {
+            localStorage.setItem('auth_token', token);
+        } else {
+            localStorage.removeItem('auth_token');
+        }
+    }
+
+    static getToken() {
+        return localStorage.getItem('auth_token');
+    }
+
+    static removeToken() {
+        localStorage.removeItem('auth_token');
+    }
+
+    static async request(endpoint, method = 'GET', data = null, includeToken = true) {
         try {
             const options = {
                 method,
                 headers: { 'Content-Type': 'application/json' },
             };
+
+            // Attach Authorization header if token exists and requested
+            if (includeToken) {
+                const token = localStorage.getItem('auth_token');
+
+                if (token) {
+                    options.headers['Authorization'] = `Bearer ${token}`;
+                }
+            }
 
             // Only send body if needed
             if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && data) {

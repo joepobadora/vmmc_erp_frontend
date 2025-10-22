@@ -3,6 +3,7 @@
     import App from '$lib/assets/js/bootstrap';
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
+    import Sidebar from './components/Sidebar.svelte';
 
     let auth = null;
 
@@ -17,21 +18,22 @@
 </script>
 
 <svelte:head>
-    <title>VMMC ERP - Home</title>
+    <title>VMMC ERP - Admin Console</title>
 </svelte:head>
 
 {#if auth}
     <!-- navbar -->
     <div class="row mb-5">
         <div class="col px-0">
-            <Navbar title="VMMC ERP" titleRoute="/home" />
+            <Navbar title="VMMC ERP - Admin Console" titleRoute="/admin" />
         </div>
     </div>
 
     <!-- main -->
     <div class="container">
         <div class="row">
-            <div class="col-sm-12"><slot /></div>
+            <div class="col-md-2"><Sidebar /></div>
+            <div class="col-md-10"><slot /></div>
         </div>
     </div>
 {/if}
