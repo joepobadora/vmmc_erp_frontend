@@ -1,4 +1,8 @@
 <script>
+    import { goto } from '$app/navigation';
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+
     let data = $state({
         account: {
             status: true,
@@ -6,7 +10,7 @@
         user: {},
         module: {
             admin: {
-                accounts: {},
+                accounts: { access: false },
                 audit: {},
                 offices: {},
                 docTypes: {},
@@ -40,8 +44,13 @@
         }
     });
 
-    function showData() {
-        console.log(JSON.stringify(data));
+    function save(event) {
+        const button = event.currentTarget;
+        App.Button.el(button).setLoading('Saving...');
+        setTimeout(() => {
+            goto('/admin/accounts');
+            Alert.show('success', 'Success', 'Successfully created an account.');
+        }, 2000);
     }
 </script>
 
@@ -166,25 +175,49 @@
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.accounts.access} class="form-check-input" type="checkbox" id="accounts" />
+                                                            <input
+                                                                bind:checked={data.module.admin.accounts.access}
+                                                                disabled={!data.module.admin.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="accounts"
+                                                            />
                                                             <label class="form-check-label small" for="accounts">Accounts</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.accounts.view} class="form-check-input" type="checkbox" id="viewAccounts" />
+                                                            <input
+                                                                bind:checked={data.module.admin.accounts.view}
+                                                                disabled={!data.module.admin.accounts.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="viewAccounts"
+                                                            />
                                                             <label class="form-check-label small" for="viewAccounts">View</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.accounts.edit} class="form-check-input" type="checkbox" id="editAccounts" />
+                                                            <input
+                                                                bind:checked={data.module.admin.accounts.edit}
+                                                                disabled={!data.module.admin.accounts.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="editAccounts"
+                                                            />
                                                             <label class="form-check-label small" for="editAccounts">Edit</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.accounts.delete} class="form-check-input" type="checkbox" id="deleteAccounts" />
+                                                            <input
+                                                                bind:checked={data.module.admin.accounts.delete}
+                                                                disabled={!data.module.admin.accounts.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="deleteAccounts"
+                                                            />
                                                             <label class="form-check-label small" for="deleteAccounts">Delete</label>
                                                         </div>
                                                     </td>
@@ -192,13 +225,25 @@
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.audit.access} class="form-check-input" type="checkbox" id="auditTrail" />
+                                                            <input
+                                                                bind:checked={data.module.admin.audit.access}
+                                                                disabled={!data.module.admin.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="auditTrail"
+                                                            />
                                                             <label class="form-check-label small" for="auditTrail">Audit Trail</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.audit.view} class="form-check-input" type="checkbox" id="viewAuditTrail" />
+                                                            <input
+                                                                bind:checked={data.module.admin.audit.view}
+                                                                disabled={!data.module.admin.audit.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="viewAuditTrail"
+                                                            />
                                                             <label class="form-check-label small" for="viewAuditTrail">View</label>
                                                         </div>
                                                     </td>
@@ -225,25 +270,49 @@
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.offices.access} class="form-check-input" type="checkbox" id="offices" />
+                                                            <input
+                                                                bind:checked={data.module.admin.offices.access}
+                                                                disabled={!data.module.admin.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="offices"
+                                                            />
                                                             <label class="form-check-label small" for="offices">Offices</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.offices.view} class="form-check-input" type="checkbox" id="viewOffices" />
+                                                            <input
+                                                                bind:checked={data.module.admin.offices.view}
+                                                                disabled={!data.module.admin.offices.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="viewOffices"
+                                                            />
                                                             <label class="form-check-label small" for="viewOffices">View</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.offices.edit} class="form-check-input" type="checkbox" id="editOffices" />
+                                                            <input
+                                                                bind:checked={data.module.admin.offices.edit}
+                                                                disabled={!data.module.admin.offices.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="editOffices"
+                                                            />
                                                             <label class="form-check-label small" for="editOffices">Edit</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.offices.delete} class="form-check-input" type="checkbox" id="deleteOffices" />
+                                                            <input
+                                                                bind:checked={data.module.admin.offices.delete}
+                                                                disabled={!data.module.admin.offices.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="deleteOffices"
+                                                            />
                                                             <label class="form-check-label small" for="deleteOffices">Delete</label>
                                                         </div>
                                                     </td>
@@ -251,25 +320,49 @@
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTypes.access} class="form-check-input" type="checkbox" id="documentTypes" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTypes.access}
+                                                                disabled={!data.module.admin.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="documentTypes"
+                                                            />
                                                             <label class="form-check-label small" for="documentTypes">Document Types</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTypes.view} class="form-check-input" type="checkbox" id="viewDocumentTypes" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTypes.view}
+                                                                disabled={!data.module.admin.docTypes.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="viewDocumentTypes"
+                                                            />
                                                             <label class="form-check-label small" for="viewDocumentTypes">View</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTypes.edit} class="form-check-input" type="checkbox" id="editDocumentTypes" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTypes.edit}
+                                                                disabled={!data.module.admin.docTypes.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="editDocumentTypes"
+                                                            />
                                                             <label class="form-check-label small" for="editDocumentTypes">Edit</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTypes.delete} class="form-check-input" type="checkbox" id="deleteDocumentTypes" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTypes.delete}
+                                                                disabled={!data.module.admin.docTypes.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="deleteDocumentTypes"
+                                                            />
                                                             <label class="form-check-label small" for="deleteDocumentTypes">Delete</label>
                                                         </div>
                                                     </td>
@@ -277,25 +370,49 @@
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTags.access} class="form-check-input" type="checkbox" id="documentTags" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTags.access}
+                                                                disabled={!data.module.admin.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="documentTags"
+                                                            />
                                                             <label class="form-check-label small" for="documentTags">Document Tags</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTags.view} class="form-check-input" type="checkbox" id="viewDocumentTags" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTags.view}
+                                                                disabled={!data.module.admin.docTags.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="viewDocumentTags"
+                                                            />
                                                             <label class="form-check-label small" for="viewDocumentTags">View</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTags.edit} class="form-check-input" type="checkbox" id="editDocumentTags" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTags.edit}
+                                                                disabled={!data.module.admin.docTags.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="editDocumentTags"
+                                                            />
                                                             <label class="form-check-label small" for="editDocumentTags">Edit</label>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="form-check">
-                                                            <input bind:checked={data.module.admin.docTags.delete} class="form-check-input" type="checkbox" id="deleteDocumentTags" />
+                                                            <input
+                                                                bind:checked={data.module.admin.docTags.delete}
+                                                                disabled={!data.module.admin.docTags.access}
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="deleteDocumentTags"
+                                                            />
                                                             <label class="form-check-label small" for="deleteDocumentTags">Delete</label>
                                                         </div>
                                                     </td>
@@ -307,7 +424,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <button onclick={showData} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>
+                            <button onclick={save} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>
                         </div>
                     </div>
                 </div>
