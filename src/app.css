@@ -26,19 +26,14 @@ body {
     background-color: inherit !important;
     border-left: 1px !important;
     border-right: 0 !important;
-    padding: 8px 15px !important;
+    padding: 10px 5px !important;
     transition: background-color 0.2s !important;
 }
 
 .custom-row:hover {
-    box-shadow: inset 3px 0 0 0 lightgray;
+    box-shadow: inset 3px 0 0 0 #336699;
     /* X offset = +2px → left side */
     background-color: #f6f8fa !important;
-}
-
-.custom-pagination-button {
-    width: 32px;
-    overflow: hidden;
 }
 
 .custom-filter-wrapper {
@@ -60,19 +55,6 @@ body {
     /* rounded-bottom-0 */
 }
 
-.custom-table-wrapper {
-    border: 1px solid #dee2e6;
-    /* border */
-    border-top: none;
-    /* border-top-0 */
-    border-radius: 0.3rem;
-    /* rounded-3 */
-    border-top-left-radius: 0;
-    /* rounded-top-0 */
-    border-top-right-radius: 0;
-    /* rounded-top-0 */
-}
-
 /* Baby Blue (Male) */
 .custom-badge-male {
     background-color: #d6f0fa !important;
@@ -89,8 +71,4 @@ body {
     color: #8a3c5a;
     /* muted rose text */
     /* border: 1px solid #8a3c5a; */
-}
-
-.custom-bg-light {
-    background-color: #f0f4f8;
 }

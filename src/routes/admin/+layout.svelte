@@ -4,6 +4,7 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
     import Sidebar from './components/Sidebar.svelte';
+    import Footer from './components/Footer.svelte';
 
     let auth = null;
 
@@ -36,4 +37,7 @@
             <div class="col-md-10"><slot /></div>
         </div>
     </div>
+
+    <!-- footer -->
+    <Footer />
 {/if}

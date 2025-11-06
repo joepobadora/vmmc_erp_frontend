@@ -48,7 +48,7 @@
         const button = event.currentTarget;
         App.Button.el(button).setLoading('Saving...');
         setTimeout(() => {
-            goto('/admin/accounts');
+            goto('/admin/document-types');
             Alert.show('success', 'Success', 'Successfully created an account.');
         }, 2000);
     }
