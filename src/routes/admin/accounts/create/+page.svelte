@@ -2,37 +2,87 @@
     import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
+    import { onMount } from 'svelte';
 
     let data = $state({
         account: {
+            username: '',
+            password: '',
+            confirm_password: '',
             status: true,
+            office: '',
         },
-        user: {},
-        module: {
+        user: {
+            first_name: '',
+            middle_name: '',
+            last_name: '',
+            suffix: 'N/A',
+            gender: '',
+            birthdate: '',
+        },
+        account_modules: {
             admin: {
-                accounts: { access: false },
-                audit: {},
-                offices: {},
-                docTypes: {},
-                docTags: {},
+                access: false,
+                accounts: {
+                    access: false,
+                    view: false,
+                    edit: false,
+                    delete: false,
+                },
+                audit: {
+                    access: false,
+                    view: false,
+                },
+                offices: {
+                    access: false,
+                    view: false,
+                    edit: false,
+                    delete: false,
+                },
+                document_types: {
+                    access: false,
+                    view: false,
+                    edit: false,
+                    delete: false,
+                },
+                document_tags: {
+                    access: false,
+                    view: false,
+                    edit: false,
+                    delete: false,
+                },
             },
         },
     });
 
+    let officeList = $state([]);
+
+    onMount(() => {
+        initOfficeDropdown();
+    });
+
+    async function initOfficeDropdown() {
+        const result = await App.API.post('http://127.0.0.1:8000/api/offices', { keyword: '', status: 'Active' }, false);
+
+        if (result.success) {
+            officeList = result.data.map((o) => o.short_name);
+        }
+    }
+
     $effect(() => {
         // If Admin Console is disabled, turn off all submodules' access
-        if (!data.module.admin.access) {
-            for (const key in data.module.admin) {
+        if (!data.account_modules.admin.access) {
+            for (const key in data.account_modules.admin) {
                 if (key !== 'access') {
-                    data.module.admin[key].access = false;
+                    data.account_modules.admin[key].access = false;
                 }
             }
         }
 
         // For each submodule, if access is disabled, turn off all its permissions
-        for (const key in data.module.admin) {
+        for (const key in data.account_modules.admin) {
             if (key !== 'access') {
-                const submodule = data.module.admin[key];
+                const submodule = data.account_modules.admin[key];
                 if (!submodule.access) {
                     for (const perm in submodule) {
                         if (perm !== 'access') {
@@ -44,13 +94,22 @@
         }
     });
 
-    function save(event) {
-        const button = event.currentTarget;
-        App.Button.el(button).setLoading('Saving...');
-        setTimeout(() => {
-            goto('/admin/accounts');
-            Alert.show('success', 'Success', 'Successfully created an account.');
-        }, 2000);
+    async function save(event) {
+        // const button = event.currentTarget;
+        // App.Button.el(button).setLoading('Saving...');
+
+        const result = await App.API.post('http://127.0.0.1:8000/api/accounts', { data }, false);
+
+        if (result.success) {
+            console.log(result.data);
+        } else {
+            console.log(result);
+        }
+
+        // setTimeout(() => {
+        //     goto('/admin/accounts');
+        //     Alert.show('success', 'Success', 'Successfully created an account.');
+        // }, 2000);
     }
 </script>
 
@@ -95,13 +154,18 @@
                             </div>
                             <div class="col-12 col-sm-6">
                                 <label for="confirmPassword" class="form-label small">Confirm Password</label>
-                                <input bind:value={data.account.confirmPassword} type="password" class="form-control form-control-sm" id="confirmPassword" placeholder="Confirm password" />
+                                <input bind:value={data.account.confirm_password} type="password" class="form-control form-control-sm" id="confirmPassword" placeholder="Confirm password" />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="office" class="form-label small">Office</label>
-                                <input bind:value={data.account.office} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+                                <input bind:value={data.account.office} list="officeList" type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+                                <datalist id="officeList">
+                                    {#each officeList as office}
+                                        <option value={office}></option>
+                                    {/each}
+                                </datalist>
                             </div>
                         </div>
                         <div class="row mb-4">
@@ -118,20 +182,20 @@
                         <div class="row mb-3">
                             <div class="col-12 col-md-3">
                                 <label for="firstName" class="form-label small">First Name</label>
-                                <input bind:value={data.user.firstName} type="text" class="form-control form-control-sm" id="firstName" placeholder="First name" />
+                                <input bind:value={data.user.first_name} type="text" class="form-control form-control-sm" id="firstName" placeholder="First name" />
                             </div>
                             <div class="col-12 col-md-3">
-                                <label for="middleName" class="form-label small">Middle Name</label>
-                                <input bind:value={data.user.middleName} type="text" class="form-control form-control-sm" id="middleName" placeholder="Middle name" />
+                                <label for="middleName" class="form-label small">Middle Name<span class="ms-1 text-muted fst-italic">(Optional)</span></label>
+                                <input bind:value={data.user.middle_name} type="text" class="form-control form-control-sm" id="middleName" placeholder="Middle name" />
                             </div>
                             <div class="col-12 col-md-3">
                                 <label for="exampleFormControlInput1" class="form-label small">Last Name</label>
-                                <input bind:value={data.user.lastName} type="text" class="form-control form-control-sm" id="exampleFormControlInput1" placeholder="Last name" />
+                                <input bind:value={data.user.last_name} type="text" class="form-control form-control-sm" id="exampleFormControlInput1" placeholder="Last name" />
                             </div>
                             <div class="col-12 col-md-3">
-                                <label for="suffix" class="form-label small">Suffix</label>
+                                <label for="suffix" class="form-label small">Suffix<span class="ms-1 text-muted fst-italic">(Optional)</span></label>
                                 <select bind:value={data.user.suffix} class="form-select form-select-sm" id="suffix">
-                                    <option value="NA" selected>N/A</option>
+                                    <option value="N/A" selected>N/A</option>
                                     <option value="SR">SR.</option>
                                     <option value="JR">JR.</option>
                                     <option value="II">II.</option>
@@ -165,7 +229,7 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="form-check form-switch">
-                                            <input bind:checked={data.module.admin.access} class="form-check-input" type="checkbox" role="switch" id="adminConsole" />
+                                            <input bind:checked={data.account_modules.admin.access} class="form-check-input" type="checkbox" role="switch" id="adminConsole" />
                                             <label class="form-check-label small" for="adminConsole">Admin Console</label>
                                         </div>
                                     </div>
@@ -176,8 +240,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.accounts.access}
-                                                                disabled={!data.module.admin.access}
+                                                                bind:checked={data.account_modules.admin.accounts.access}
+                                                                disabled={!data.account_modules.admin.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="accounts"
@@ -188,8 +252,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.accounts.view}
-                                                                disabled={!data.module.admin.accounts.access}
+                                                                bind:checked={data.account_modules.admin.accounts.view}
+                                                                disabled={!data.account_modules.admin.accounts.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="viewAccounts"
@@ -200,8 +264,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.accounts.edit}
-                                                                disabled={!data.module.admin.accounts.access}
+                                                                bind:checked={data.account_modules.admin.accounts.edit}
+                                                                disabled={!data.account_modules.admin.accounts.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="editAccounts"
@@ -212,8 +276,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.accounts.delete}
-                                                                disabled={!data.module.admin.accounts.access}
+                                                                bind:checked={data.account_modules.admin.accounts.delete}
+                                                                disabled={!data.account_modules.admin.accounts.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="deleteAccounts"
@@ -226,8 +290,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.audit.access}
-                                                                disabled={!data.module.admin.access}
+                                                                bind:checked={data.account_modules.admin.audit.access}
+                                                                disabled={!data.account_modules.admin.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="auditTrail"
@@ -238,8 +302,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.audit.view}
-                                                                disabled={!data.module.admin.audit.access}
+                                                                bind:checked={data.account_modules.admin.audit.view}
+                                                                disabled={!data.account_modules.admin.audit.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="viewAuditTrail"
@@ -271,8 +335,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.offices.access}
-                                                                disabled={!data.module.admin.access}
+                                                                bind:checked={data.account_modules.admin.offices.access}
+                                                                disabled={!data.account_modules.admin.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="offices"
@@ -283,8 +347,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.offices.view}
-                                                                disabled={!data.module.admin.offices.access}
+                                                                bind:checked={data.account_modules.admin.offices.view}
+                                                                disabled={!data.account_modules.admin.offices.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="viewOffices"
@@ -295,8 +359,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.offices.edit}
-                                                                disabled={!data.module.admin.offices.access}
+                                                                bind:checked={data.account_modules.admin.offices.edit}
+                                                                disabled={!data.account_modules.admin.offices.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="editOffices"
@@ -307,8 +371,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.offices.delete}
-                                                                disabled={!data.module.admin.offices.access}
+                                                                bind:checked={data.account_modules.admin.offices.delete}
+                                                                disabled={!data.account_modules.admin.offices.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="deleteOffices"
@@ -321,8 +385,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTypes.access}
-                                                                disabled={!data.module.admin.access}
+                                                                bind:checked={data.account_modules.admin.document_types.access}
+                                                                disabled={!data.account_modules.admin.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="documentTypes"
@@ -333,8 +397,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTypes.view}
-                                                                disabled={!data.module.admin.docTypes.access}
+                                                                bind:checked={data.account_modules.admin.document_types.view}
+                                                                disabled={!data.account_modules.admin.document_types.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="viewDocumentTypes"
@@ -345,8 +409,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTypes.edit}
-                                                                disabled={!data.module.admin.docTypes.access}
+                                                                bind:checked={data.account_modules.admin.document_types.edit}
+                                                                disabled={!data.account_modules.admin.document_types.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="editDocumentTypes"
@@ -357,8 +421,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTypes.delete}
-                                                                disabled={!data.module.admin.docTypes.access}
+                                                                bind:checked={data.account_modules.admin.document_types.delete}
+                                                                disabled={!data.account_modules.admin.document_types.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="deleteDocumentTypes"
@@ -371,8 +435,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTags.access}
-                                                                disabled={!data.module.admin.access}
+                                                                bind:checked={data.account_modules.admin.document_tags.access}
+                                                                disabled={!data.account_modules.admin.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="documentTags"
@@ -383,8 +447,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTags.view}
-                                                                disabled={!data.module.admin.docTags.access}
+                                                                bind:checked={data.account_modules.admin.document_tags.view}
+                                                                disabled={!data.account_modules.admin.document_tags.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="viewDocumentTags"
@@ -395,8 +459,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTags.edit}
-                                                                disabled={!data.module.admin.docTags.access}
+                                                                bind:checked={data.account_modules.admin.document_tags.edit}
+                                                                disabled={!data.account_modules.admin.document_tags.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="editDocumentTags"
@@ -407,8 +471,8 @@
                                                     <td>
                                                         <div class="form-check">
                                                             <input
-                                                                bind:checked={data.module.admin.docTags.delete}
-                                                                disabled={!data.module.admin.docTags.access}
+                                                                bind:checked={data.account_modules.admin.document_tags.delete}
+                                                                disabled={!data.account_modules.admin.document_tags.access}
                                                                 class="form-check-input"
                                                                 type="checkbox"
                                                                 id="deleteDocumentTags"

@@ -1,6 +1,12 @@
 <script>
     import { page } from '$app/stores';
     import Table from '$lib/components/Table.svelte';
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+    import { onMount } from 'svelte';
+
+    let promise = $state();
+    let timer;
 
     const accounts = [
         { id: 1, fullname: 'Dela Cruz, Juan', username: 'jdelacruz', office: 'Finance', status: 'Active', date_created: '2024-01-12', created_by: 'admin' },
@@ -32,6 +38,17 @@
 
     function test(name) {
         console.log(name);
+    }
+
+    onMount(() => {
+        promise = App.API.get('http://127.0.0.1:8000/api/accounts', false);
+    });
+
+    function refreshTable() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            promise = App.API.get('http://127.0.0.1:8000/api/accounts', false);
+        }, 400);
     }
 </script>
 
@@ -78,55 +95,65 @@
 
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
         <!-- table -->
         <div class="card border-0 shadow-sm px-3">
             <div class="card-body">
-                <Table data={accounts} enableTotalCount enablePagination pageSize="10">
-                    <div slot="row" let:item class="row border-bottom custom-row small">
-                        <div class="col">
-                            <div>
-                                <span class="text-muted me-2">Name:</span>
-                                <strong class="custom-link">{item.fullname}</strong>
-                            </div>
-                            <div>
-                                <span class="text-muted me-2">Username:</span>
-                                <span>{item.username}</span>
-                            </div>
-                            <div>
-                                <span class="text-muted me-2">Status:</span>
-                                <span class="badge bg-{item.status == 'Active' ? 'success' : 'danger'}">{item.status}</span>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div>
-                                <span class="text-muted me-2">Office:</span>
-                                <span>{item.office}</span>
-                            </div>
-                        </div>
-                        <div class="col-auto ms-auto">
-                            <div>
-                                <span class="text-muted me-2">Date created:</span>
-                                <span>{item.date_created}</span>
-                            </div>
-                            <div>
-                                <span class="text-muted me-2">By:</span>
-                                <span>{item.created_by}</span>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <button
-                                class="btn btn-sm btn-outline-primary px-3"
-                                onclick={() => {
-                                    test(item.fullname);
-                                }}>Edit</button
-                            >
-                        </div>
+                {#await promise}
+                    <div class="d-flex justify-content-center p-4">
+                        <div class="spinner-border text-primary" role="status"></div>
                     </div>
-                </Table>
+                {:then result}
+                    {#if result}
+                        {#if result.success}
+                            <Table data={result.data} enableTotalCount enablePagination pageSize="10">
+                                <div slot="row" let:item class="row border-bottom custom-row small">
+                                    <div class="col">
+                                        <div>
+                                            <span class="text-muted me-2">Name:</span>
+                                            <strong class="custom-link">{item.user.full_name2}</strong>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted me-2">Username:</span>
+                                            <span>{item.username}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted me-2">Status:</span>
+                                            <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div>
+                                            <span class="text-muted me-2">Office:</span>
+                                            <span>{item.office.short_name}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto ms-auto">
+                                        <div>
+                                            <span class="text-muted me-2">Date created:</span>
+                                            <span>{item.created_at}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted me-2">By:</span>
+                                            <span>{item.created_by}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button
+                                            class="btn btn-sm btn-outline-primary px-3"
+                                            onclick={() => {
+                                                test(item.user.full_name1);
+                                            }}>Edit</button
+                                        >
+                                    </div>
+                                </div>
+                            </Table>
+                        {/if}
+                    {/if}
+                {/await}
             </div>
         </div>
     </div>

@@ -15,12 +15,18 @@
         promise = App.API.post('http://127.0.0.1:8000/api/offices', { keyword, status }, false);
     });
 
-    function refreshTable(event) {
-        const val = event.target.value;
+    function refreshTable() {
         clearTimeout(timer);
         timer = setTimeout(() => {
             promise = App.API.post('http://127.0.0.1:8000/api/offices', { keyword, status }, false);
         }, 400);
+    }
+
+    function resetFilter() {
+        keyword = '';
+        status = 'All';
+
+        refreshTable();
     }
 </script>
 
@@ -65,7 +71,7 @@
 
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button onclick={resetFilter} type="button" class="btn btn-outline-secondary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
