@@ -25,7 +25,7 @@
     <!-- navbar -->
     <div class="row mb-5">
         <div class="col px-0">
-            <Navbar title="VMMC ERP - DMS" titleRoute="/dms" showHome="true" />
+            <Navbar title="VMMC ERP - DEx" titleRoute="/dex" showHome="true" />
         </div>
     </div>
 

@@ -26,7 +26,7 @@
     <!-- navbar -->
     <div class="row mb-5">
         <div class="col px-0">
-            <Navbar title="VMMC ERP - Admin Console" titleRoute="/admin" />
+            <Navbar title="VMMC ERP - Admin Console" titleRoute="/admin" showHome />
         </div>
     </div>
 
