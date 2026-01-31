@@ -67,6 +67,7 @@
             </div>
             <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/create'}><i class="bi bi-plus-lg me-2"></i>Create</a></div>
         </div>
+
         <div class="row mb-4">
             <!-- search -->
             <div class="col">
@@ -86,6 +87,16 @@
             <!-- status -->
             <div class="col-auto">
                 <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Status</label>
+                <select class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+                    <option value="All" selected>All</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- role -->
+            <div class="col-auto">
+                <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Role</label>
                 <select class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
                     <option value="All" selected>All</option>
                     <option value="Active">Active</option>

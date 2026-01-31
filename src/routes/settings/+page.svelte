@@ -8,7 +8,7 @@
                     <p class="small">Change your account password to help keep your access secure. Make sure to choose a strong password that only you know.</p>
                 </div>
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label small">Username </label>
+                    <label for="exampleFormControlInput1" class="form-label small">Username</label>
                     <input type="email" class="form-control form-control-sm" id="exampleFormControlInput1" placeholder="Username" />
                 </div>
                 <div class="row mb-4">
@@ -86,6 +86,25 @@
                 </div>
                 <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
                     <button type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-arrow-repeat me-2"></i>Update</button>
+                </div>
+            </div>
+        </div>
+        <!-- signature -->
+        <div class="card border-0 shadow-sm p-2 mb-4">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Signature</h5>
+                    <p class="small">Set your official signature details as they will appear on documents and records that require your authorization.</p>
+                </div>
+                <div class="mb-4">
+                    <div class="row justify-content-center">
+                        <div class="col-auto mb-3">
+                            <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle"> </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
+                    <a href="/settings/sign-pad" class="btn btn-light border btn-sm px-3">Open Sign Pad<i class="bi bi-box-arrow-up-right ms-2"></i></a>
                 </div>
             </div>
         </div>

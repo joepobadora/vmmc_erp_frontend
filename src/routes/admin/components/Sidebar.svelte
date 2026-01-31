@@ -10,6 +10,10 @@
                     <i class="bi bi-people me-2"></i>Accounts
                 </a>
 
+                <a href="/admin/roles" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/roles')}>
+                    <i class="bi bi-shield-lock me-2"></i>Roles
+                </a>
+
                 <a href="/admin/offices" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/offices')}>
                     <i class="bi bi-geo-alt me-2"></i>Offices
                 </a>

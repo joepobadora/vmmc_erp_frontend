@@ -20,6 +20,10 @@
                                 <i class="bi bi-folder me-2"></i>Documents
                             </a>
 
+                            <a href="/dex/dms/reference-copies" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/reference-copies')}>
+                                <i class="bi bi-folder me-2"></i>Reference Copies
+                            </a>
+
                             <a href="/dex/dms/drafts" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/drafts')}>
                                 <i class="bi bi-pencil-square me-2"></i>Drafts
                             </a>

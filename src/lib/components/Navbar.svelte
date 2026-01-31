@@ -6,7 +6,7 @@
 
     let el;
     let logoutModal;
-    let { title, titleRoute, showHome } = $props();
+    let { title, titleRoute, showHome, hideSettings } = $props();
 
     $effect(() => {
         if ($BootstrapClient) {
@@ -44,11 +44,13 @@
                         </a>
                     </li>
                 {/if}
-                <li>
-                    <a class="dropdown-item small" href="/settings">
-                        <i class="bi bi-gear me-2"></i> Settings
-                    </a>
-                </li>
+                {#if !hideSettings}
+                    <li>
+                        <a class="dropdown-item small" href="/settings">
+                            <i class="bi bi-gear me-2"></i> Settings
+                        </a>
+                    </li>
+                {/if}
                 <li><hr class="dropdown-divider" /></li>
                 <li>
                     <a class="dropdown-item small" href="/" data-bs-toggle="modal" data-bs-target="#logoutModal">
