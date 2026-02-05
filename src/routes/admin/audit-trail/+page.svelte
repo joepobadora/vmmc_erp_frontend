@@ -18,6 +18,18 @@
         </div>
 
         <div class="row mb-4">
+            <!-- date from -->
+            <div class="col-auto">
+                <label for="docmngtMyDocumentsFromDatePicker" class="small text-muted ms-1">Date from</label>
+                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsFromDatePicker" placeholder="YYYY-MM-DD" />
+            </div>
+
+            <!-- date to -->
+            <div class="col-auto">
+                <label for="docmngtMyDocumentsToDatePicker" class="small text-muted ms-1">Date to</label>
+                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsToDatePicker" placeholder="YYYY-MM-DD" />
+            </div>
+
             <!-- search -->
             <div class="col">
                 <div class="row">
@@ -35,21 +47,9 @@
                 <input type="text" class="form-control form-control-sm" placeholder="Search by name..." id="docmngtMyDocumentsSearchInput" />
             </div>
 
-            <!-- date from -->
-            <div class="col-auto">
-                <label for="docmngtMyDocumentsFromDatePicker" class="small text-muted ms-1">Date from</label>
-                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsFromDatePicker" placeholder="YYYY-MM-DD" />
-            </div>
-
-            <!-- date to -->
-            <div class="col-auto">
-                <label for="docmngtMyDocumentsToDatePicker" class="small text-muted ms-1">Date to</label>
-                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsToDatePicker" placeholder="YYYY-MM-DD" />
-            </div>
-
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
