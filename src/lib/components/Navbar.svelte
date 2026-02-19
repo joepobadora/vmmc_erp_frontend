@@ -1,4 +1,5 @@
 <script>
+    import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import { BootstrapClient } from '$lib/stores/bootstrapClient';
     import { onMount } from 'svelte';
@@ -8,13 +9,27 @@
     let logoutModal;
     let { title, titleRoute, showHome, hideSettings } = $props();
 
+    let firstName = $state('');
+
     $effect(() => {
         if ($BootstrapClient) {
             logoutModal = $BootstrapClient.Modal.getOrCreateInstance(el);
         }
     });
 
-    onMount(() => {});
+    onMount(async () => {
+        try {
+            const result = await App.API.get('/me');
+
+            if (result.success) {
+                firstName = result['data']['user']['first_name'];
+            } else {
+                Alert.show('error', 'Login failed.', result.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        }
+    });
 
     function Logout() {
         App.API.removeToken();
@@ -35,7 +50,7 @@
             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-label="menu dropdown">
                 <li class="px-4 py-2">
                     <p class="small text-secondary mb-1">Signed in as:</p>
-                    <h6>Joe Louis</h6>
+                    <h6>{firstName}</h6>
                 </li>
                 {#if showHome}
                     <li>

@@ -29,21 +29,17 @@
         rememberMe && user ? localStorage.setItem('username', user) : localStorage.removeItem('username');
 
         try {
-            const result = await App.API.post(
-                'http://127.0.0.1:8000/api/login',
-                {
-                    username: user,
-                    password: pass,
-                },
-                false
-            );
+            const result = await App.API.post('/login', {
+                username: user,
+                password: pass,
+            });
 
             if (result.success) {
-                App.API.setToken(result.token);
+                App.API.setToken(result.data.token);
                 goto('/');
-                Alert.show('success', 'Login successful.', 'Welcome back, ' + result.username + '!');
+                Alert.show('success', 'Login successful.', 'Welcome back, ' + result.data.user.first_name + '!');
             } else {
-                Alert.show('error', 'Login failed.', result.message);
+                Alert.show('error', 'Login failed.', result.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
@@ -71,8 +67,10 @@
                 <div class="d-flex flex-column align-items-center justify-content-center mt-3">
                     <!-- icon -->
                     <img class="mb-3" src="/vmmc_logo.png" alt="VMMC Logo" width="64px" height="64px" />
+
                     <!-- title -->
                     <h5>Sign in</h5>
+
                     <!-- subtitle -->
                     <p>
                         Get access to you
@@ -80,8 +78,10 @@
                         modules.
                     </p>
                 </div>
+
                 <!-- username input -->
                 <input type="text" class="form-control form-control-sm" placeholder="Username" name="usernameInput" bind:value={user} bind:this={userInput} />
+
                 <!-- password input -->
                 <div class="input-group input-group-sm">
                     <input type={passType} class="form-control border border-end-0" placeholder="Password" name="passwordInput" bind:value={pass} bind:this={passInput} />
@@ -89,11 +89,13 @@
                         <i class="bi {passIcon} text-secondary"></i>
                     </button>
                 </div>
+
                 <!-- remember me -->
                 <div class="form-check small">
                     <input class="form-check-input" type="checkbox" id="rememberMe" bind:checked={rememberMe} />
                     <label class="form-check-label text-primary" for="rememberMe">Remember me</label>
                 </div>
+
                 <!-- login button -->
                 <div class="row">
                     <div class="col-12 col-sm-auto ms-sm-auto">

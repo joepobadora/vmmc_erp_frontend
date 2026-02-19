@@ -1,3 +1,20 @@
+<script>
+    import { goto } from '$app/navigation';
+    import App from '$lib/assets/js/bootstrap';
+    import { onMount } from 'svelte';
+
+    // route guard
+    let auth = null;
+
+    onMount(async () => {
+        auth = await App.Auth.loggedIn();
+
+        if (auth) {
+            goto('/');
+        }
+    });
+</script>
+
 <svelte:head>
     <title>VMMC ERP - Login</title>
 </svelte:head>

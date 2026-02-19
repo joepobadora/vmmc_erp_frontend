@@ -7,8 +7,7 @@
     let auth = null;
 
     onMount(async () => {
-        // auth = await App.Auth.loggedIn();
-        auth = true;
+        auth = await App.Auth.loggedIn();
 
         if (!auth) {
             goto('/login');

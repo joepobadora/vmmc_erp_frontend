@@ -1,3 +1,68 @@
+<script>
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+    import { onMount, onDestroy } from 'svelte';
+    import { goto } from '$app/navigation';
+
+    let updatingSignature = $state(false);
+
+    let canvasEl;
+    let signPad;
+
+    // onmount
+    onMount(() => {
+        initSignPad();
+    });
+
+    // init sign pad
+    function initSignPad() {
+        // Initialize SignPad after canvas is mounted
+        signPad = new App.SignPad(canvasEl);
+
+        // Cleanup
+        onDestroy(() => {
+            signPad = null; // dereference
+        });
+    }
+
+    // clear canvas
+    function clearCanvas() {
+        signPad.ClearCanvas();
+    }
+
+    // update signature
+    async function updateSignature() {
+        // validate canvas
+        if (!signPad.Valid(1)) {
+            Alert.show('error', 'Update failed.', 'Signature empty or might be too little.');
+            return;
+        }
+
+        // update signature
+        try {
+            updatingSignature = true;
+
+            const result = await App.API.post('/settings/signature/update', {
+                signature: signPad.SaveAsBase64(),
+            });
+
+            if (result.success) {
+                setTimeout(() => {
+                    updatingSignature = true;
+                    goto('/settings');
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    updatingSignature = false;
+                    Alert.show('error', 'Update failed.', result.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        }
+    }
+</script>
+
 <div class="row justify-content-center">
     <div class="col-12 col-sm-8">
         <!-- signature -->
@@ -26,13 +91,21 @@
                                     <p class="text-center text-secondary small">( sign here )</p>
                                 </div>
                             </div>
-                            <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle"> </canvas>
+                            <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle" bind:this={canvasEl}> </canvas>
                         </div>
                     </div>
                 </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                    <button type="button" class="btn btn-light border btn-sm px-3 me-3"><i class="bi bi-x-lg me-2"></i>Clear</button>
-                    <button type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check-lg me-2"></i>Save</button>
+                <div class="d-flex flex-column flex-sm-row justify-content-sm-end gap-3 gap-sm-0">
+                    <button type="button" class="btn btn-light border btn-sm px-3 me-sm-3 {updatingSignature ? 'd-none' : ''}" onclick={clearCanvas}><i class="bi bi-x-lg me-2"></i>Clear</button>
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick={updateSignature} disabled={updatingSignature}>
+                        {#if updatingSignature}
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Saving...
+                        {:else}
+                            <i class="bi bi-check-lg me-2"></i>
+                            Save
+                        {/if}
+                    </button>
                 </div>
             </div>
         </div>

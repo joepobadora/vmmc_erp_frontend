@@ -4,11 +4,11 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
 
+    // route guard
     let auth = null;
 
     onMount(async () => {
-        // auth = await App.Auth.loggedIn();
-        auth = true;
+        auth = await App.Auth.loggedIn();
 
         if (!auth) {
             goto('/login');

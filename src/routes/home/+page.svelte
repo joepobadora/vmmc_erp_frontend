@@ -1,6 +1,8 @@
 <!-- script -->
 <script>
     import { Alert } from '$lib/stores/alert';
+    import { onMount } from 'svelte';
+    import App from '$lib/assets/js/bootstrap';
 
     const modules = [
         {
