@@ -135,17 +135,17 @@
                 setTimeout(() => {
                     init();
 
-                    updatingAccount = false;
                     Alert.show('success', 'Update success.', result.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    updatingAccount = false;
                     Alert.show('error', 'Update failed.', result.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            updatingAccount = false;
         }
     }
 
@@ -201,17 +201,17 @@
                 setTimeout(() => {
                     init();
 
-                    updatingPersonalInfo = false;
                     Alert.show('success', 'Update success.', result.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    updatingPersonalInfo = false;
                     Alert.show('error', 'Update failed.', result.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            updatingPersonalInfo = false;
         }
     }
 </script>

@@ -1,5 +1,34 @@
 <script>
     import { page } from '$app/stores';
+    import Table from '$lib/components/Table.svelte';
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+    import { onMount } from 'svelte';
+
+    let loadingData = $state('false');
+    let roles = $state([]);
+
+    onMount(() => {
+        refreshTable();
+    });
+
+    async function refreshTable() {
+        loadingData = true;
+
+        try {
+            const result = await App.API.get('/admin/roles');
+
+            if (result.success) {
+                roles = result.data;
+            } else {
+                Alert.show('error', 'Request failed.', result.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loadingData = false;
+        }
+    }
 </script>
 
 <div class="row">
@@ -15,7 +44,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/create'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
+            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
         </div>
 
         <div class="row mb-4">
@@ -43,7 +72,32 @@
 
         <!-- table -->
         <div class="card border-0 shadow-sm px-3">
-            <div class="card-body"></div>
+            <div class="card-body">
+                {#if loadingData}
+                    <div class="d-flex justify-content-center p-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                {:else}
+                    <Table data={roles} enableTotalCount enablePagination pageSize="10">
+                        <div slot="row" let:item class="row border-bottom custom-row small">
+                            <div class="col-auto d-flex align-items-center">
+                                <strong>{item.name}</strong>
+                            </div>
+                            <div class="col d-flex align-items-center">
+                                <div class="text-muted">{item.code}</div>
+                            </div>
+                            <div class="col-auto">
+                                <button
+                                    class="btn btn-sm btn-outline-primary px-3"
+                                    onclick={() => {
+                                        test(item.document_type);
+                                    }}>Edit</button
+                                >
+                            </div>
+                        </div>
+                    </Table>
+                {/if}
+            </div>
         </div>
     </div>
 </div>

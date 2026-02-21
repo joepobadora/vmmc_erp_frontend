@@ -4,7 +4,7 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
     import Sidebar from './components/Sidebar.svelte';
-    import Footer from '../../lib/components/Footer.svelte';
+    import Footer from '$lib/components/Footer.svelte';
 
     let auth = null;
 
@@ -31,7 +31,7 @@
     </div>
 
     <!-- main -->
-    <div class="container">
+    <div class="container mb-auto">
         <div class="row">
             <div class="col-md-2"><Sidebar /></div>
             <div class="col-md-10"><slot /></div>

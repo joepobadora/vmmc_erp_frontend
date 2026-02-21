@@ -31,7 +31,7 @@
     </div>
 
     <!-- main -->
-    <div class="container">
+    <div class="container mb-auto">
         <div class="row">
             <div class="col-sm-2"><Sidebar /></div>
             <div class="col-sm-10"><slot /></div>

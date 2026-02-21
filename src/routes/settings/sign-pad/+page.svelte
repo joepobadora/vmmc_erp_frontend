@@ -48,17 +48,17 @@
 
             if (result.success) {
                 setTimeout(() => {
-                    updatingSignature = true;
                     goto('/settings');
                 }, 600);
             } else {
                 setTimeout(() => {
-                    updatingSignature = false;
                     Alert.show('error', 'Update failed.', result.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            updatingSignature = false;
         }
     }
 </script>

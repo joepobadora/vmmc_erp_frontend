@@ -42,7 +42,7 @@
 
 <!-- html -->
 <div class="d-flex align-items-center justify-content-center">
-    <div class="d-flex gap-4">
+    <div class="d-flex flex-column flex-sm-row flex-wrap gap-4 justify-content-center">
         {#each modules as config}
             {#if !config.mainte}
                 <a href={config.link} class="text-decoration-none text-dark">
