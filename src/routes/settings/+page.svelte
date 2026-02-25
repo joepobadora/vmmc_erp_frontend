@@ -4,14 +4,16 @@
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
 
-    let username = $state('');
-    let firstName = $state('');
-    let middleName = $state('');
-    let lastName = $state('');
-    let suffixList = $state([]);
-    let suffix = $state('');
-    let gender = $state('');
-    let birthdate = $state('');
+    let { data } = $props();
+
+    let username = $state(data.username ?? '');
+    let firstName = $state(data.firstName ?? '');
+    let middleName = $state(data.middleName ?? '');
+    let lastName = $state(data.lastName ?? '');
+    let suffixList = $state(data.suffixList ?? []);
+    let suffix = $state(Number(data.suffix) ?? 0);
+    let gender = $state(data.gender ?? '');
+    let birthdate = $state(data.birthdate ?? '');
 
     let oldPassword = $state('');
     let newPassword = $state('');
@@ -31,34 +33,8 @@
 
     // onmount
     onMount(() => {
-        init();
         initSignature();
     });
-
-    // init form
-    async function init() {
-        try {
-            const result = await App.API.get('/settings');
-
-            if (result.success) {
-                username = result.data.account.username;
-                oldPassword = '';
-                newPassword = '';
-                confirmNewPassword = '';
-                firstName = result.data.user.first_name;
-                middleName = result.data.user.middle_name;
-                lastName = result.data.user.last_name;
-                suffixList = result.data.suffix_list;
-                suffix = result.data.user.suffix ?? 'N/A';
-                gender = result.data.user.gender;
-                birthdate = App.Format.date(result.data.user.birthdate).toISODate();
-            } else {
-                Alert.show('error', 'Request failed.', result.error_code);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        }
-    }
 
     // init signature
     async function initSignature() {
@@ -286,9 +262,9 @@
                         <div class="col-12 col-sm-3">
                             <label for="suffix" class="form-label small">Suffix</label>
                             <select class="form-select form-select-sm" id="suffix" bind:value={suffix}>
-                                <option value="N/A" selected>N/A</option>
+                                <option value={0} selected>N/A</option>
                                 {#each suffixList as suffix}
-                                    <option value={suffix}>{suffix}</option>
+                                    <option value={suffix.id}>{suffix.enumeration}</option>
                                 {/each}
                             </select>
                         </div>

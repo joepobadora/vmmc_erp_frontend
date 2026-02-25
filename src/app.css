@@ -12,6 +12,7 @@ body {
 
 /* custom link style */
 .custom-link {
+    color: black;
     text-decoration: none;
 }
 

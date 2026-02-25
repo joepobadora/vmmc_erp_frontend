@@ -1,9 +1,10 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
     let loadingData = $state('false');
     let roles = $state([]);
@@ -44,7 +45,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
+            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
         </div>
 
         <div class="row mb-4">
@@ -80,19 +81,24 @@
                 {:else}
                     <Table data={roles} enableTotalCount enablePagination pageSize="10">
                         <div slot="row" let:item class="row border-bottom custom-row small">
-                            <div class="col-auto d-flex align-items-center">
-                                <strong>{item.name}</strong>
+                            <div class="col">
+                                <div>
+                                    <span class="text-muted me-2">Name:</span>
+                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link"><strong>{item.name}</strong></a>
+                                </div>
+                                <div>
+                                    <span class="text-muted me-2">Status:</span>
+                                    <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                </div>
                             </div>
-                            <div class="col d-flex align-items-center">
-                                <div class="text-muted">{item.code}</div>
+                            <div class="col">
+                                <div>
+                                    <span class="text-muted me-2">Code:</span>
+                                    <span>{item.code}</span>
+                                </div>
                             </div>
                             <div class="col-auto">
-                                <button
-                                    class="btn btn-sm btn-outline-primary px-3"
-                                    onclick={() => {
-                                        test(item.document_type);
-                                    }}>Edit</button
-                                >
+                                <a href={page.url.pathname + `/edit/${item.id}`}><button class="btn btn-sm btn-outline-primary px-3">Edit</button></a>
                             </div>
                         </div>
                     </Table>
