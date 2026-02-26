@@ -19,7 +19,7 @@
     <title>VMMC ERP - Settings</title>
 </svelte:head>
 
-{#if auth}
+{#if auth == true}
     <!-- navbar -->
     <div class="row mb-5">
         <div class="col px-0">

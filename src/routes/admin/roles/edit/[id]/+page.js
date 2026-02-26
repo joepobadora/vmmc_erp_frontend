@@ -74,21 +74,23 @@ export async function load({ params }) {
     try {
         const result = await App.API.get(`/admin/roles/${params.id}`);
 
-        if (result.success) {
-            result.data.permissions.forEach((permission) => {
+        const data = result.data.data;
+
+        if (result.data.success) {
+            data.permissions.forEach((permission) => {
                 permissions[permission.code] = true;
             });
 
             return {
-                code: result.data.code,
-                name: result.data.name,
-                description: result.data.description,
-                status: result.data.is_active == 1,
+                code: data.code,
+                name: data.name,
+                description: data.description,
+                status: data.is_active == 1,
                 permissions,
             };
         } else {
             return {
-                error: result.error_code,
+                error: result.data.error_code,
             };
         }
     } catch (err) {

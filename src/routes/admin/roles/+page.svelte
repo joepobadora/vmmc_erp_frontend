@@ -19,8 +19,10 @@
         try {
             const result = await App.API.get('/admin/roles');
 
-            if (result.success) {
-                roles = result.data;
+            const data = result.data.data;
+
+            if (result.data.success) {
+                roles = data;
             } else {
                 Alert.show('error', 'Request failed.', result.error_code);
             }

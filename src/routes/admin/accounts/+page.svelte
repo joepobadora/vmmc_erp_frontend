@@ -18,8 +18,10 @@
         try {
             const result = await App.API.get('/admin/accounts');
 
-            if (result.success) {
-                accounts = result.data;
+            const data = result.data.data;
+
+            if (result.data.success) {
+                accounts = data;
             } else {
                 Alert.show('error', 'Request failed.', result.error_code);
             }

@@ -3,6 +3,7 @@
     import { Alert } from '$lib/stores/alert';
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+    import z from 'zod';
 
     let { data } = $props();
 
@@ -19,17 +20,30 @@
     let newPassword = $state('');
     let confirmNewPassword = $state('');
 
-    let validOldPassword = $state(true);
-    let validNewPasswords = $state(true);
-    let validFirstName = $state(true);
-    let validLastName = $state(true);
-    let validBirthdate = $state(true);
-
     let updatingAccount = $state(false);
     let updatingPersonalInfo = $state(false);
     let loadingSignatureImage = $state(false);
 
     let imgSrc = $state('');
+
+    let errors = $state({});
+
+    const accountSchema = z
+        .object({
+            oldPassword: z.string().nonempty('Required.'),
+            newPassword: z.string().nonempty('Required.'),
+            confirmNewPassword: z.string().nonempty('Required.'),
+        })
+        .refine((data) => data.newPassword === data.confirmNewPassword, {
+            message: 'Passwords do not match.',
+            path: ['confirmNewPassword'],
+        });
+
+    const personalInfoSchema = z.object({
+        firstName: z.string().nonempty('Required.'),
+        lastName: z.string().nonempty('Required.'),
+        birthdate: z.coerce.date('Required').max(new Date(), 'Must not be in the future.'),
+    });
 
     // onmount
     onMount(() => {
@@ -41,10 +55,12 @@
         loadingSignatureImage = true;
 
         try {
-            const blob = await App.API.get('/file/show-signature', 'blob');
+            const result = await App.API.get('/file/show-signature', {
+                responseType: 'blob',
+            });
 
             // Convert blob to an object URL to display in <img>
-            const url = URL.createObjectURL(blob);
+            const url = URL.createObjectURL(result.data);
 
             imgSrc = url;
         } catch (err) {
@@ -56,20 +72,17 @@
 
     // update account
     async function updateAccount() {
-        // require
-        if (!App.Validator.value(oldPassword).required()) {
-            validOldPassword = false;
-            Alert.show('error', 'Update failed.', 'Old password required.');
+        const validate = accountSchema.safeParse({
+            oldPassword,
+            newPassword,
+            confirmNewPassword,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
             return;
         } else {
-            validOldPassword = true;
-        }
-        if (!App.Validator.value(newPassword).required()) {
-            validNewPasswords = false;
-            Alert.show('error', 'Update failed.', 'New password required.');
-            return;
-        } else {
-            validNewPasswords = true;
+            errors = {};
         }
 
         // validate old password
@@ -79,23 +92,13 @@
             });
 
             if (!result.success) {
-                validOldPassword = false;
-                Alert.show('error', 'Update failed.', result.error_code);
+                errors = {
+                    oldPassword: ['Wrong old password.'],
+                };
                 return;
-            } else {
-                validOldPassword = true;
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
-        }
-
-        // validate new passwords if match
-        if (!App.Validator.value(newPassword).match(confirmNewPassword)) {
-            validNewPasswords = false;
-            Alert.show('error', 'Update failed.', 'New passwords do not match.');
-            return;
-        } else {
-            validNewPasswords = true;
         }
 
         // update account
@@ -109,7 +112,10 @@
 
             if (result.success) {
                 setTimeout(() => {
-                    init();
+                    oldPassword = '';
+                    newPassword = '';
+                    confirmNewPassword = '';
+                    goto('/settings', { invalidateAll: true });
 
                     Alert.show('success', 'Update success.', result.success_code);
                 }, 600);
@@ -127,36 +133,17 @@
 
     // update personal information
     async function updatePersonalInfo() {
-        // require
-        if (!App.Validator.value(firstName).required()) {
-            validFirstName = false;
-            Alert.show('error', 'Update failed.', 'First name required.');
-            return;
-        } else {
-            validFirstName = true;
-        }
-        if (!App.Validator.value(lastName).required()) {
-            validLastName = false;
-            Alert.show('error', 'Update failed.', 'Last name required.');
-            return;
-        } else {
-            validLastName = true;
-        }
-        if (!App.Validator.value(birthdate).required()) {
-            validBirthdate = false;
-            Alert.show('error', 'Update failed.', 'Birthdate required.');
-            return;
-        } else {
-            validBirthdate = true;
-        }
+        const validate = personalInfoSchema.safeParse({
+            firstName,
+            lastName,
+            birthdate,
+        });
 
-        // ensure birthdate is not in the future
-        if (App.Validator.value(birthdate).isAfter(new Date())) {
-            validBirthdate = false;
-            Alert.show('error', 'Update failed.', 'Birthdate must not be in the future.');
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
             return;
         } else {
-            validBirthdate = true;
+            errors = {};
         }
 
         // update personal information
@@ -175,7 +162,7 @@
 
             if (result.success) {
                 setTimeout(() => {
-                    init();
+                    goto('/settings', { invalidateAll: true });
 
                     Alert.show('success', 'Update success.', result.success_code);
                 }, 600);
@@ -207,22 +194,25 @@
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-sm-4 mb-3">
-                        <label for="oldPassword" class="form-label small">Old Password</label>
-                        <input type="password" class="form-control form-control-sm {!validOldPassword ? 'is-invalid' : ''}" id="oldPassword" placeholder="Old password" bind:value={oldPassword} />
+                        <label for="oldPassword" class="form-label small">Old Password<span class="ms-1 text-danger">*</span></label>
+                        <input type="password" class="form-control form-control-sm {errors.oldPassword ? 'is-invalid' : ''}" id="oldPassword" placeholder="Old password" bind:value={oldPassword} />
+                        <p class="text-danger small mb-auto {errors.oldPassword ? '' : 'd-none'}">{errors.oldPassword?.[0]}</p>
                     </div>
                     <div class="col-12 col-sm-4 mb-3">
-                        <label for="newPassword" class="form-label small">New Password</label>
-                        <input type="password" class="form-control form-control-sm {!validNewPasswords ? 'is-invalid' : ''}" id="newPassword" placeholder="New password" bind:value={newPassword} />
+                        <label for="newPassword" class="form-label small">New Password<span class="ms-1 text-danger">*</span></label>
+                        <input type="password" class="form-control form-control-sm {errors.newPassword ? 'is-invalid' : ''}" id="newPassword" placeholder="New password" bind:value={newPassword} />
+                        <p class="text-danger small mb-auto {errors.newPassword ? '' : 'd-none'}">{errors.newPassword?.[0]}</p>
                     </div>
                     <div class="col-12 col-sm-4">
-                        <label for="confirmNewPassword" class="form-label small">Confirm New Password</label>
+                        <label for="confirmNewPassword" class="form-label small">Confirm New Password<span class="ms-1 text-danger">*</span></label>
                         <input
                             type="password"
-                            class="form-control form-control-sm {!validNewPasswords ? 'is-invalid' : ''}"
+                            class="form-control form-control-sm {errors.confirmNewPassword ? 'is-invalid' : ''}"
                             id="confirmNewPassword"
                             placeholder="Confirm new password"
                             bind:value={confirmNewPassword}
                         />
+                        <p class="text-danger small mb-auto {errors.confirmNewPassword ? '' : 'd-none'}">{errors.confirmNewPassword?.[0]}</p>
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
@@ -248,16 +238,18 @@
                 <div class="mb-3">
                     <div class="row">
                         <div class="col-12 col-sm-3 mb-3">
-                            <label for="firstName" class="form-label small">First Name</label>
-                            <input type="text" class="form-control form-control-sm {!validFirstName ? 'is-invalid' : ''}" id="firstName" placeholder="First name" bind:value={firstName} />
+                            <label for="firstName" class="form-label small">First Name<span class="ms-1 text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm {errors.firstName ? 'is-invalid' : ''}" id="firstName" placeholder="First name" bind:value={firstName} />
+                            <p class="text-danger small mb-auto {errors.firstName ? '' : 'd-none'}">{errors.firstName?.[0]}</p>
                         </div>
                         <div class="col-12 col-sm-3 mb-3">
                             <label for="middleName" class="form-label small">Middle Name</label>
                             <input type="text" class="form-control form-control-sm" id="middleName" placeholder="Middle name" bind:value={middleName} />
                         </div>
                         <div class="col-12 col-sm-3 mb-3">
-                            <label for="lastName" class="form-label small">Last Name</label>
-                            <input type="text" class="form-control form-control-sm {!validLastName ? 'is-invalid' : ''}" id="lastName" placeholder="Last name" bind:value={lastName} />
+                            <label for="lastName" class="form-label small">Last Name<span class="ms-1 text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm {errors.lastName ? 'is-invalid' : ''}" id="lastName" placeholder="Last name" bind:value={lastName} />
+                            <p class="text-danger small mb-auto {errors.lastName ? '' : 'd-none'}">{errors.lastName?.[0]}</p>
                         </div>
                         <div class="col-12 col-sm-3">
                             <label for="suffix" class="form-label small">Suffix</label>
@@ -286,8 +278,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-3">
-                            <label for="birthdate" class="form-label small">Birthdate</label>
-                            <input type="date" class="form-control form-control-sm {!validBirthdate ? 'is-invalid' : ''}" id="birthdate" bind:value={birthdate} />
+                            <label for="birthdate" class="form-label small">Birthdate<span class="ms-1 text-danger">*</span></label>
+                            <input type="date" class="form-control form-control-sm {errors.birthdate ? 'is-invalid' : ''}" id="birthdate" bind:value={birthdate} />
+                            <p class="text-danger small mb-auto {errors.birthdate ? '' : 'd-none'}">{errors.birthdate?.[0]}</p>
                         </div>
                     </div>
                 </div>

@@ -4,15 +4,17 @@ export async function load() {
     try {
         const result = await App.API.get('/admin/accounts/create/dropdown');
 
-        if (result.success) {
+        const data = result.data.data;
+
+        if (result.data.success) {
             return {
-                suffixList: result.data.suffix,
-                roleList: result.data.role,
-                officeList: result.data.office,
+                suffixList: data.suffix,
+                roleList: data.role,
+                officeList: data.office,
             };
         } else {
             return {
-                error: result.error_code,
+                error: result.data.error_code,
             };
         }
     } catch (err) {

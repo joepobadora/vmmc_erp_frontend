@@ -21,10 +21,12 @@
         try {
             const result = await App.API.get('/me');
 
-            if (result.success) {
-                firstName = result['data']['user']['first_name'];
+            const data = result.data.data;
+
+            if (result.data.success) {
+                firstName = data['user']['first_name'];
             } else {
-                Alert.show('error', 'Login failed.', result.error_code);
+                console.log(result.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
@@ -32,7 +34,7 @@
     });
 
     function Logout() {
-        App.API.removeToken();
+        localStorage.removeItem('access_token');
         logoutModal.hide();
         goto('/login');
     }

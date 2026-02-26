@@ -46,7 +46,7 @@
                 signature: signPad.SaveAsBase64(),
             });
 
-            if (result.success) {
+            if (result.data.success) {
                 setTimeout(() => {
                     goto('/settings');
                 }, 600);

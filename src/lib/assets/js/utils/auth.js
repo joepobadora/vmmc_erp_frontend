@@ -1,15 +1,15 @@
-import API from './api';
+import App from '../bootstrap';
 
 class Auth {
     static async loggedIn() {
-        const token = API.getToken();
+        const token = localStorage.getItem('access_token');
 
         if (!token) return false;
 
         try {
-            const result = await API.get('/auth');
+            const result = await App.API.get('/auth');
 
-            if (!result.success) {
+            if (!result.data.success) {
                 return false;
             }
 

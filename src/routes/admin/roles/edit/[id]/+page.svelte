@@ -3,6 +3,7 @@
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
+    import z from 'zod';
 
     let { data } = $props();
 
@@ -14,7 +15,24 @@
 
     let saving = $state(false);
 
+    let errors = $state({});
+
+    const schema = z.object({
+        name: z.string().nonempty('Required.'),
+    });
+
     async function save() {
+        const validate = schema.safeParse({
+            name,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
+
         try {
             // udpate button state
             saving = true;
@@ -27,14 +45,14 @@
                 permissions: permissions,
             });
 
-            if (result.success) {
+            if (result.data.success) {
                 setTimeout(() => {
                     goto('/admin/roles');
-                    Alert.show('success', 'Update success.', result.success_code);
+                    Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Update failed.', result.error_code);
+                    Alert.show('error', 'Update failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
@@ -82,8 +100,9 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="name" class="form-label small">Name</label>
-                                <input bind:value={name} type="text" class="form-control form-control-sm" id="name" placeholder="Name" />
+                                <label for="name" class="form-label small">Name<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="name" placeholder="Name" />
+                                <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
                             </div>
                         </div>
                         <div class="row mb-3">

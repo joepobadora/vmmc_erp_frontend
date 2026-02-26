@@ -3,19 +3,27 @@
     import { onMount } from 'svelte';
     import { Alert } from '$lib/stores/alert';
     import App from '$lib/assets/js/bootstrap';
+    import z from 'zod';
 
-    let user = $state('');
-    let pass = $state('');
+    let username = $state('');
+    let password = $state('');
     let rememberMe = $state(false);
     let passIcon = $state('bi-eye-slash-fill');
     let passType = $state('password');
     let userInput;
     let passInput;
 
+    let errors = $state({});
+
+    const schema = z.object({
+        username: z.string().nonempty('Required'),
+        password: z.string().nonempty('Required'),
+    });
+
     onMount(() => {
         const stored = localStorage.getItem('username');
         if (stored) {
-            user = stored;
+            username = stored;
             rememberMe = true;
             passInput.focus();
         } else {
@@ -26,20 +34,34 @@
     async function HandleSubmit(e) {
         e.preventDefault();
 
-        rememberMe && user ? localStorage.setItem('username', user) : localStorage.removeItem('username');
+        rememberMe && username ? localStorage.setItem('username', username) : localStorage.removeItem('username');
+
+        const validate = schema.safeParse({
+            username,
+            password,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
 
         try {
-            const result = await App.API.post('/login', {
-                username: user,
-                password: pass,
+            const result = await App.API.post('http://127.0.0.1:8000/api/login', {
+                username: username,
+                password: password,
             });
 
-            if (result.success) {
-                App.API.setToken(result.data.token);
+            const data = result.data.data;
+
+            if (result.data.success) {
+                localStorage.setItem('access_token', data.token);
                 goto('/');
-                Alert.show('success', 'Login successful.', 'Welcome back, ' + result.data.user.first_name + '!');
+                Alert.show('success', 'Login successful.', 'Welcome back, ' + data.user.first_name + '!');
             } else {
-                Alert.show('error', 'Login failed.', result.error_code);
+                Alert.show('error', 'Login failed.', result.data.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
@@ -80,15 +102,17 @@
                 </div>
 
                 <!-- username input -->
-                <input type="text" class="form-control form-control-sm" placeholder="Username" name="usernameInput" bind:value={user} bind:this={userInput} />
+                <input type="text" class="form-control form-control-sm {errors.username ? 'is-invalid' : ''}" placeholder="Username" name="usernameInput" bind:value={username} bind:this={userInput} />
+                <p class="text-danger small mb-auto {errors.username ? '' : 'd-none'}">{errors.username?.[0]}</p>
 
                 <!-- password input -->
                 <div class="input-group input-group-sm">
-                    <input type={passType} class="form-control border border-end-0" placeholder="Password" name="passwordInput" bind:value={pass} bind:this={passInput} />
+                    <input type={passType} class="form-control {errors.password ? 'is-invalid' : ''}" placeholder="Password" name="passwordInput" bind:value={password} bind:this={passInput} />
                     <button class="btn border border-start-0" type="button" id="button-addon2" aria-label="toggle password visibility" onclick={TogglePasswordVisibility}>
                         <i class="bi {passIcon} text-secondary"></i>
                     </button>
                 </div>
+                <p class="text-danger small mb-auto {errors.password ? '' : 'd-none'}">{errors.password?.[0]}</p>
 
                 <!-- remember me -->
                 <div class="form-check small">
