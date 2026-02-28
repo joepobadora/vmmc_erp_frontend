@@ -1,17 +1,21 @@
 <script>
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
     import z from 'zod';
 
-    let division = $state('');
-    let abbreviation = $state('');
-    let department = $state('');
-    let office = $state('');
-    let status = $state(true);
+    let { data } = $props();
+
+    let division = $state(data.division ?? '');
+    let abbreviation = $state(data.abbreviation ?? '');
+    let department = $state(data.department ?? '');
+    let office = $state(data.office ?? '');
+    let status = $state(data.status ?? false);
 
     let saving = $state(false);
+    let deleting = $state(false);
 
     let errors = $state({});
 
@@ -40,7 +44,7 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post('/admin/offices/store', {
+            const result = await App.API.post(`/admin/offices/update/${page.params.id}`, {
                 division: division,
                 abbreviation: abbreviation,
                 department: department,
@@ -64,6 +68,30 @@
             saving = false;
         }
     }
+
+    async function destroy() {
+        try {
+            // udpate button state
+            deleting = true;
+
+            const result = await App.API.post(`/admin/offices/destroy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/offices');
+                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            deleting = false;
+        }
+    }
 </script>
 
 <div class="row">
@@ -76,7 +104,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
                         <li class="breadcrumb-item"><a href="/admin/offices">Offices</a></li>
-                        <li class="breadcrumb-item active">Add</li>
+                        <li class="breadcrumb-item active">View</li>
                     </ol>
                 </nav>
             </div>
@@ -87,7 +115,7 @@
                 <div class="card shadow-sm border-0 p-2 mb-4">
                     <div class="card-body">
                         <div class="mb-4">
-                            <h5>Add new office</h5>
+                            <h5>View office</h5>
                             <p class="small text-muted">
                                 A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                             </p>
@@ -96,70 +124,36 @@
                         <h5>Office</h5>
                         <div class="row mb-3">
                             <div class="col-12 col-sm-6">
-                                <label for="password" class="form-label small">Division<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={division}
-                                    oninput={(e) => (division = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.division ? 'is-invalid' : ''}"
-                                    id="password"
-                                    placeholder="Division"
-                                />
-                                <p class="text-danger small mb-auto {errors.division ? '' : 'd-none'}">{errors.division?.[0]}</p>
+                                <label for="password" class="form-label small">Division</label>
+                                <input bind:value={division} type="text" class="form-control form-control-sm" id="password" disabled />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="username" class="form-label small">Department<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={department}
-                                    oninput={(e) => (department = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.department ? 'is-invalid' : ''}"
-                                    id="username"
-                                    placeholder="Department"
-                                />
-                                <p class="text-danger small mb-auto {errors.department ? '' : 'd-none'}">{errors.department?.[0]}</p>
+                                <label for="username" class="form-label small">Department</label>
+                                <input bind:value={department} type="text" class="form-control form-control-sm" id="username" disabled />
                             </div>
                             <div class="col-12 col-sm-3">
-                                <label for="confirmPassword" class="form-label small">Dept. Abbreviation<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={abbreviation}
-                                    oninput={(e) => (abbreviation = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.abbreviation ? 'is-invalid' : ''}"
-                                    id="confirmPassword"
-                                    placeholder="Abbreviation"
-                                />
-                                <p class="text-danger small mb-auto {errors.abbreviation ? '' : 'd-none'}">{errors.abbreviation?.[0]}</p>
+                                <label for="confirmPassword" class="form-label small">Dept. Abbreviation</label>
+                                <input bind:value={abbreviation} type="text" class="form-control form-control-sm" id="confirmPassword" disabled />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="office" class="form-label small">Office</label>
-                                <input bind:value={office} oninput={(e) => (office = e.target.value.toUpperCase())} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+                                <input bind:value={office} type="text" class="form-control form-control-sm" id="office" disabled />
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-12 col-md-6">
                                 <label for="status" class="form-label small">Status</label>
-                                <div class="form-check form-switch">
-                                    <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
-                                    <label class="form-check-label small" for="status">Active</label>
+                                <div>
+                                    <span class="badge bg-{status == true ? 'success' : 'danger'}">{status == true ? 'Active' : 'Inactive'}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/offices"> <button type="button" class="btn btn-light border btn-sm px-3 me-3">Cancel</button></a>
-                            <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
-                                {#if saving}
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    Saving...
-                                {:else}
-                                    <i class="bi bi-check-lg me-2"></i>
-                                    Save
-                                {/if}
-                            </button>
+                            <a href="/admin/offices"> <button type="button" class="btn btn-primary btn-sm px-3">Okay</button></a>
                         </div>
                     </div>
                 </div>

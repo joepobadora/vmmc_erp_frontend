@@ -1,5 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import z from 'zod';
@@ -10,89 +11,41 @@
     let suffixList = $state(data.suffixList ?? []);
     let roleList = $state(data.roleList ?? []);
 
-    let account = $state({
-        username: '',
-        password: '',
-        confirm_password: '',
-        status: true,
-        office: '',
-        role: 0,
-    });
+    let account = $state(data.account ?? {});
+    let user = $state(data.account.user ?? {});
+    let modules = $state(data.modules ?? {});
 
-    let user = $state({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        suffix: 0,
-        gender: '',
-        birthdate: '',
-    });
-
-    let modules = $state({
-        ADMIN0: false, // admin
-        ADMIN1: false, // accounts
-        ADMIN2: false, // roles
-        ADMIN3: false, // offices
-        ADMIN4: false, // doc types
-        ADMIN5: false, // doc tags
-        ADMIN6: false, // audit trail
-        DEX0: false, // dex
-        DEX1: false, // dms documents
-        DEX2: false, // dms ref copies
-        DEX3: false, // dms drafts
-        DEX4: false, // dms archive
-        DEX5: false, // dms trash
-        DEX6: false, // dts incoming
-        DEX7: false, // dts inbox
-        DEX8: false, // dts outgoing
-        DEX9: false, // dts drafts
-        DEX10: false, // dts broadcast
-        DEX11: false, // dts archive
-        DEX12: false, // dts trash
-        SEND0: false, // send
-        FORMS0: false, // forms
-    });
-
+    let resetting = $state(false);
+    let deleting = $state(false);
     let saving = $state(false);
 
     let errors = $state({});
 
-    const schema = z
-        .object({
-            username: z.string().nonempty('Required.'),
-            password: z.string().nonempty('Required.'),
-            confirm_password: z.string().nonempty('Required.'),
-            office: z
-                .string()
-                .nonempty('Required.')
-                .refine((val) => officeList.map((s) => s.short_name).includes(val), {
-                    message: 'Invalid office selected.',
-                }),
-            first_name: z.string().nonempty('Required.'),
-            last_name: z.string().nonempty('Required.'),
-            gender: z.string().nonempty('Required.'),
-            birthdate: z.coerce.date('Required').max(new Date(), 'Must not be in the future.'),
-            role: z.number().min(1, 'Required'),
-        })
-        .refine((data) => data.password === data.confirm_password, {
-            message: 'Passwords do not match.',
-            path: ['confirm_password'],
-        });
+    const schema = z.object({
+        office: z
+            .string()
+            .nonempty('Required.')
+            .refine((val) => officeList.map((s) => s.short_name).includes(val), {
+                message: 'Invalid office selected.',
+            }),
+        first_name: z.string().nonempty('Required.'),
+        last_name: z.string().nonempty('Required.'),
+        gender: z.string().nonempty('Required.'),
+        birthdate: z.coerce.date('Required').max(new Date(), 'Must not be in the future.'),
+        role_id: z.number().min(1, 'Required'),
+    });
 
     async function save() {
-        const { username, password, confirm_password, office, role } = account;
+        const { office, role_id } = account;
         const { first_name, last_name, gender, birthdate } = user;
 
         const validate = schema.safeParse({
-            username,
-            password,
-            confirm_password,
             office,
             first_name,
             last_name,
             gender,
             birthdate,
-            role,
+            role_id,
         });
 
         if (!validate.success) {
@@ -106,7 +59,7 @@
         try {
             // udpate button state
             saving = true;
-            const result = await App.API.post('/admin/accounts/store', {
+            const result = await App.API.post(`/admin/accounts/update/${page.params.id}`, {
                 account: account,
                 user: user,
                 modules: modules,
@@ -126,6 +79,54 @@
             Alert.show('error', 'Bad request.', err.message);
         } finally {
             saving = false;
+        }
+    }
+
+    async function resetPassword() {
+        // saving account
+        try {
+            // udpate button state
+            resetting = true;
+            const result = await App.API.post(`/admin/accounts/reset-password/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/accounts');
+                    Alert.show('success', 'Resetting success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Resetting failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            resetting = false;
+        }
+    }
+
+    async function destroy() {
+        try {
+            // udpate button state
+            deleting = true;
+
+            const result = await App.API.post(`/admin/accounts/destroy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/accounts');
+                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            deleting = false;
         }
     }
 
@@ -165,7 +166,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
                         <li class="breadcrumb-item"><a href="/admin/accounts">Accounts</a></li>
-                        <li class="breadcrumb-item active">Create</li>
+                        <li class="breadcrumb-item active">Edit</li>
                     </ol>
                 </nav>
             </div>
@@ -176,7 +177,7 @@
                 <div class="card shadow-sm border-0 p-2 mb-4">
                     <div class="card-body">
                         <div class="mb-4">
-                            <h5>Create new user account</h5>
+                            <h5>Edit user account</h5>
                             <p class="small text-muted">
                                 A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                             </p>
@@ -185,27 +186,31 @@
                         <h5>Account</h5>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="username" class="form-label small">Username<span class="ms-1 text-danger">*</span></label>
-                                <input bind:value={account.username} type="text" class="form-control form-control-sm {errors.username ? 'is-invalid' : ''}" id="username" placeholder="Username" />
+                                <label for="username" class="form-label small">Username</label>
+                                <input
+                                    bind:value={account.username}
+                                    type="text"
+                                    class="form-control form-control-sm {errors.username ? 'is-invalid' : ''}"
+                                    id="username"
+                                    placeholder="Username"
+                                    disabled
+                                />
                                 <p class="text-danger small mb-auto {errors.username ? '' : 'd-none'}">{errors.username?.[0]}</p>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-12 col-sm-6">
-                                <label for="password" class="form-label small">Password<span class="ms-1 text-danger">*</span></label>
-                                <input bind:value={account.password} type="password" class="form-control form-control-sm {errors.password ? 'is-invalid' : ''}" id="password" placeholder="Password" />
-                                <p class="text-danger small mb-auto {errors.password ? '' : 'd-none'}">{errors.password?.[0]}</p>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <label for="confirmPassword" class="form-label small">Confirm Password<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={account.confirm_password}
-                                    type="password"
-                                    class="form-control form-control-sm {errors.confirm_password ? 'is-invalid' : ''}"
-                                    id="confirmPassword"
-                                    placeholder="Confirm password"
-                                />
-                                <p class="text-danger small mb-auto {errors.confirm_password ? '' : 'd-none'}">{errors.confirm_password?.[0]}</p>
+                            <div class="col-12">
+                                <label for="password" class="form-label small">Password</label>
+                                <div>
+                                    <button type="button" class="btn btn-primary btn-sm px-3" id="password" onclick={resetPassword}>
+                                        {#if resetting}
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Resetting...
+                                        {:else}
+                                            <i class="bi bi-arrow-repeat me-2"></i>Reset password
+                                        {/if}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -231,7 +236,7 @@
                             <div class="col-12 col-md-6">
                                 <label for="status" class="form-label small">Status</label>
                                 <div class="form-check form-switch">
-                                    <input bind:checked={account.status} class="form-check-input" type="checkbox" id="status" />
+                                    <input bind:checked={account.is_active} class="form-check-input" type="checkbox" id="status" />
                                     <label class="form-check-label small" for="status">Active</label>
                                 </div>
                             </div>
@@ -261,7 +266,7 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <label for="suffix" class="form-label small">Suffix</label>
-                                <select bind:value={user.suffix} class="form-select form-select-sm" id="suffix">
+                                <select bind:value={user.suffix_id} class="form-select form-select-sm" id="suffix">
                                     <option value={0} selected>N/A</option>
                                     {#each suffixList as suffix}
                                         <option value={suffix.id}>{suffix.enumeration}</option>
@@ -302,15 +307,15 @@
                         <div class="row mb-4">
                             <div class="col-12 col-sm-6">
                                 <label for="suffix" class="form-label small">Role<span class="ms-1 text-danger">*</span></label>
-                                <select bind:value={account.role} class="form-select form-select-sm {errors.role ? 'is-invalid' : ''}" id="role">
+                                <select bind:value={account.role_id} class="form-select form-select-sm {errors.role_id ? 'is-invalid' : ''}" id="role">
                                     {#each roleList as role}
                                         <option value={role.id}>{role.name}</option>
                                     {/each}
                                 </select>
-                                <p class="text-danger small mb-auto {errors.role ? '' : 'd-none'}">{errors.role?.[0]}</p>
+                                <p class="text-danger small mb-auto {errors.role_id ? '' : 'd-none'}">{errors.role_id?.[0]}</p>
                             </div>
                         </div>
-                        <div class="row mb-4">
+                        <div class="row mb-3">
                             <div class="col">
                                 <label for="modules" class="form-label small">Modules</label>
                                 <table class="table" id="modules">
@@ -449,6 +454,24 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                        <hr class="text-muted" />
+                        <h5>Maintenance</h5>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="password" class="form-label small">Account</label>
+                                <div>
+                                    <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
+                                        {#if deleting}
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Deleting...
+                                        {:else}
+                                            <i class="bi bi-x-lg me-2"></i>
+                                            Delete Account
+                                        {/if}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">

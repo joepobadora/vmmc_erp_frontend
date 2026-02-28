@@ -1,32 +1,36 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import Table from '$lib/components/Table.svelte';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
-    let keyword = $state('');
-    let status = $state('All');
-
-    let promise = $state();
-    let timer;
+    let loadingData = $state('false');
+    let offices = $state([]);
 
     onMount(() => {
-        promise = App.API.post('http://127.0.0.1:8000/api/offices', { keyword, status }, false);
+        refreshTable();
     });
 
-    function refreshTable() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            promise = App.API.post('http://127.0.0.1:8000/api/offices', { keyword, status }, false);
-        }, 400);
-    }
+    async function refreshTable() {
+        loadingData = true;
 
-    function resetFilter() {
-        keyword = '';
-        status = 'All';
+        try {
+            const result = await App.API.get('/admin/offices');
 
-        refreshTable();
+            const data = result.data.data;
+
+            if (result.data.success) {
+                offices = data;
+            } else {
+                Alert.show('error', 'Request failed.', result.data.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loadingData = false;
+        }
     }
 </script>
 
@@ -43,26 +47,19 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
+            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
         </div>
         <div class="row mb-4">
             <!-- search -->
             <div class="col">
                 <label for="docmngtMyDocumentsSearchInput" class="small text-muted ms-1">Search</label>
-                <input
-                    bind:value={keyword}
-                    onkeyup={() => refreshTable(event)}
-                    type="text"
-                    class="form-control form-control-sm"
-                    placeholder="Search by name or abbreviation..."
-                    id="docmngtMyDocumentsSearchInput"
-                />
+                <input type="text" class="form-control form-control-sm" placeholder="Search by name or abbreviation..." id="docmngtMyDocumentsSearchInput" />
             </div>
 
             <!-- status -->
             <div class="col-auto">
                 <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Status</label>
-                <select bind:value={status} onchange={() => refreshTable(event)} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+                <select class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
                     <option value="All" selected>All</option>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -78,38 +75,29 @@
         <!-- table -->
         <div class="card border-0 shadow-sm px-3">
             <div class="card-body">
-                {#await promise}
+                {#if loadingData}
                     <div class="d-flex justify-content-center p-4">
                         <div class="spinner-border text-primary" role="status"></div>
                     </div>
-                {:then result}
-                    {#if result}
-                        {#if result.success}
-                            <Table data={result.data} enableTotalCount enablePagination pageSize="10">
-                                <div slot="row" let:item class="row border-bottom custom-row small">
-                                    <div class="col">
-                                        <div>
-                                            <span class="text-muted me-2">Office:</span>
-                                            <strong class="custom-link">{item.short_name}</strong>
-                                        </div>
-                                        <div>
-                                            <span class="text-muted me-2">Status:</span>
-                                            <span class="badge bg-{item.is_active == 1 ? 'success' : 'danger'}">{item.is_active == 1 ? 'Active' : 'Inactive'}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button
-                                            class="btn btn-sm btn-outline-primary px-3"
-                                            onclick={() => {
-                                                test(item.complete_name);
-                                            }}>Edit</button
-                                        >
-                                    </div>
+                {:else}
+                    <Table data={offices} enableTotalCount enablePagination pageSize="10">
+                        <div slot="row" let:item class="row border-bottom custom-row small">
+                            <div class="col">
+                                <div>
+                                    <span class="text-muted me-2">Office:</span>
+                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link"><strong>{item.short_name}</strong></a>
                                 </div>
-                            </Table>
-                        {/if}
-                    {/if}
-                {/await}
+                                <div>
+                                    <span class="text-muted me-2">Status:</span>
+                                    <span class="badge bg-{item.is_active == 1 ? 'success' : 'danger'}">{item.is_active == 1 ? 'Active' : 'Inactive'}</span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <a href={page.url.pathname + `/edit/${item.id}`}><button class="btn btn-sm btn-outline-primary px-3">Edit</button></a>
+                            </div>
+                        </div>
+                    </Table>
+                {/if}
             </div>
         </div>
     </div>

@@ -1,17 +1,21 @@
 <script>
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
     import z from 'zod';
 
-    let division = $state('');
-    let abbreviation = $state('');
-    let department = $state('');
-    let office = $state('');
-    let status = $state(true);
+    let { data } = $props();
+
+    let division = $state(data.division ?? '');
+    let abbreviation = $state(data.abbreviation ?? '');
+    let department = $state(data.department ?? '');
+    let office = $state(data.office ?? '');
+    let status = $state(data.status ?? false);
 
     let saving = $state(false);
+    let deleting = $state(false);
 
     let errors = $state({});
 
@@ -40,7 +44,7 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post('/admin/offices/store', {
+            const result = await App.API.post(`/admin/offices/update/${page.params.id}`, {
                 division: division,
                 abbreviation: abbreviation,
                 department: department,
@@ -64,6 +68,30 @@
             saving = false;
         }
     }
+
+    async function destroy() {
+        try {
+            // udpate button state
+            deleting = true;
+
+            const result = await App.API.post(`/admin/offices/destroy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/offices');
+                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            deleting = false;
+        }
+    }
 </script>
 
 <div class="row">
@@ -76,7 +104,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
                         <li class="breadcrumb-item"><a href="/admin/offices">Offices</a></li>
-                        <li class="breadcrumb-item active">Add</li>
+                        <li class="breadcrumb-item active">Edit</li>
                     </ol>
                 </nav>
             </div>
@@ -87,7 +115,7 @@
                 <div class="card shadow-sm border-0 p-2 mb-4">
                     <div class="card-body">
                         <div class="mb-4">
-                            <h5>Add new office</h5>
+                            <h5>Edit office</h5>
                             <p class="small text-muted">
                                 A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                             </p>
@@ -140,12 +168,30 @@
                                 <input bind:value={office} oninput={(e) => (office = e.target.value.toUpperCase())} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
                             </div>
                         </div>
-                        <div class="row mb-4">
+                        <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="status" class="form-label small">Status</label>
                                 <div class="form-check form-switch">
                                     <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
                                     <label class="form-check-label small" for="status">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="text-muted" />
+                        <h5>Maintenance</h5>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="password" class="form-label small">Office</label>
+                                <div>
+                                    <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
+                                        {#if deleting}
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Deleting...
+                                        {:else}
+                                            <i class="bi bi-x-lg me-2"></i>
+                                            Delete Office
+                                        {/if}
+                                    </button>
                                 </div>
                             </div>
                         </div>

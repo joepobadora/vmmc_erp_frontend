@@ -4,6 +4,7 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import z from 'zod';
+    import { fa } from 'zod/v4/locales';
 
     let { data } = $props();
 
@@ -14,6 +15,7 @@
     let permissions = $state(data.permissions ?? []);
 
     let saving = $state(false);
+    let deleting = $state(false);
 
     let errors = $state({});
 
@@ -37,8 +39,7 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post('/admin/roles/update', {
-                id: page.params.id,
+            const result = await App.API.post(`/admin/roles/update/${page.params.id}`, {
                 name: name,
                 description: description,
                 status: status,
@@ -59,6 +60,30 @@
             Alert.show('error', 'Bad request.', err.message);
         } finally {
             saving = false;
+        }
+    }
+
+    async function destroy() {
+        try {
+            // udpate button state
+            deleting = true;
+
+            const result = await App.API.post(`/admin/roles/destroy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/roles');
+                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            deleting = false;
         }
     }
 </script>
@@ -453,7 +478,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="row mb-4">
+                        <div class="row mb-3">
                             <div class="col">
                                 <label for="admin" class="form-label small">Admin</label>
                                 <table class="table" id="admin">
@@ -621,8 +646,27 @@
                                 </table>
                             </div>
                         </div>
+                        <hr class="text-muted" />
+                        <h5>Maintenance</h5>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="password" class="form-label small">Role</label>
+                                <div>
+                                    <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
+                                        {#if deleting}
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Deleting...
+                                        {:else}
+                                            <i class="bi bi-x-lg me-2"></i>
+                                            Delete Role
+                                        {/if}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
+                            <a href="/admin/roles"> <button type="button" class="btn btn-light border btn-sm px-3 me-3">Cancel</button></a>
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

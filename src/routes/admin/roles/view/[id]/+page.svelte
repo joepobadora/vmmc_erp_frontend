@@ -46,27 +46,26 @@
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="code" class="form-label small">Code</label>
-                                <input bind:value={code} type="text" class="form-control form-control-sm" id="code" placeholder="OFFICE_POSITION" disabled />
+                                <input bind:value={code} type="text" class="form-control form-control-sm" id="code" disabled />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="name" class="form-label small">Name</label>
-                                <input bind:value={name} type="text" class="form-control form-control-sm" id="name" placeholder="Name" disabled />
+                                <input bind:value={name} type="text" class="form-control form-control-sm" id="name" disabled />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
                                 <label for="name" class="form-label small">Description</label>
-                                <input bind:value={description} type="text" class="form-control form-control-sm" id="name" placeholder="Description" disabled />
+                                <input bind:value={description} type="text" class="form-control form-control-sm" id="name" disabled />
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-12 col-md-6">
                                 <label for="status" class="form-label small">Status</label>
-                                <div class="form-check form-switch">
-                                    <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
-                                    <label class="form-check-label small" for="status">Active</label>
+                                <div>
+                                    <span class="badge bg-{status == true ? 'success' : 'danger'}">{status == true ? 'Active' : 'Inactive'}</span>
                                 </div>
                             </div>
                         </div>
@@ -377,7 +376,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/roles"> <button type="button" class="btn btn-primary btn-sm px-3"> <i class="bi bi-check-lg me-2"></i> Okay</button></a>
+                            <a href="/admin/roles"> <button type="button" class="btn btn-primary btn-sm px-3">Okay</button></a>
                         </div>
                     </div>
                 </div>

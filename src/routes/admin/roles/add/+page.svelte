@@ -165,7 +165,14 @@
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="name" class="form-label small">Code<span class="ms-1 text-danger">*</span></label>
-                                <input bind:value={code} type="text" class="form-control form-control-sm {errors.code ? 'is-invalid' : ''}" id="name" placeholder="OFFICE_POSITION" />
+                                <input
+                                    bind:value={code}
+                                    oninput={(e) => (code = e.target.value.toUpperCase())}
+                                    type="text"
+                                    class="form-control form-control-sm {errors.code ? 'is-invalid' : ''}"
+                                    id="name"
+                                    placeholder="OFFICE_POSITION"
+                                />
                                 <p class="text-danger small mb-auto {errors.code ? '' : 'd-none'}">{errors.code?.[0]}</p>
                             </div>
                         </div>
@@ -694,6 +701,7 @@
                         </div>
 
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
+                            <a href="/admin/roles"> <button type="button" class="btn btn-light border btn-sm px-3 me-3">Cancel</button></a>
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

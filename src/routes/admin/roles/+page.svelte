@@ -24,7 +24,7 @@
             if (result.data.success) {
                 roles = data;
             } else {
-                Alert.show('error', 'Request failed.', result.error_code);
+                Alert.show('error', 'Request failed.', result.data.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);

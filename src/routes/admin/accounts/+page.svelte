@@ -1,5 +1,5 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
@@ -46,7 +46,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={$page.url.pathname + '/create'}><i class="bi bi-plus-lg me-2"></i>Create</a></div>
+            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={page.url.pathname + '/create'}><i class="bi bi-plus-lg me-2"></i>Create</a></div>
         </div>
 
         <div class="row mb-4">
@@ -104,7 +104,7 @@
                             <div class="col">
                                 <div>
                                     <span class="text-muted me-2">Name:</span>
-                                    <strong class="custom-link">{item.user.full_name}</strong>
+                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link"><strong>{item.user.full_name_2}</strong></a>
                                 </div>
                                 <div>
                                     <span class="text-muted me-2">Username:</span>
@@ -128,16 +128,11 @@
                                 </div>
                                 <div>
                                     <span class="text-muted me-2">By:</span>
-                                    <span>{item.creator.user.full_name}</span>
+                                    <span>{item.creator.user.full_name_2}</span>
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <button
-                                    class="btn btn-sm btn-outline-primary px-3"
-                                    onclick={() => {
-                                        test(item.user.full_name);
-                                    }}>Edit</button
-                                >
+                                <a href={page.url.pathname + `/edit/${item.id}`}><button class="btn btn-sm btn-outline-primary px-3">Edit</button></a>
                             </div>
                         </div>
                     </Table>
