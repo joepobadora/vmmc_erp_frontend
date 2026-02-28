@@ -68,7 +68,7 @@
 
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button onclick={resetFilter} type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
