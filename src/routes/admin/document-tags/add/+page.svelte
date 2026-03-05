@@ -2,55 +2,70 @@
     import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
+    import z from 'zod';
 
-    let data = $state({
-        account: {
-            status: true,
-        },
-        user: {},
-        module: {
-            admin: {
-                accounts: { access: false },
-                audit: {},
-                offices: {},
-                docTypes: {},
-                docTags: {},
-            },
-        },
+    let { data } = $props();
+
+    let officeList = $state(data.officeList ?? []);
+
+    let name = $state('');
+    let office = $state('');
+    let status = $state(true);
+
+    let saving = $state(false);
+
+    let errors = $state({});
+
+    const schema = z.object({
+        name: z.string().nonempty('Required.'),
+        office: z
+            .string()
+            .nonempty('Required.')
+            .refine((val) => officeList.map((s) => s.short_name).includes(val), {
+                message: 'Invalid office selected.',
+            }),
     });
 
-    $effect(() => {
-        // If Admin Console is disabled, turn off all submodules' access
-        if (!data.module.admin.access) {
-            for (const key in data.module.admin) {
-                if (key !== 'access') {
-                    data.module.admin[key].access = false;
-                }
-            }
+    async function save() {
+        const validate = schema.safeParse({
+            name,
+            office,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
         }
 
-        // For each submodule, if access is disabled, turn off all its permissions
-        for (const key in data.module.admin) {
-            if (key !== 'access') {
-                const submodule = data.module.admin[key];
-                if (!submodule.access) {
-                    for (const perm in submodule) {
-                        if (perm !== 'access') {
-                            submodule[perm] = false;
-                        }
-                    }
-                }
-            }
-        }
-    });
+        // update personal information
+        try {
+            // udpate button state
+            saving = true;
 
-    function save(event) {
-        const button = event.currentTarget;
-        App.Button.el(button).setLoading('Saving...');
-        setTimeout(() => {
-            goto('/admin/accounts');
-            Alert.show('success', 'Success', 'Successfully created an account.');
-        }, 2000);
+            const result = await App.API.post('/admin/document-tags/store', {
+                name: name,
+                office: office,
+                status: status,
+            });
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto('/admin/document-tags');
+                    Alert.show('success', 'Update success.', result.data.success_code);
+                }, 600);
+            } else {
+                console.log(result);
+                setTimeout(() => {
+                    Alert.show('error', 'Update failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            saving = false;
+        }
     }
 </script>
 
@@ -63,7 +78,7 @@
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/offices">Document Tags</a></li>
+                        <li class="breadcrumb-item"><a href="/admin/document-tags">Document Tags</a></li>
                         <li class="breadcrumb-item active">Add</li>
                     </ol>
                 </nav>
@@ -84,25 +99,43 @@
                         <h5>Document Tag</h5>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="username" class="form-label small">Tag</label>
-                                <input bind:value={data.account.username} type="text" class="form-control form-control-sm" id="username" placeholder="Document tag" />
+                                <label for="username" class="form-label small">Tag<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="username" placeholder="Document tag" />
+                                <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="office" class="form-label small">Office</label>
-                                <input bind:value={data.account.office} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+                                <label for="office" class="form-label small">Office<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={office} list="officeList" type="text" class="form-control form-control-sm {errors.office ? 'is-invalid' : ''}" id="office" placeholder="Office" />
+                                <p class="text-danger small mb-auto {errors.office ? '' : 'd-none'}">{errors.office?.[0]}</p>
+                                <datalist id="officeList">
+                                    {#each officeList as office}
+                                        <option value={office.short_name}></option>
+                                    {/each}
+                                </datalist>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-12 col-md-6">
                                 <label for="status" class="form-label small">Status</label>
                                 <div class="form-check form-switch">
-                                    <input bind:checked={data.account.status} class="form-check-input" type="checkbox" id="status" />
+                                    <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
                                     <label class="form-check-label small" for="status">Active</label>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <button onclick={save} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>
+                            <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
+                                <a href="/admin/document-types"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
+                                <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
+                                    {#if saving}
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                        Saving...
+                                    {:else}
+                                        <i class="bi bi-check-lg me-2"></i>
+                                        Save
+                                    {/if}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

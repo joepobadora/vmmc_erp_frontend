@@ -11,6 +11,8 @@
 
     let firstName = $state('');
 
+    let loggingOut = $state(false);
+
     $effect(() => {
         if ($BootstrapClient) {
             logoutModal = $BootstrapClient.Modal.getOrCreateInstance(el);
@@ -26,17 +28,34 @@
             if (result.data.success) {
                 firstName = data['user']['first_name'];
             } else {
-                console.log(result.error_code);
+                console.log(result.data.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
         }
     });
 
-    function Logout() {
-        localStorage.removeItem('access_token');
-        logoutModal.hide();
-        goto('/login');
+    async function Logout() {
+        try {
+            // udpate button state
+            loggingOut = true;
+
+            const result = await App.API.get('/logout');
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    localStorage.removeItem('access_token');
+                    logoutModal.hide();
+                    goto('/login');
+                }, 600);
+            } else {
+                console.log(result.data.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loggingOut = false;
+        }
     }
 </script>
 
@@ -91,8 +110,15 @@
                 <p>Are you sure you want to logout?</p>
             </div>
             <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-light border btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger btn-sm px-3" onclick={Logout}><i class="bi bi-box-arrow-left me-2"></i>Logout</button>
+                <button type="button" class="btn btn-light border btn-sm px-3 {loggingOut == true ? 'd-none' : ''}" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger btn-sm px-3" onclick={Logout} disabled={loggingOut}>
+                    {#if loggingOut}
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        Logging out...
+                    {:else}
+                        <i class="bi bi-box-arrow-left me-2"></i>Logout
+                    {/if}
+                </button>
             </div>
         </div>
     </div>

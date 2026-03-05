@@ -23,7 +23,7 @@
         first_name: '',
         middle_name: '',
         last_name: '',
-        suffix: 0,
+        suffix_id: 0,
         gender: '',
         birthdate: '',
     });
@@ -261,7 +261,7 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <label for="suffix" class="form-label small">Suffix</label>
-                                <select bind:value={user.suffix} class="form-select form-select-sm" id="suffix">
+                                <select bind:value={user.suffix_id} class="form-select form-select-sm" id="suffix">
                                     <option value={0} selected>N/A</option>
                                     {#each suffixList as suffix}
                                         <option value={suffix.id}>{suffix.enumeration}</option>
@@ -452,7 +452,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/accounts"> <button type="button" class="btn btn-light border btn-sm px-3 me-3">Cancel</button></a>
+                            <a href="/admin/accounts"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

@@ -3,16 +3,15 @@
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
     import z from 'zod';
 
     let { data } = $props();
 
-    let division = $state(data.division ?? '');
-    let abbreviation = $state(data.abbreviation ?? '');
-    let department = $state(data.department ?? '');
-    let office = $state(data.office ?? '');
-    let status = $state(data.status ?? false);
+    let officeList = $state(data.officeList ?? []);
+
+    let name = $state(data.documentTag.name ?? '');
+    let office = $state(data.documentTag.office ?? '');
+    let status = $state(data.documentTag.status ?? true);
 
     let saving = $state(false);
     let deleting = $state(false);
@@ -20,16 +19,19 @@
     let errors = $state({});
 
     const schema = z.object({
-        division: z.string().nonempty('Required.'),
-        abbreviation: z.string().nonempty('Required.'),
-        department: z.string().nonempty('Required.'),
+        name: z.string().nonempty('Required.'),
+        office: z
+            .string()
+            .nonempty('Required.')
+            .refine((val) => officeList.map((s) => s.short_name).includes(val), {
+                message: 'Invalid office selected.',
+            }),
     });
 
     async function save() {
         const validate = schema.safeParse({
-            division,
-            abbreviation,
-            department,
+            name,
+            office,
         });
 
         if (!validate.success) {
@@ -44,20 +46,19 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post(`/admin/offices/update/${page.params.id}`, {
-                division: division,
-                abbreviation: abbreviation,
-                department: department,
+            const result = await App.API.post(`/admin/document-tags/update/${page.params.id}`, {
+                name: name,
                 office: office,
                 status: status,
             });
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto('/admin/offices');
+                    goto('/admin/document-tags');
                     Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
+                console.log(result);
                 setTimeout(() => {
                     Alert.show('error', 'Update failed.', result.data.error_code);
                 }, 600);
@@ -74,11 +75,11 @@
             // udpate button state
             deleting = true;
 
-            const result = await App.API.post(`/admin/offices/destroy/${page.params.id}`);
+            const result = await App.API.post(`/admin/document-tags/destroy/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto('/admin/offices');
+                    goto('/admin/document-tags');
                     Alert.show('success', 'Deletion success.', result.data.success_code);
                 }, 600);
             } else {
@@ -103,8 +104,8 @@
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/offices">Offices</a></li>
-                        <li class="breadcrumb-item active">Edit</li>
+                        <li class="breadcrumb-item"><a href="/admin/document-tags">Document Tags</a></li>
+                        <li class="breadcrumb-item active">Add</li>
                     </ol>
                 </nav>
             </div>
@@ -115,57 +116,28 @@
                 <div class="card shadow-sm border-0 p-2 mb-4">
                     <div class="card-body">
                         <div class="mb-4">
-                            <h5>Edit office</h5>
+                            <h5>Edit document tag</h5>
                             <p class="small text-muted">
                                 A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                             </p>
                         </div>
                         <hr class="text-muted" />
-                        <h5>Office</h5>
-                        <div class="row mb-3">
-                            <div class="col-12 col-sm-6">
-                                <label for="password" class="form-label small">Division<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={division}
-                                    oninput={(e) => (division = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.division ? 'is-invalid' : ''}"
-                                    id="password"
-                                    placeholder="Division"
-                                />
-                                <p class="text-danger small mb-auto {errors.division ? '' : 'd-none'}">{errors.division?.[0]}</p>
-                            </div>
-                        </div>
+                        <h5>Document Tag</h5>
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="username" class="form-label small">Department<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={department}
-                                    oninput={(e) => (department = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.department ? 'is-invalid' : ''}"
-                                    id="username"
-                                    placeholder="Department"
-                                />
-                                <p class="text-danger small mb-auto {errors.department ? '' : 'd-none'}">{errors.department?.[0]}</p>
+                                <label for="username" class="form-label small">Tag<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="username" placeholder="Document tag" />
+                                <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
                             </div>
-                            <div class="col-12 col-sm-3">
-                                <label for="confirmPassword" class="form-label small">Dept. Abbreviation<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={abbreviation}
-                                    oninput={(e) => (abbreviation = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.abbreviation ? 'is-invalid' : ''}"
-                                    id="confirmPassword"
-                                    placeholder="Abbreviation"
-                                />
-                                <p class="text-danger small mb-auto {errors.abbreviation ? '' : 'd-none'}">{errors.abbreviation?.[0]}</p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col-12 col-md-6">
-                                <label for="office" class="form-label small">Office</label>
-                                <input bind:value={office} oninput={(e) => (office = e.target.value.toUpperCase())} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+                                <label for="office" class="form-label small">Office<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={office} list="officeList" type="text" class="form-control form-control-sm {errors.office ? 'is-invalid' : ''}" id="office" placeholder="Office" />
+                                <p class="text-danger small mb-auto {errors.office ? '' : 'd-none'}">{errors.office?.[0]}</p>
+                                <datalist id="officeList">
+                                    {#each officeList as office}
+                                        <option value={office.short_name}></option>
+                                    {/each}
+                                </datalist>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -181,7 +153,7 @@
                         <h5>Maintenance</h5>
                         <div class="row mb-4">
                             <div class="col">
-                                <label for="password" class="form-label small">Office</label>
+                                <label for="password" class="form-label small">Document Tag</label>
                                 <div>
                                     <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
                                         {#if deleting}
@@ -189,14 +161,14 @@
                                             Deleting...
                                         {:else}
                                             <i class="bi bi-x-lg me-2"></i>
-                                            Delete Office
+                                            Delete Tag
                                         {/if}
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/offices"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
+                            <a href="/admin/document-tags"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

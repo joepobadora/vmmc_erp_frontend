@@ -1,5 +1,36 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import Table from '$lib/components/Table.svelte';
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+    import { onMount } from 'svelte';
+
+    let loadingData = $state('false');
+    let logs = $state([]);
+
+    onMount(() => {
+        refreshTable();
+    });
+
+    async function refreshTable() {
+        loadingData = true;
+
+        try {
+            const result = await App.API.get('/admin/audit-logs');
+
+            const data = result.data.data;
+
+            if (result.data.success) {
+                logs = data;
+            } else {
+                Alert.show('error', 'Request failed.', result.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loadingData = false;
+        }
+    }
 </script>
 
 <div class="row">
@@ -55,7 +86,60 @@
 
         <!-- table -->
         <div class="card border-0 shadow-sm px-3">
-            <div class="card-body"></div>
+            <div class="card-body">
+                {#if loadingData}
+                    <div class="d-flex justify-content-center p-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                {:else}
+                    <div class="row px-2">
+                        <div class="col">
+                            <p class="small text-muted">Timestamp</p>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted">Client Route</p>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted">Action Taken</p>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted">Entity</p>
+                        </div>
+                        <div class="col">
+                            <p class="small text-muted">Actor</p>
+                        </div>
+                    </div>
+                    <Table data={logs} enableTotalCount enablePagination pageSize="50">
+                        <div slot="row" let:item class="row border-bottom custom-row small">
+                            <div class="col">
+                                <div>
+                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link text-danger">{App.Format.date(item.created_at).toMilliseconds()}</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <span>{item.client_route}</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <span>{item.details}</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <span>{item.entity}</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <span>{item.full_name_2}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </Table>
+                {/if}
+            </div>
         </div>
     </div>
 </div>

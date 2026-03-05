@@ -3,12 +3,14 @@
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
 
-    const { data } = $props();
+    let { data } = $props();
 
-    let name = $state(data.name ?? '');
-    let status = $state(data.status ?? true);
+    let officeList = $state(data.officeList ?? []);
+
+    let name = $state(data.documentTag.name ?? '');
+    let office = $state(data.documentTag.office ?? '');
+    let status = $state(data.documentTag.status ?? true);
 </script>
 
 <div class="row">
@@ -20,7 +22,7 @@
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/document-types">Document Types</a></li>
+                        <li class="breadcrumb-item"><a href="/admin/document-tags">Document Tags</a></li>
                         <li class="breadcrumb-item active">View</li>
                     </ol>
                 </nav>
@@ -32,17 +34,26 @@
                 <div class="card shadow-sm border-0 p-2 mb-4">
                     <div class="card-body">
                         <div class="mb-4">
-                            <h5>View document type</h5>
+                            <h5>View document tag</h5>
                             <p class="small text-muted">
                                 A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                             </p>
                         </div>
                         <hr class="text-muted" />
-                        <h5>Document Type</h5>
+                        <h5>Document Tag</h5>
                         <div class="row mb-3">
-                            <div class="col-12 col-sm-6">
-                                <label for="password" class="form-label small">Type</label>
-                                <input bind:value={name} type="text" class="form-control form-control-sm" id="password" disabled />
+                            <div class="col-12 col-md-6">
+                                <label for="username" class="form-label small">Tag<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={name} type="text" class="form-control form-control-sm" id="username" disabled />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="office" class="form-label small">Office<span class="ms-1 text-danger">*</span></label>
+                                <input bind:value={office} list="officeList" type="text" class="form-control form-control-sm" id="office" disabled />
+                                <datalist id="officeList">
+                                    {#each officeList as office}
+                                        <option value={office.short_name}></option>
+                                    {/each}
+                                </datalist>
                             </div>
                         </div>
                         <div class="row mb-4">
@@ -54,7 +65,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/document-types"> <button type="button" class="btn btn-primary btn-sm px-3">Okay</button></a>
+                            <a href="/admin/document-tags"> <button type="button" class="btn btn-primary btn-sm px-3">Okay</button></a>
                         </div>
                     </div>
                 </div>

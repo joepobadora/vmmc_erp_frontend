@@ -13,6 +13,7 @@
 
 <svelte:head>
     <link rel="icon" href="/vmmc_logo.png" />
+    <link rel="stylesheet" href="/css/html.css" />
     <title>VMMC ERP</title>
 </svelte:head>
 

@@ -13,6 +13,8 @@
     let userInput;
     let passInput;
 
+    let loggingIn = $state(false);
+
     let errors = $state({});
 
     const schema = z.object({
@@ -49,6 +51,9 @@
         }
 
         try {
+            // udpate button state
+            loggingIn = true;
+
             const result = await App.API.post('http://127.0.0.1:8000/api/login', {
                 username: username,
                 password: password,
@@ -57,14 +62,18 @@
             const data = result.data.data;
 
             if (result.data.success) {
-                localStorage.setItem('access_token', data.token);
-                goto('/');
-                Alert.show('success', 'Login successful.', 'Welcome back, ' + data.user.first_name + '!');
+                setTimeout(() => {
+                    localStorage.setItem('access_token', data.token);
+                    goto('/');
+                    Alert.show('success', 'Login successful.', 'Welcome back, ' + data.user.first_name + '!');
+                }, 600);
             } else {
                 Alert.show('error', 'Login failed.', result.data.error_code);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loggingIn = false;
         }
     }
 
@@ -123,7 +132,14 @@
                 <!-- login button -->
                 <div class="row">
                     <div class="col-12 col-sm-auto ms-sm-auto">
-                        <button type="submit" class="btn btn-primary btn-sm px-3 w-100 w-sm-auto">Login<i class="bi bi-chevron-right ms-2"></i></button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 w-100 w-sm-auto" disabled={loggingIn}>
+                            {#if loggingIn}
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Logging in...
+                            {:else}
+                                Login<i class="bi bi-chevron-right ms-2"></i>
+                            {/if}
+                        </button>
                     </div>
                 </div>
             </div>
