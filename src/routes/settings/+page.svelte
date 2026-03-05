@@ -91,7 +91,7 @@
                 old_password: oldPassword,
             });
 
-            if (!result.success) {
+            if (!result.data.success) {
                 errors = {
                     oldPassword: ['Wrong old password.'],
                 };
@@ -110,18 +110,18 @@
                 new_password: newPassword,
             });
 
-            if (result.success) {
+            if (result.data.success) {
                 setTimeout(() => {
                     oldPassword = '';
                     newPassword = '';
                     confirmNewPassword = '';
                     goto('/settings', { invalidateAll: true });
 
-                    Alert.show('success', 'Update success.', result.success_code);
+                    Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Update failed.', result.error_code);
+                    Alert.show('error', 'Update failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
@@ -160,7 +160,7 @@
                 gender: gender,
             });
 
-            if (result.success) {
+            if (result.data.success) {
                 setTimeout(() => {
                     goto('/settings', { invalidateAll: true });
 

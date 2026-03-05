@@ -7,8 +7,6 @@
     import { onMount } from 'svelte';
 
     const { data } = $props();
-
-    console.log(data);
 </script>
 
 <div class="row">

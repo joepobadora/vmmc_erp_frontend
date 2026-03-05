@@ -32,7 +32,7 @@
             // Render pretty HTML diff
             container.innerHTML = html.format(delta, oldData);
         } else {
-            container.innerHTML = '<p>No changes detected</p>';
+            container.innerHTML = '<p class="small text-muted">No changes detected</p>';
         }
     });
 </script>
