@@ -268,11 +268,11 @@
                             <label for="male" class="form-label small">Gender</label>
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="male" value="MALE" bind:group={gender} />
+                                    <input class="form-check-input" type="radio" name="gender" id="male" value="Male" bind:group={gender} />
                                     <label class="form-check-label" for="male">Male</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="female" value="FEMALE" bind:group={gender} />
+                                    <input class="form-check-input" type="radio" name="gender" id="female" value="Female" bind:group={gender} />
                                     <label class="form-check-label" for="female">Female</label>
                                 </div>
                             </div>
@@ -318,7 +318,7 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                    <a href="/settings/sign-pad" class="btn btn-light border btn-sm px-3">Open Sign Pad<i class="bi bi-box-arrow-up-right ms-2"></i></a>
+                    <a href="/settings/sign-pad" class="btn btn-outline-primary btn-sm px-3">Open Sign Pad<i class="bi bi-box-arrow-up-right ms-2"></i></a>
                 </div>
             </div>
         </div>

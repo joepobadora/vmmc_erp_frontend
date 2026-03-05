@@ -123,7 +123,12 @@
                             </div>
                             <div class="col">
                                 <div>
-                                    <span>{item.details}</span>
+                                    <span
+                                        >{(() => {
+                                            const id = (item.api_endpoint.match(/\/(\d+)$/) || [])[1];
+                                            return item.details + (id ? ': ' + id : '');
+                                        })()}</span
+                                    >
                                 </div>
                             </div>
                             <div class="col">
