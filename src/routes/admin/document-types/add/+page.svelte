@@ -65,7 +65,7 @@
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/offices">Document Types</a></li>
+                        <li class="breadcrumb-item"><a href="/admin/document-types">Document Types</a></li>
                         <li class="breadcrumb-item active">Add</li>
                     </ol>
                 </nav>

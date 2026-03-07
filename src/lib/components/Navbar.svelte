@@ -60,7 +60,7 @@
 </script>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow py-1 px-2">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-1 px-2">
     <div class="container-fluid">
         <a class="navbar-brand" href={titleRoute}>{title}</a>
 

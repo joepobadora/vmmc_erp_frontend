@@ -42,8 +42,8 @@
             <div class="col">
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item active">Document Types</li>
+                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+                        <li class="breadcrumb-item small active">Document Types</li>
                     </ol>
                 </nav>
             </div>

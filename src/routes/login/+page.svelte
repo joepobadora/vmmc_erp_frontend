@@ -54,7 +54,7 @@
             // udpate button state
             loggingIn = true;
 
-            const result = await App.API.post('http://127.0.0.1:8000/api/login', {
+            const result = await App.API.post('/login', {
                 username: username,
                 password: password,
             });

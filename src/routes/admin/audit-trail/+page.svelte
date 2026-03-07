@@ -41,8 +41,8 @@
             <div class="col">
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item active">Audit Trail</li>
+                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+                        <li class="breadcrumb-item small active">Audit Trail</li>
                     </ol>
                 </nav>
             </div>
@@ -113,7 +113,7 @@
                         <div slot="row" let:item class="row border-bottom custom-row small">
                             <div class="col">
                                 <div>
-                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link text-danger">{App.Format.date(item.created_at).toMilliseconds()}</a>
+                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link text-danger">{App.Format.date(item.created_at).toDatetime()}</a>
                                 </div>
                             </div>
                             <div class="col">
