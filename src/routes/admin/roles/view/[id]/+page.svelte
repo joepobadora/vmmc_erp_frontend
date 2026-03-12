@@ -22,9 +22,9 @@
             <div class="col">
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/roles">Roles</a></li>
-                        <li class="breadcrumb-item active">View</li>
+                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+                        <li class="breadcrumb-item small"><a href="/admin/roles?page={page.url.searchParams.get('page')}">Roles</a></li>
+                        <li class="breadcrumb-item small active">View</li>
                     </ol>
                 </nav>
             </div>
@@ -376,7 +376,13 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/roles"> <button type="button" class="btn btn-primary btn-sm px-3">Okay</button></a>
+                            <button
+                                type="button"
+                                class="btn btn-primary btn-sm px-3"
+                                onclick={() => {
+                                    goto(`/admin/roles?page=${page.url.searchParams.get('page')}`);
+                                }}>Okay</button
+                            >
                         </div>
                     </div>
                 </div>

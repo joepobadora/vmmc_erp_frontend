@@ -48,7 +48,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto('/admin/roles');
+                    goto(`/admin/roles?page=${page.url.searchParams.get('page')}`);
                     Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
@@ -72,7 +72,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto('/admin/roles');
+                    goto(`/admin/roles?page=${page.url.searchParams.get('page')}`);
                     Alert.show('success', 'Deletion success.', result.data.success_code);
                 }, 600);
             } else {
@@ -96,9 +96,9 @@
             <div class="col">
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/roles">Roles</a></li>
-                        <li class="breadcrumb-item active">Edit</li>
+                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+                        <li class="breadcrumb-item small"><a href="/admin/roles?page={page.url.searchParams.get('page')}">Roles</a></li>
+                        <li class="breadcrumb-item small active">Edit</li>
                     </ol>
                 </nav>
             </div>
@@ -666,7 +666,13 @@
                         </div>
 
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/roles"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
+                            <button
+                                type="button"
+                                class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}"
+                                onclick={() => {
+                                    goto(`/admin/roles?page=${page.url.searchParams.get('page')}`);
+                                }}>Cancel</button
+                            >
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

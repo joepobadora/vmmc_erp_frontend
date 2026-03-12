@@ -19,6 +19,7 @@ export async function load() {
                 docTagsTotal: data.docTagsTotal,
                 docTagsActive: data.docTagsActive,
                 systemActivity: data.systemActivity,
+                activeUsers: data.activeUsers,
             };
         } else {
             return {

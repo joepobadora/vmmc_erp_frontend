@@ -9,6 +9,8 @@
     let loadingData = $state('false');
     let offices = $state([]);
 
+    let tablePage = $state(page.url.searchParams.get('page') || 1);
+
     onMount(() => {
         refreshTable();
     });
@@ -47,7 +49,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={page.url.pathname + '/add'}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
+            <div class="col-auto"><a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/add?page=${tablePage}`}><i class="bi bi-plus-lg me-2"></i>Add</a></div>
         </div>
         <div class="row mb-4">
             <!-- search -->
@@ -80,12 +82,17 @@
                         <div class="spinner-border text-primary" role="status"></div>
                     </div>
                 {:else}
-                    <Table data={offices} enableTotalCount enablePagination pageSize="10">
+                    <Table data={offices} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
                         <div slot="row" let:item class="row border-bottom custom-row small">
                             <div class="col">
                                 <div>
                                     <span class="text-muted me-2">Office:</span>
-                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link"><strong>{item.short_name}</strong></a>
+                                    <strong
+                                        class="custom-link"
+                                        onclick={() => {
+                                            goto(page.url.pathname + `/view/${item.id}?page=${tablePage}`);
+                                        }}>{item.short_name}</strong
+                                    >
                                 </div>
                                 <div>
                                     <span class="text-muted me-2">Status:</span>
@@ -93,7 +100,12 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href={page.url.pathname + `/edit/${item.id}`}><button class="btn btn-sm btn-outline-primary px-3">Edit</button></a>
+                                <button
+                                    class="btn btn-sm btn-outline-primary px-3"
+                                    onclick={() => {
+                                        goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                    }}>Edit</button
+                                >
                             </div>
                         </div>
                     </Table>

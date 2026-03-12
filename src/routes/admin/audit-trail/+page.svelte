@@ -4,9 +4,12 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
     let loadingData = $state('false');
     let logs = $state([]);
+
+    let tablePage = $state(page.url.searchParams.get('page') || 1);
 
     onMount(() => {
         refreshTable();
@@ -109,11 +112,16 @@
                             <p class="small text-muted">Actor</p>
                         </div>
                     </div>
-                    <Table data={logs} enableTotalCount enablePagination pageSize="50">
+                    <Table data={logs} enableTotalCount enablePagination pageSize="50" bind:currentPage={tablePage}>
                         <div slot="row" let:item class="row border-bottom custom-row small">
                             <div class="col">
                                 <div>
-                                    <a href={page.url.pathname + `/view/${item.id}`} class="custom-link text-danger">{App.Format.date(item.created_at).toDatetime()}</a>
+                                    <span
+                                        class="custom-link text-danger"
+                                        onclick={() => {
+                                            goto(page.url.pathname + `/view/${item.id}?page=${tablePage}`);
+                                        }}>{App.Format.date(item.created_at).toDatetime()}</span
+                                    >
                                 </div>
                             </div>
                             <div class="col">

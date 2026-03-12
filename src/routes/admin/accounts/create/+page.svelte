@@ -1,5 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import z from 'zod';
@@ -114,7 +115,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto('/admin/accounts');
+                    goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
                     Alert.show('success', 'Saving success.', result.data.success_code);
                 }, 600);
             } else {
@@ -163,9 +164,9 @@
             <div class="col">
                 <nav style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/accounts">Accounts</a></li>
-                        <li class="breadcrumb-item active">Create</li>
+                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+                        <li class="breadcrumb-item small"><a href="/admin/accounts?page={page.url.searchParams.get('page')}">Accounts</a></li>
+                        <li class="breadcrumb-item small active">Create</li>
                     </ol>
                 </nav>
             </div>
@@ -452,7 +453,13 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <a href="/admin/accounts"> <button type="button" class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}">Cancel</button></a>
+                            <button
+                                type="button"
+                                class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}"
+                                onclick={() => {
+                                    goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
+                                }}>Cancel</button
+                            >
                             <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
                                 {#if saving}
                                     <span class="spinner-border spinner-border-sm me-2"></span>

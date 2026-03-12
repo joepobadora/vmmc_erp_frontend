@@ -15,6 +15,7 @@
     let docTagsTotal = $state(data.docTagsTotal ?? 0);
     let docTagsActive = $state(data.docTagsActive ?? 0);
     let systemActivity = $state(data.systemActivity ?? []);
+    let activeUsers = $state(data.activeUsers ?? []);
 
     let connected = $state(true);
     let lastHeartbeat = Date.now();
@@ -52,14 +53,22 @@
                     case 'system-activity':
                         systemActivity = data.message.activities;
                         break;
+                    case 'active-users':
+                        activeUsers = data.message.account;
+                        break;
                 }
             } catch (err) {
                 console.error('SSE parse error:', err);
             }
         };
 
+        source.onopen = () => {
+            connected = true;
+            lastHeartbeat = Date.now();
+        };
+
         source.onerror = () => {
-            if (Date.now() - lastHeartbeat > 25000) {
+            if (Date.now() - lastHeartbeat > 20000) {
                 connected = false;
             }
         };
@@ -147,6 +156,12 @@
                         <a href="/admin/audit-trail" class="small">View more</a>
                     </div>
                     <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <span class="text-muted small me-auto">Timestamp</span>
+                                <span class="text-muted small">Actor</span>
+                            </div>
+                        </li>
                         {#each systemActivity as activity}
                             <li class="list-group-item">
                                 <div class="d-flex">
@@ -171,12 +186,21 @@
                         <h5>Active Users</h5>
                         <a href="/admin/audit-trail" class="small">View more</a>
                     </div>
-                    <ul class="list-group list-group-flush small">
-                        <li class="list-group-item">An item</li>
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
-                        <li class="list-group-item">A fourth item</li>
-                        <li class="list-group-item">And a fifth one</li>
+                    <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <span class="text-muted small me-auto">Last Seen</span>
+                                <span class="text-muted small">User</span>
+                            </div>
+                        </li>
+                        {#each activeUsers as user}
+                            <li class="list-group-item">
+                                <div class="d-flex">
+                                    <span class="me-auto">{App.Format.date(user.last_seen).toDatetime()}</span>
+                                    <span>{user.account.user.full_name_2}</span>
+                                </div>
+                            </li>
+                        {/each}
                     </ul>
                 </div>
             </div>

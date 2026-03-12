@@ -1,8 +1,12 @@
 <script>
-    const { data = [], pageSize = 10, enablePagination = false, enableJumpToPage = false, enableTotalCount = false, maxPageButtons = 5 } = $props();
+    let { data = [], pageSize = 10, enablePagination = false, enableJumpToPage = false, enableTotalCount = false, maxPageButtons = 5, currentPage = $bindable(1) } = $props();
 
-    let currentPage = $state(1);
-    let jumpPage = $state(1);
+    // let currentPage = $state(1);
+    let jumpPage = $state(currentPage);
+
+    $effect(() => {
+        jumpPage = currentPage;
+    });
 
     // derived
     let totalPages = $derived(Math.ceil(data.length / pageSize) || 1);
@@ -90,16 +94,16 @@
                         </li>
 
                         {#each renderPaginationButtons() as num}
-                            {#if num === '...'}
+                            {#if num == '...'}
                                 <li class="page-item disabled"><span class="page-link">…</span></li>
                             {:else}
-                                <li class="page-item {num === currentPage ? 'active' : ''}">
+                                <li class="page-item {num == currentPage ? 'active' : ''}">
                                     <button class="page-link" onclick={() => goToPage(num)}>{num}</button>
                                 </li>
                             {/if}
                         {/each}
 
-                        <li class="page-item {currentPage === totalPages ? 'disabled' : ''}">
+                        <li class="page-item {currentPage == totalPages ? 'disabled' : ''}">
                             <button class="page-link" onclick={() => goToPage(currentPage + 1)} aria-label="page link button">
                                 <i class="bi bi-chevron-right"></i>
                             </button>

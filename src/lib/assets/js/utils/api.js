@@ -19,4 +19,19 @@ API.interceptors.request.use((config) => {
     return config;
 });
 
+API.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            console.warn('Unauthorized - redirecting to login');
+
+            localStorage.removeItem('access_token');
+
+            window.location.href = '/login';
+        }
+
+        return Promise.reject(error);
+    }
+);
+
 export default API;
