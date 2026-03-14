@@ -22,12 +22,12 @@
     }
 </script>
 
-<div class="shadow-sm p-3 bg-white">
+<div class="p-3 bg-white border">
     <div class="row">
         <div class="col">
             <div class="list-group list-group-flush">
                 {#each links as link}
-                    <span on:click={() => handleClick(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={$page.url.pathname.startsWith(link.href)}>
+                    <span onclick={() => handleClick(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={$page.url.pathname.startsWith(link.href)}>
                         <i class={`bi ${link.icon} me-2`}></i>{link.label}
                     </span>
                 {/each}
