@@ -16,6 +16,13 @@ class Format {
         return this;
     }
 
+    // Set number value
+    static number(value) {
+        this._value = value;
+        this._result = Number(value);
+        return this;
+    }
+
     static toDatetime() {
         this._result = this._result.toLocaleString('en-US', {
             hour12: true,
@@ -102,6 +109,12 @@ class Format {
         const milliseconds = String(d.getMilliseconds()).padStart(3, '0');
 
         this._result = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+        return this._result;
+    }
+
+    static toFileSize() {
+        const bytes = this._value;
+        this._result = (bytes / 1024 / 1024).toFixed(2) + ' MB';
         return this._result;
     }
 }

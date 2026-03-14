@@ -1,35 +1,43 @@
 <script>
     import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
+
+    const links = [
+        { href: '/admin/accounts', icon: 'bi-people', label: 'Accounts' },
+        { href: '/admin/roles', icon: 'bi-shield-lock', label: 'Roles' },
+        { href: '/admin/offices', icon: 'bi-geo-alt', label: 'Offices' },
+        { href: '/admin/document-types', icon: 'bi-file-earmark-code', label: 'Document Types' },
+        { href: '/admin/document-tags', icon: 'bi-tags', label: 'Document Tags' },
+        { href: '/admin/audit-trail', icon: 'bi-clock-history', label: 'Audit Trail' },
+    ];
+
+    function handleClick(linkHref) {
+        if ($page.url.pathname.startsWith(linkHref)) {
+            // Clicked current page → full reload
+            window.location.href = linkHref;
+        } else {
+            // Navigate SPA style
+            goto(linkHref);
+        }
+    }
 </script>
 
 <div class="shadow-sm p-3 bg-white">
     <div class="row">
         <div class="col">
             <div class="list-group list-group-flush">
-                <a href="/admin/accounts" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/accounts')}>
-                    <i class="bi bi-people me-2"></i>Accounts
-                </a>
-
-                <a href="/admin/roles" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/roles')}>
-                    <i class="bi bi-shield-lock me-2"></i>Roles
-                </a>
-
-                <a href="/admin/offices" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/offices')}>
-                    <i class="bi bi-geo-alt me-2"></i>Offices
-                </a>
-
-                <a href="/admin/document-types" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/document-types')}>
-                    <i class="bi bi-file-earmark-code me-2"></i>Document Types
-                </a>
-
-                <a href="/admin/document-tags" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/document-tags')}>
-                    <i class="bi bi-tags me-2"></i>Document Tags
-                </a>
-
-                <a href="/admin/audit-trail" class="list-group-item list-group-item-action small" class:active={$page.url.pathname.startsWith('/admin/audit-trail')}>
-                    <i class="bi bi-clock-history me-2"></i>Audit Trail
-                </a>
+                {#each links as link}
+                    <span on:click={() => handleClick(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={$page.url.pathname.startsWith(link.href)}>
+                        <i class={`bi ${link.icon} me-2`}></i>{link.label}
+                    </span>
+                {/each}
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
