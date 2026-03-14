@@ -20,7 +20,7 @@
     let connected = $state(true);
     let lastHeartbeat = Date.now();
 
-    const source = new EventSource('http://127.0.0.1:8080/api/events');
+    const source = new EventSource('http://localhost/api/events');
 
     onMount(() => {
         source.onmessage = (event) => {
