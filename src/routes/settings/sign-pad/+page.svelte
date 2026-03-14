@@ -3,6 +3,7 @@
     import { Alert } from '$lib/stores/alert';
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+    import j from '$lib/components/helper';
 
     let updatingSignature = $state(false);
 
@@ -63,51 +64,40 @@
     }
 </script>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-sm-8">
+<j.Row centerx>
+    <j.Col span="8">
+        <!-- controls -->
+        <j.RowCol>
+            <nav style="--bs-breadcrumb-divider: '>';">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item small"><a href="/settings">Settings</a></li>
+                    <li class="breadcrumb-item small active">Sign Pad</li>
+                </ol>
+            </nav>
+        </j.RowCol>
+
         <!-- signature -->
-        <div class="row mb-4">
-            <div class="col">
-                <nav style="--bs-breadcrumb-divider: '<';">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active"></li>
-                        <li class="breadcrumb-item"><a href="/settings">Settings</a></li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-        <div class="card border-0 shadow-sm p-2 mb-4">
-            <div class="card-body">
-                <div class="mb-4">
-                    <h5>Signature</h5>
-                    <p class="small">Please sign inside the designated area.</p>
-                </div>
-                <div class="mb-4">
-                    <div class="row justify-content-center">
-                        <div class="col-auto mb-3">
-                            <div style="position: relative;">
-                                <div style="position: absolute; top:100px ; pointer-events: none; width: 300px; height: 200px;">
-                                    <hr class="mb-0 mx-auto" width="80%;" />
-                                    <p class="text-center text-secondary small">( sign here )</p>
-                                </div>
-                            </div>
-                            <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle" bind:this={canvasEl}> </canvas>
+        <j.Card>
+            <j.RowCol>
+                <h5>Signature</h5>
+                <p class="small">Please sign inside the designated area.</p>
+            </j.RowCol>
+            <j.Row centerx>
+                <j.Col auto>
+                    <div style="position: relative;">
+                        <div style="position: absolute; top:100px ; pointer-events: none; width: 300px; height: 200px;">
+                            <hr class="mb-0 mx-auto" width="80%;" />
+                            <p class="text-center text-secondary small">( sign here )</p>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-sm-end gap-3 gap-sm-0">
-                    <button type="button" class="btn btn-light border btn-sm px-3 me-sm-3 {updatingSignature ? 'd-none' : ''}" onclick={clearCanvas}><i class="bi bi-x-lg me-2"></i>Clear</button>
-                    <button type="button" class="btn btn-primary btn-sm px-3" onclick={updateSignature} disabled={updatingSignature}>
-                        {#if updatingSignature}
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Saving...
-                        {:else}
-                            <i class="bi bi-check-lg me-2"></i>
-                            Save
-                        {/if}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle" bind:this={canvasEl}> </canvas>
+                </j.Col>
+            </j.Row>
+            <j.Row endx>
+                <j.Col auto>
+                    <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={updatingSignature} onClick={updateSignature} />
+                </j.Col>
+            </j.Row>
+        </j.Card>
+    </j.Col>
+</j.Row>

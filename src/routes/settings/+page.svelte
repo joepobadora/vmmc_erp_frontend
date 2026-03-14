@@ -3,6 +3,7 @@
     import { Alert } from '$lib/stores/alert';
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+    import j from '$lib/components/helper';
     import z from 'zod';
 
     let { data } = $props();
@@ -55,7 +56,7 @@
         loadingSignatureImage = true;
 
         try {
-            const result = await App.API.get('/file/show-signature', {
+            const result = await App.API.get('/settings/signature', {
                 responseType: 'blob',
             });
 
@@ -164,11 +165,11 @@
                 setTimeout(() => {
                     goto('/settings', { invalidateAll: true });
 
-                    Alert.show('success', 'Update success.', result.success_code);
+                    Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Update failed.', result.error_code);
+                    Alert.show('error', 'Update failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
@@ -179,148 +180,140 @@
     }
 </script>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-sm-8">
+<j.Row centerx>
+    <j.Col span="8">
+        <!-- controls -->
+        <j.RowCol>
+            <nav style="--bs-breadcrumb-divider: '>';">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item small active">Settings</li>
+                </ol>
+            </nav>
+        </j.RowCol>
         <!-- account -->
-        <div class="card shadow-sm border-0 p-2 mb-4">
-            <div class="card-body">
-                <div class="mb-4">
-                    <h5>Account</h5>
-                    <p class="small">Change your account password to help keep your access secure. Make sure to choose a strong password that only you know.</p>
-                </div>
-                <div class="mb-3">
-                    <label for="username" class="form-label small">Username</label>
-                    <input type="text" class="form-control form-control-sm" id="username" placeholder="Username" bind:value={username} readonly />
-                </div>
-                <div class="row mb-4">
-                    <div class="col-12 col-sm-4 mb-3">
-                        <label for="oldPassword" class="form-label small">Old Password<span class="ms-1 text-danger">*</span></label>
-                        <input type="password" class="form-control form-control-sm {errors.oldPassword ? 'is-invalid' : ''}" id="oldPassword" placeholder="Old password" bind:value={oldPassword} />
-                        <p class="text-danger small mb-auto {errors.oldPassword ? '' : 'd-none'}">{errors.oldPassword?.[0]}</p>
-                    </div>
-                    <div class="col-12 col-sm-4 mb-3">
-                        <label for="newPassword" class="form-label small">New Password<span class="ms-1 text-danger">*</span></label>
-                        <input type="password" class="form-control form-control-sm {errors.newPassword ? 'is-invalid' : ''}" id="newPassword" placeholder="New password" bind:value={newPassword} />
-                        <p class="text-danger small mb-auto {errors.newPassword ? '' : 'd-none'}">{errors.newPassword?.[0]}</p>
-                    </div>
-                    <div class="col-12 col-sm-4">
-                        <label for="confirmNewPassword" class="form-label small">Confirm New Password<span class="ms-1 text-danger">*</span></label>
-                        <input
-                            type="password"
-                            class="form-control form-control-sm {errors.confirmNewPassword ? 'is-invalid' : ''}"
-                            id="confirmNewPassword"
-                            placeholder="Confirm new password"
-                            bind:value={confirmNewPassword}
-                        />
-                        <p class="text-danger small mb-auto {errors.confirmNewPassword ? '' : 'd-none'}">{errors.confirmNewPassword?.[0]}</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                    <button type="button" class="btn btn-primary btn-sm px-3" onclick={updateAccount} disabled={updatingAccount}>
-                        {#if updatingAccount}
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Updating...
-                        {:else}
-                            <i class="bi bi-arrow-repeat me-2"></i>
-                            Update
-                        {/if}
-                    </button>
-                </div>
-            </div>
-        </div>
+        <j.Card>
+            <j.RowCol>
+                <h5>Account</h5>
+                <p class="small">Change your account password to help keep your access secure. Make sure to choose a strong password that only you know.</p>
+            </j.RowCol>
+            <j.RowCol>
+                <label for="username" class="form-label small">Username</label>
+                <input type="text" class="form-control form-control-sm" id="username" placeholder="Username" bind:value={username} readonly />
+            </j.RowCol>
+            <j.Row>
+                <j.Col span="4">
+                    <label for="oldPassword" class="form-label small">Old Password<span class="ms-1 text-danger">*</span></label>
+                    <input type="password" class="form-control form-control-sm {errors.oldPassword ? 'is-invalid' : ''}" id="oldPassword" placeholder="Old password" bind:value={oldPassword} />
+                    <p class="text-danger small mb-auto {errors.oldPassword ? '' : 'd-none'}">{errors.oldPassword?.[0]}</p>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="newPassword" class="form-label small">New Password<span class="ms-1 text-danger">*</span></label>
+                    <input type="password" class="form-control form-control-sm {errors.newPassword ? 'is-invalid' : ''}" id="newPassword" placeholder="New password" bind:value={newPassword} />
+                    <p class="text-danger small mb-auto {errors.newPassword ? '' : 'd-none'}">{errors.newPassword?.[0]}</p>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="confirmNewPassword" class="form-label small">Confirm New Password<span class="ms-1 text-danger">*</span></label>
+                    <input
+                        type="password"
+                        class="form-control form-control-sm {errors.confirmNewPassword ? 'is-invalid' : ''}"
+                        id="confirmNewPassword"
+                        placeholder="Confirm new password"
+                        bind:value={confirmNewPassword}
+                    />
+                    <p class="text-danger small mb-auto {errors.confirmNewPassword ? '' : 'd-none'}">{errors.confirmNewPassword?.[0]}</p>
+                </j.Col>
+            </j.Row>
+            <j.Row endx>
+                <j.Col auto>
+                    <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingAccount} onClick={updateAccount} />
+                </j.Col>
+            </j.Row>
+        </j.Card>
+
         <!-- personal information -->
-        <div class="card border-0 shadow-sm p-2 mb-4">
-            <div class="card-body">
-                <div class="mb-4">
-                    <h5>Personal Information</h5>
-                    <p class="small">Update your basic details such as your name, gender, and birthdate. This information is used within the system to keep your profile accurate.</p>
-                </div>
-                <div class="mb-3">
-                    <div class="row">
-                        <div class="col-12 col-sm-3 mb-3">
-                            <label for="firstName" class="form-label small">First Name<span class="ms-1 text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm {errors.firstName ? 'is-invalid' : ''}" id="firstName" placeholder="First name" bind:value={firstName} />
-                            <p class="text-danger small mb-auto {errors.firstName ? '' : 'd-none'}">{errors.firstName?.[0]}</p>
+        <j.Card>
+            <j.RowCol>
+                <h5>Personal Information</h5>
+                <p class="small">Update your basic details such as your name, gender, and birthdate. This information is used within the system to keep your profile accurate.</p>
+            </j.RowCol>
+            <j.RowCol>
+                <label for="username" class="form-label small">Username</label>
+                <input type="text" class="form-control form-control-sm" id="username" placeholder="Username" bind:value={username} readonly />
+            </j.RowCol>
+            <j.Row>
+                <j.Col span="3">
+                    <label for="firstName" class="form-label small">First Name<span class="ms-1 text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm {errors.firstName ? 'is-invalid' : ''}" id="firstName" placeholder="First name" bind:value={firstName} />
+                    <p class="text-danger small mb-auto {errors.firstName ? '' : 'd-none'}">{errors.firstName?.[0]}</p>
+                </j.Col>
+                <j.Col span="3">
+                    <label for="middleName" class="form-label small">Middle Name</label>
+                    <input type="text" class="form-control form-control-sm" id="middleName" placeholder="Middle name" bind:value={middleName} />
+                </j.Col>
+                <j.Col span="3">
+                    <label for="lastName" class="form-label small">Last Name<span class="ms-1 text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm {errors.lastName ? 'is-invalid' : ''}" id="lastName" placeholder="Last name" bind:value={lastName} />
+                    <p class="text-danger small mb-auto {errors.lastName ? '' : 'd-none'}">{errors.lastName?.[0]}</p>
+                </j.Col>
+                <j.Col span="3">
+                    <label for="suffix" class="form-label small">Suffix</label>
+                    <select class="form-select form-select-sm" id="suffix" bind:value={suffix}>
+                        <option value={0} selected>N/A</option>
+                        {#each suffixList as suffix}
+                            <option value={suffix.id}>{suffix.enumeration}</option>
+                        {/each}
+                    </select>
+                </j.Col>
+            </j.Row>
+            <j.Row>
+                <j.Col span="3">
+                    <label for="male" class="form-label small">Gender</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="male" value="Male" bind:group={gender} />
+                            <label class="form-check-label" for="male">Male</label>
                         </div>
-                        <div class="col-12 col-sm-3 mb-3">
-                            <label for="middleName" class="form-label small">Middle Name</label>
-                            <input type="text" class="form-control form-control-sm" id="middleName" placeholder="Middle name" bind:value={middleName} />
-                        </div>
-                        <div class="col-12 col-sm-3 mb-3">
-                            <label for="lastName" class="form-label small">Last Name<span class="ms-1 text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm {errors.lastName ? 'is-invalid' : ''}" id="lastName" placeholder="Last name" bind:value={lastName} />
-                            <p class="text-danger small mb-auto {errors.lastName ? '' : 'd-none'}">{errors.lastName?.[0]}</p>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <label for="suffix" class="form-label small">Suffix</label>
-                            <select class="form-select form-select-sm" id="suffix" bind:value={suffix}>
-                                <option value={0} selected>N/A</option>
-                                {#each suffixList as suffix}
-                                    <option value={suffix.id}>{suffix.enumeration}</option>
-                                {/each}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <div class="row">
-                        <div class="col-12 col-sm-3 mb-3">
-                            <label for="male" class="form-label small">Gender</label>
-                            <div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="male" value="Male" bind:group={gender} />
-                                    <label class="form-check-label" for="male">Male</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="female" value="Female" bind:group={gender} />
-                                    <label class="form-check-label" for="female">Female</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <label for="birthdate" class="form-label small">Birthdate<span class="ms-1 text-danger">*</span></label>
-                            <input type="date" class="form-control form-control-sm {errors.birthdate ? 'is-invalid' : ''}" id="birthdate" bind:value={birthdate} />
-                            <p class="text-danger small mb-auto {errors.birthdate ? '' : 'd-none'}">{errors.birthdate?.[0]}</p>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="female" value="Female" bind:group={gender} />
+                            <label class="form-check-label" for="female">Female</label>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                    <button type="button" class="btn btn-primary btn-sm px-3" onclick={updatePersonalInfo} disabled={updatingPersonalInfo}>
-                        {#if updatingPersonalInfo}
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Updating...
-                        {:else}
-                            <i class="bi bi-arrow-repeat me-2"></i>
-                            Update
-                        {/if}
-                    </button>
-                </div>
-            </div>
-        </div>
+                </j.Col>
+                <j.Col span="3">
+                    <label for="birthdate" class="form-label small">Birthdate<span class="ms-1 text-danger">*</span></label>
+                    <input type="date" class="form-control form-control-sm {errors.birthdate ? 'is-invalid' : ''}" id="birthdate" bind:value={birthdate} />
+                    <p class="text-danger small mb-auto {errors.birthdate ? '' : 'd-none'}">{errors.birthdate?.[0]}</p>
+                </j.Col>
+            </j.Row>
+            <j.Row endx>
+                <j.Col auto>
+                    <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingPersonalInfo} onClick={updatePersonalInfo} />
+                </j.Col>
+            </j.Row>
+        </j.Card>
+
         <!-- signature -->
-        <div class="card border-0 shadow-sm p-2 mb-4">
-            <div class="card-body">
-                <div class="mb-4">
-                    <h5>Signature</h5>
-                    <p class="small">Set your official signature details as they will appear on documents and records that require your authorization.</p>
-                </div>
-                <div class="mb-4">
-                    <div class="row justify-content-center">
-                        <div class="col-auto mb-3">
-                            {#if loadingSignatureImage}
-                                <div class="d-flex justify-content-center align-items-center border border-secondary-subtle" style="width: 300px; height: 200px;">
-                                    <div class="spinner-border text-secondary"></div>
-                                </div>
-                            {:else}
-                                <img src={imgSrc} alt="" width="300" height="200" class="border border-secondary-subtle" />
-                            {/if}
+        <j.Card>
+            <j.RowCol>
+                <h5>Signature</h5>
+                <p class="small">Set your official signature details as they will appear on documents and records that require your authorization.</p>
+            </j.RowCol>
+            <j.Row centerx>
+                <j.Col auto>
+                    {#if loadingSignatureImage}
+                        <div class="d-flex justify-content-center align-items-center border border-secondary-subtle" style="width: 300px; height: 200px;">
+                            <div class="spinner-border text-secondary"></div>
                         </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                    <a href="/settings/sign-pad" class="btn btn-outline-primary btn-sm px-3">Open Sign Pad<i class="bi bi-box-arrow-up-right ms-2"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    {:else}
+                        <img src={imgSrc} alt="" width="300" height="200" class="border border-secondary-subtle" />
+                    {/if}
+                </j.Col>
+            </j.Row>
+            <j.Row endx>
+                <j.Col auto>
+                    <j.Button label="Open Sign Pad" variant="outline-primary" icon="bi-box-arrow-up-right" href="/settings/sign-pad" />
+                </j.Col>
+            </j.Row>
+        </j.Card>
+    </j.Col>
+</j.Row>
