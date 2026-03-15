@@ -5,12 +5,12 @@ const baseURL = 'http://localhost/api';
 // Create Axios instance
 const API = axios.create({
     baseURL,
-    headers: {
+    headers: {  
         'Content-Type': 'application/json',
     },
 });
 
-// Optional: add token automatically from localStorage
+// Optional: add token automatically from localStorage  
 API.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
     if (token) config.headers['Authorization'] = `Bearer ${token}`;
