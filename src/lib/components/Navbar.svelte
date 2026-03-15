@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import App from '$lib/assets/js/bootstrap';
+    import j from '$lib/components/helper';
 
     let closeModalButton;
 
@@ -53,43 +54,46 @@
 </script>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-1 px-2">
-    <div class="container-fluid">
-        <a class="navbar-brand" href={titleRoute}>{title}</a>
-
-        <div class="dropdown text-light">
-            <a class="nav-link dropdown-toggle" href="/" data-bs-toggle="dropdown" aria-label="menu button">
-                <i class="bi bi-three-dots-vertical"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-label="menu dropdown">
-                <li class="px-4 py-2">
-                    <p class="small text-secondary mb-1">Signed in as:</p>
-                    <h6>{firstName}</h6>
-                </li>
-                {#if showHome}
+ <div class="bg-primary p-3 pb-2 shadow-sm">
+    <j.Row mb=0>
+        <j.Col>
+            <a href={titleRoute} class="text-decoration-none"><h5 class="text-light fw-normal">{title}</h5></a>
+        </j.Col>
+        <j.Col auto>
+            <div class="dropdown text-light">
+                <a class="nav-link dropdown-toggle" href="/" data-bs-toggle="dropdown" aria-label="menu button">
+                    <i class="bi bi-three-dots-vertical"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-label="menu dropdown">
+                    <li class="px-4 py-2">
+                        <p class="small text-secondary mb-1">Signed in as:</p>
+                        <h6>{firstName}</h6>
+                    </li>
+                    {#if showHome}
+                        <li>
+                            <a class="dropdown-item small" href="/">
+                                <i class="bi bi-house me-2"></i> Home
+                            </a>
+                        </li>
+                    {/if}
+                    {#if !hideSettings}
+                        <li>
+                            <a class="dropdown-item small" href="/settings">
+                                <i class="bi bi-gear me-2"></i> Settings
+                            </a>
+                        </li>
+                    {/if}
+                    <li><hr class="dropdown-divider" /></li>
                     <li>
-                        <a class="dropdown-item small" href="/">
-                            <i class="bi bi-house me-2"></i> Home
+                        <a class="dropdown-item small" href="/" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class="bi bi-box-arrow-left me-2"></i> Logout
                         </a>
                     </li>
-                {/if}
-                {#if !hideSettings}
-                    <li>
-                        <a class="dropdown-item small" href="/settings">
-                            <i class="bi bi-gear me-2"></i> Settings
-                        </a>
-                    </li>
-                {/if}
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                    <a class="dropdown-item small" href="/" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                        <i class="bi bi-box-arrow-left me-2"></i> Logout
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+                </ul>
+            </div>
+        </j.Col>
+    </j.Row>
+ </div>
 
 <!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" data-bs-backdrop="static">
