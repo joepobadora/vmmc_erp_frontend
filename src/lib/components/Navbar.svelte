@@ -1,23 +1,16 @@
 <script>
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
-    import { BootstrapClient } from '$lib/stores/bootstrapClient';
     import { onMount } from 'svelte';
     import App from '$lib/assets/js/bootstrap';
 
-    let el;
-    let logoutModal;
+    let closeModalButton;
+
     let { title, titleRoute, showHome, hideSettings } = $props();
 
     let firstName = $state('');
 
     let loggingOut = $state(false);
-
-    $effect(() => {
-        if ($BootstrapClient) {
-            logoutModal = $BootstrapClient.Modal.getOrCreateInstance(el);
-        }
-    });
 
     onMount(async () => {
         try {
@@ -45,7 +38,7 @@
             if (result.data.success) {
                 setTimeout(() => {
                     localStorage.removeItem('access_token');
-                    logoutModal.hide();
+                    closeModalButton.click();
                     goto('/login');
                 }, 600);
             } else {
@@ -99,12 +92,12 @@
 </nav>
 
 <!-- Logout Modal -->
-<div bind:this={el} class="modal fade" id="logoutModal" data-bs-backdrop="static">
+<div class="modal fade" id="logoutModal" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5>Logout</h5>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="close logout modal"></button>
+                <button bind:this={closeModalButton} type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="close logout modal"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to logout?</p>
