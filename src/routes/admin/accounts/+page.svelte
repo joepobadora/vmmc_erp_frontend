@@ -156,11 +156,18 @@
                                     <span>{item.username}</span>
                                 </div>
                                 <div>
-                                    <span class="text-muted me-2">Status:</span>
-                                    <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                <span class="text-info custom-link"
+                                onclick={() => {
+                                        goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                    }}
+                                ><i class="bi bi-pencil-fill me-1 small"></i>Edit</span>
                                 </div>
                             </div>
                             <div class="col">
+                                <div>
+                                    <span class="text-muted me-2">Status:</span>
+                                    <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                </div>
                                 <div>
                                     <span class="text-muted me-2">Office:</span>
                                     <span>{item.office.short_name}</span>
@@ -176,14 +183,14 @@
                                     <span>{item.creator.user.full_name_2}</span>
                                 </div>
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <button
                                     class="btn btn-sm btn-outline-primary px-3"
                                     onclick={() => {
                                         goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
                                     }}>Edit</button
                                 >
-                            </div>
+                            </div> -->
                         </div>
                     </Table>
                 {/if}

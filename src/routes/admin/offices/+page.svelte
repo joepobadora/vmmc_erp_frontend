@@ -8,6 +8,7 @@
 
     let loadingData = $state('false');
     let offices = $state([]);
+    let hoveredRow = $state(null);
 
     let tablePage = $state(page.url.searchParams.get('page') || 1);
 
@@ -83,7 +84,10 @@
                     </div>
                 {:else}
                     <Table data={offices} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
-                        <div slot="row" let:item class="row border-bottom custom-row small">
+                        <div slot="row" let:item class="row border-bottom custom-row small"
+                        onmouseenter={() => hoveredRow = item.id}
+                        onmouseleave={() => hoveredRow = null}
+                        >
                             <div class="col">
                                 <div>
                                     <span class="text-muted me-2">Office:</span>
@@ -98,15 +102,23 @@
                                     <span class="text-muted me-2">Status:</span>
                                     <span class="badge bg-{item.is_active == 1 ? 'success' : 'danger'}">{item.is_active == 1 ? 'Active' : 'Inactive'}</span>
                                 </div>
+                               <div class={hoveredRow == item.id ? 'visible' : 'invisible'}>
+                                <span class="text-info custom-link"
+                                onclick={() => {
+                                        goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                    }}
+                                ><i class="bi bi-pencil-fill me-1 small"></i>Edit</span>
+                                </div>
+                                
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <button
                                     class="btn btn-sm btn-outline-primary px-3"
                                     onclick={() => {
                                         goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
                                     }}>Edit</button
                                 >
-                            </div>
+                            </div> -->
                         </div>
                     </Table>
                 {/if}
