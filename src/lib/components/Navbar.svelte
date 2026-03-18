@@ -54,8 +54,8 @@
 </script>
 
 <!-- Navbar -->
- <div class="bg-primary p-3 pb-2 shadow-sm">
-    <j.Row mb=0>
+<div class="bg-primary p-3 pb-2 shadow-sm">
+    <j.Row mb="0">
         <j.Col>
             <a href={titleRoute} class="text-decoration-none"><h5 class="text-light fw-normal">{title}</h5></a>
         </j.Col>
@@ -93,7 +93,7 @@
             </div>
         </j.Col>
     </j.Row>
- </div>
+</div>
 
 <!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" data-bs-backdrop="static">
