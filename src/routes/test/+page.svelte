@@ -3,16 +3,23 @@
 
     let showAuth = $state(false);
 
-    function launchAuth() {
-        showAuth = true;
+    function handleResult(result) {
+        showAuth = false;
     }
+
     function handleClose() {
-        showAuth = false; // parent updates its state
+        showAuth = false;
     }
 </script>
 
 <div class="container">
-    <button onclick={launchAuth}>launch</button>
+    <button
+        onclick={() => {
+            showAuth = true;
+        }}>launch</button
+    >
 </div>
 
-<Auth show={showAuth} close={handleClose} />
+{#if showAuth}
+    <Auth authResult={handleResult} close={handleClose} />
+{/if}
