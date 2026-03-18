@@ -101,7 +101,14 @@
                         <div class="row mb-3">
                             <div class="col-12 col-md-6">
                                 <label for="username" class="form-label small">Tag<span class="ms-1 text-danger">*</span></label>
-                                <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="username" placeholder="Document tag" />
+                                <input
+                                    bind:value={name}
+                                    oninput={(e) => (name = e.target.value.toUpperCase())}
+                                    type="text"
+                                    class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}"
+                                    id="username"
+                                    placeholder="Document tag"
+                                />
                                 <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
                             </div>
                             <div class="col-12 col-md-6">

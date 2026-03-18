@@ -95,23 +95,23 @@
                                     >
                                 </div>
                                 <div>
-                                    <span class="text-muted me-2">Status:</span>
-                                    <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                    <span
+                                        class="text-info custom-link"
+                                        onclick={() => {
+                                            goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                        }}>Edit</span
+                                    >
                                 </div>
                             </div>
                             <div class="col">
                                 <div>
+                                    <span class="text-muted me-2">Status:</span>
+                                    <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div>
                                     <span class="text-muted me-2">Office:</span>
                                     <span>{item.office.short_name}</span>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <button
-                                    class="btn btn-sm btn-outline-primary px-3"
-                                    onclick={() => {
-                                        goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
-                                    }}>Edit</button
-                                >
                             </div>
                         </div>
                     </Table>

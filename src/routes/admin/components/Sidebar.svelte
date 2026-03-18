@@ -12,13 +12,14 @@
     ];
 
     function handleClick(linkHref) {
-        if ($page.url.pathname.startsWith(linkHref)) {
-            // Clicked current page → full reload
-            window.location.href = linkHref;
-        } else {
-            // Navigate SPA style
-            goto(linkHref);
-        }
+        // if ($page.url.pathname.startsWith(linkHref)) {
+        //     // Clicked current page → full reload
+        //     window.location.href = linkHref;
+        // } else {
+        //     // Navigate SPA style
+        //     goto(linkHref);
+        // }
+        goto(linkHref);
     }
 </script>
 

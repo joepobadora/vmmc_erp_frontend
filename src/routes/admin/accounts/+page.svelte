@@ -3,7 +3,6 @@
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
     let { data } = $props();
@@ -156,11 +155,12 @@
                                     <span>{item.username}</span>
                                 </div>
                                 <div>
-                                <span class="text-info custom-link"
-                                onclick={() => {
-                                        goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
-                                    }}
-                                ><i class="bi bi-pencil-fill me-1 small"></i>Edit</span>
+                                    <span
+                                        class="text-info custom-link"
+                                        onclick={() => {
+                                            goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                        }}>Edit</span
+                                    >
                                 </div>
                             </div>
                             <div class="col">

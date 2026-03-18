@@ -1,6 +1,5 @@
 <!-- +page.svelte -->
 <script>
-    import TreeView from './TreeView.svelte';
     import { page } from '$app/stores';
 </script>
 
