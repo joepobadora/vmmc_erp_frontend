@@ -182,15 +182,7 @@
     <j.RowCol>
         <label for="password" class="form-label small">Office</label>
         <div>
-            <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
-                {#if deleting}
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    Deleting...
-                {:else}
-                    <i class="bi bi-x-lg me-2"></i>
-                    Delete Office
-                {/if}
-            </button>
+            <j.Button label="Delete Office" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={deleting} onClick={destroy} />
         </div>
     </j.RowCol>
     <j.RowCol endx>

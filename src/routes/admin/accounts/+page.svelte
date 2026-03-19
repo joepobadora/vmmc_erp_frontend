@@ -87,7 +87,7 @@
         <label for="docmngtMyDocumentsSearchInput" class="small text-muted ms-1">Search</label>
         <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by name or username..." id="docmngtMyDocumentsSearchInput" />
     </j.Col>
-    <j.Col>
+    <j.Col auto>
         <label for="docmngtMyDocumentsDocumentTypeSelect" class="small text-muted ms-1">Office</label>
         <input bind:value={filter.office} list="officeList" class="form-control form-control-sm" placeholder="Type and choose..." id="docmngtMyDocumentsDocumentTypeSelect" />
 

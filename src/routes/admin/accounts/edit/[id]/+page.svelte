@@ -204,14 +204,7 @@
     <j.RowCol>
         <label for="password" class="form-label small">Password</label>
         <div>
-            <button type="button" class="btn btn-primary btn-sm px-3" id="password" onclick={resetPassword}>
-                {#if resetting}
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    Resetting...
-                {:else}
-                    <i class="bi bi-arrow-repeat me-2"></i>Reset password
-                {/if}
-            </button>
+            <j.Button label="Reset password" loadinglabel="Resetting" icon="bi-arrow-repeat" loading={resetting} onClick={resetPassword} />
         </div>
     </j.RowCol>
     <j.Row>
@@ -438,15 +431,7 @@
     <j.RowCol>
         <label for="password" class="form-label small">Account</label>
         <div>
-            <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
-                {#if deleting}
-                    <span class="spinner-border spinner-border-sm me-2"></span>
-                    Deleting...
-                {:else}
-                    <i class="bi bi-x-lg me-2"></i>
-                    Delete Account
-                {/if}
-            </button>
+            <j.Button label="Delete Account" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={deleting} onClick={destroy} />
         </div>
     </j.RowCol>
     <j.RowCol endx>
