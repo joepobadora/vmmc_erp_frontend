@@ -3,7 +3,6 @@
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
     let loadingData = $state('false');
@@ -11,15 +10,35 @@
 
     let tablePage = $state(page.url.searchParams.get('page') || 1);
 
-    onMount(() => {
-        refreshTable();
+    let today = new Date();
+    let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    let filter = $state({
+        start_date: App.Format.date(firstDayOfMonth).toISODate(),
+        end_date: App.Format.date(today).toISODate(),
+        search: null,
+    });
+
+    // debounce and react to filter
+    $effect(() => {
+        filter.start_date;
+        filter.end_date;
+        filter.search;
+
+        const timer = setTimeout(() => {
+            refreshTable();
+        }, 300);
+
+        return () => clearTimeout(timer);
     });
 
     async function refreshTable() {
         loadingData = true;
 
         try {
-            const result = await App.API.get('/admin/audit-logs');
+            const result = await App.API.post('/admin/audit-logs', {
+                filter: filter,
+            });
 
             const data = result.data.data;
 
@@ -33,6 +52,14 @@
         } finally {
             loadingData = false;
         }
+    }
+
+    function resetFilter() {
+        filter = {
+            start_date: App.Format.date(firstDayOfMonth).toISODate(),
+            end_date: App.Format.date(today).toISODate(),
+            search: null,
+        };
     }
 </script>
 
@@ -55,13 +82,13 @@
             <!-- date from -->
             <div class="col-auto">
                 <label for="docmngtMyDocumentsFromDatePicker" class="small text-muted ms-1">Date from</label>
-                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsFromDatePicker" placeholder="YYYY-MM-DD" />
+                <input bind:value={filter.start_date} type="date" class="form-control form-control-sm" id="docmngtMyDocumentsFromDatePicker" placeholder="YYYY-MM-DD" />
             </div>
 
             <!-- date to -->
             <div class="col-auto">
                 <label for="docmngtMyDocumentsToDatePicker" class="small text-muted ms-1">Date to</label>
-                <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsToDatePicker" placeholder="YYYY-MM-DD" />
+                <input bind:value={filter.end_date} type="date" class="form-control form-control-sm" id="docmngtMyDocumentsToDatePicker" placeholder="YYYY-MM-DD" />
             </div>
 
             <!-- search -->
@@ -72,18 +99,18 @@
                     </div>
                     <div class="col-auto">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="checkDefault" />
+                            <input class="form-check-input" type="checkbox" id="checkDefault" />
                             <label class="form-check-label small text-muted" for="checkDefault">Advanced search</label>
                             <i title="This will include changed database 'values' in your query." class="bi bi-question-circle-fill ms-1 text-primary"></i>
                         </div>
                     </div>
                 </div>
-                <input type="text" class="form-control form-control-sm" placeholder="Search by name..." id="docmngtMyDocumentsSearchInput" />
+                <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by name..." id="docmngtMyDocumentsSearchInput" />
             </div>
 
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button onclick={resetFilter} type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
