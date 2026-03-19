@@ -5,7 +5,17 @@
     import z from 'zod';
     import j from '$lib/components/helper';
 
-    let { handler = () => null, warning = 'You forgot a warning message.', visibility = $bindable(false) } = $props();
+    let { me = $bindable(), warning = '78675cc176081372c43abab3ea9fb70c74381eb02dc6e93fb6d44d161da6eeb3' } = $props();
+
+    me = {
+        confirm: () => {
+            show = true;
+            return new Promise((resolve) => (resolver = resolve));
+        },
+    };
+
+    let show = $state(false);
+    let resolver = $state(null);
 
     let password = $state('');
     let passIcon = $state('bi-eye-slash-fill');
@@ -47,9 +57,9 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    handler(true);
-                    visibility = false;
-                    Alert.show('success', 'Authentication success.', result.data.success_code);
+                    resolver(true);
+                    show = false;
+                    // Alert.show('success', 'Authentication success.', result.data.success_code);
                 }, 600);
             } else {
                 Alert.show('error', 'Authentication failed.', result.data.error_code);
@@ -73,7 +83,8 @@
 
     // simulate onmount
     $effect(() => {
-        if (visibility == true) {
+        if (show == true) {
+            errors = {};
             passType = 'password';
             password = '';
             passInput.focus();
@@ -81,7 +92,7 @@
     });
 </script>
 
-{#if visibility == true}
+{#if show == true}
     <!-- Auth Modal -->
     <div class="modal fade show d-block" id="logoutModal" data-bs-backdrop="static" transition:fly={{ y: -200, duration: 450 }}>
         <div class="modal-dialog modal-dialog-centered">
@@ -93,7 +104,8 @@
                                 type="button"
                                 class="btn-close btn-sm"
                                 onclick={() => {
-                                    visibility = false;
+                                    resolver(false);
+                                    show = false;
                                 }}
                             ></button>
                         </j.Col>

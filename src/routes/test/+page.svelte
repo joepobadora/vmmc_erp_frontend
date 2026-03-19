@@ -1,18 +1,10 @@
 <script>
-    import Auth from '../../lib/components/Auth.svelte';
+    import Auth from '$lib/components/Auth.svelte';
 
-    let auth = $state({
-        show: false,
-        resolver: null,
-        handler: (result) => auth.resolver(result),
-        launch: () => {
-            auth.show = true;
-            return new Promise((resolve) => (auth.resolver = resolve));
-        },
-    });
+    let auth = $state();
 
     async function doSomething() {
-        const confirmed = await auth.launch();
+        const confirmed = await auth.confirm();
 
         if (confirmed) {
             console.log('User confirmed:', confirmed);
@@ -26,4 +18,4 @@
     <button onclick={doSomething}>launch</button>
 </div>
 
-<Auth bind:visibility={auth.show} handler={auth.handler} />
+<Auth bind:me={auth} />

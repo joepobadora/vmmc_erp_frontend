@@ -4,6 +4,9 @@
     import { Alert } from '$lib/stores/alert';
     import z from 'zod';
     import { page } from '$app/state';
+    import Auth from '$lib/components/Auth.svelte';
+
+    let auth = $state();
 
     let name = $state('');
     let status = $state(true);
@@ -30,6 +33,11 @@
 
         // update personal information
         try {
+            // password auth
+            if ((await auth.confirm()) == false) {
+                return;
+            }
+
             // udpate button state
             saving = true;
 
@@ -55,6 +63,8 @@
         }
     }
 </script>
+
+<Auth bind:me={auth} />
 
 <div class="row">
     <div class="col">
@@ -91,10 +101,11 @@
                                     bind:value={name}
                                     oninput={(e) => (name = e.target.value.toUpperCase())}
                                     type="text"
-                                    class="form-control form-control-sm"
+                                    class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}"
                                     id="password"
                                     placeholder="Document type"
                                 />
+                                <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
                             </div>
                         </div>
                         <div class="row mb-4">
