@@ -34,9 +34,7 @@
         // update personal information
         try {
             // password auth
-            if ((await auth.confirm()) == false) {
-                return;
-            }
+            if (!(await auth.confirm())) return;
 
             // udpate button state
             saving = true;

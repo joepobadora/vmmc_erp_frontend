@@ -1,8 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import App from '$lib/assets/js/bootstrap';
-    import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper/index.js';
 
     let { data } = $props();
@@ -115,78 +113,76 @@
             </select>
         </j.Col>
     </j.Row>
-    <j.Row>
-        <j.Col>
-            <label for="modules" class="form-label small">Modules</label>
-            <table class="table" id="modules">
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="small"><i class="bi {modules.DEX0 == true ? checked : unchecked} me-2"></i>DEx</div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.DEX1 == true ? checked : unchecked} me-2"></i>Documents</div>
-                            <div class="small"><i class="bi {modules.DEX4 == true ? checked : unchecked} me-2"></i>Archive</div>
-                            <div class="small"><i class="bi {modules.DEX9 == true ? checked : unchecked} me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.DEX2 == true ? checked : unchecked} me-2"></i>Reference Copies</div>
-                            <div class="small"><i class="bi {modules.DEX6 == true ? checked : unchecked} me-2"></i>Incoming <span class="fst-italic">(Tracker)</span></div>
-                            <div class="small"><i class="bi {modules.DEX10 == true ? checked : unchecked} me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.DEX3 == true ? checked : unchecked} me-2"></i>Drafts</div>
-                            <div class="small"><i class="bi {modules.DEX7 == true ? checked : unchecked} me-2"></i>Inbox <span class="fst-italic">(Tracker)</span></div>
-                            <div class="small"><i class="bi {modules.DEX11 == true ? checked : unchecked} me-2"></i>Archive <span class="fst-italic">(Tracker)</span></div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.DEX5 == true ? checked : unchecked} me-2"></i>Trash</div>
-                            <div class="small"><i class="bi {modules.DEX8 == true ? checked : unchecked} me-2"></i>Outgoing <span class="fst-italic">(Tracker)</span></div>
-                            <div class="small"><i class="bi {modules.DEX12 == true ? checked : unchecked} me-2"></i>Trash <span class="fst-italic">(Tracker)</span></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="small"><i class="bi {modules.SEND0 == true ? checked : unchecked} me-2"></i>SendIt</div>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="small"><i class="bi {modules.FORMS0 == true ? checked : unchecked} me-2"></i>FormsHub</div>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="small"><i class="bi {modules.ADMIN0 == true ? checked : unchecked} me-2"></i>Admin Console</div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.ADMIN1 == true ? checked : unchecked} me-2"></i>Accounts</div>
-                            <div class="small"><i class="bi {modules.ADMIN5 == true ? checked : unchecked} me-2"></i>Document Tags</div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.ADMIN2 == true ? checked : unchecked} me-2"></i>Roles</div>
-                            <div class="small"><i class="bi {modules.ADMIN6 == true ? checked : unchecked} me-2"></i>Audit Trail</div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.ADMIN3 == true ? checked : unchecked} me-2"></i>Offices</div>
-                        </td>
-                        <td>
-                            <div class="small"><i class="bi {modules.ADMIN4 == true ? checked : unchecked} me-2"></i>Document Types</div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </j.Col>
-    </j.Row>
-    <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
+    <j.RowCol>
+        <label for="modules" class="form-label small">Modules</label>
+        <table class="table" id="modules">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="small"><i class="bi {modules.DEX0 == true ? checked : unchecked} me-2"></i>DEx</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.DEX1 == true ? checked : unchecked} me-2"></i>Documents</div>
+                        <div class="small"><i class="bi {modules.DEX4 == true ? checked : unchecked} me-2"></i>Archive</div>
+                        <div class="small"><i class="bi {modules.DEX9 == true ? checked : unchecked} me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.DEX2 == true ? checked : unchecked} me-2"></i>Reference Copies</div>
+                        <div class="small"><i class="bi {modules.DEX6 == true ? checked : unchecked} me-2"></i>Incoming <span class="fst-italic">(Tracker)</span></div>
+                        <div class="small"><i class="bi {modules.DEX10 == true ? checked : unchecked} me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.DEX3 == true ? checked : unchecked} me-2"></i>Drafts</div>
+                        <div class="small"><i class="bi {modules.DEX7 == true ? checked : unchecked} me-2"></i>Inbox <span class="fst-italic">(Tracker)</span></div>
+                        <div class="small"><i class="bi {modules.DEX11 == true ? checked : unchecked} me-2"></i>Archive <span class="fst-italic">(Tracker)</span></div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.DEX5 == true ? checked : unchecked} me-2"></i>Trash</div>
+                        <div class="small"><i class="bi {modules.DEX8 == true ? checked : unchecked} me-2"></i>Outgoing <span class="fst-italic">(Tracker)</span></div>
+                        <div class="small"><i class="bi {modules.DEX12 == true ? checked : unchecked} me-2"></i>Trash <span class="fst-italic">(Tracker)</span></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="small"><i class="bi {modules.SEND0 == true ? checked : unchecked} me-2"></i>SendIt</div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="small"><i class="bi {modules.FORMS0 == true ? checked : unchecked} me-2"></i>FormsHub</div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="small"><i class="bi {modules.ADMIN0 == true ? checked : unchecked} me-2"></i>Admin Console</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.ADMIN1 == true ? checked : unchecked} me-2"></i>Accounts</div>
+                        <div class="small"><i class="bi {modules.ADMIN5 == true ? checked : unchecked} me-2"></i>Document Tags</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.ADMIN2 == true ? checked : unchecked} me-2"></i>Roles</div>
+                        <div class="small"><i class="bi {modules.ADMIN6 == true ? checked : unchecked} me-2"></i>Audit Trail</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.ADMIN3 == true ? checked : unchecked} me-2"></i>Offices</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {modules.ADMIN4 == true ? checked : unchecked} me-2"></i>Document Types</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </j.RowCol>
+    <j.RowCol endx>
         <button
             type="button"
             class="btn btn-primary btn-sm px-3"
@@ -194,5 +190,5 @@
                 goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
             }}>Okay</button
         >
-    </div>
+    </j.RowCol>
 </j.Card>

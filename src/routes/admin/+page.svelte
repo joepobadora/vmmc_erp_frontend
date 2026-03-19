@@ -1,6 +1,7 @@
 <script>
     import App from '$lib/assets/js/bootstrap';
     import { onDestroy, onMount } from 'svelte';
+    import j from '$lib/components/helper';
 
     let { data } = $props();
 
@@ -80,134 +81,124 @@
     });
 </script>
 
-<div class="row">
-    <div class="col">
-        <div class="row mb-4">
-            <div class="col">
-                <div class="d-flex justify-content-between">
-                    <h5>Admin Dashboard</h5>
-                    <div>
-                        <span class="small me-2">Live Updates: </span>
-                        {#if connected}
-                            <span class="small badge bg-success">Connected</span>
-                        {:else}
-                            <span class="small badge bg-danger">Reconnecting...</span>
-                        {/if}
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="small text-muted">Quick create:</span>
-                    <a href="/admin/accounts/create" class="small">+ Account</a>
-                    <a href="/admin/roles/add" class="small">+ Roles</a>
-                    <a href="/admin/offices/add" class="small">+ Offices</a>
-                    <a href="/admin/document-types/add" class="small">+ Document Types</a>
-                    <a href="/admin/document-tags/add" class="small">+ Document Tags</a>
-                </div>
+<j.Row endy>
+    <j.Col>
+        <h5>Admin Dashboard</h5>
+        <div>
+            <span class="small me-2">Live Updates: </span>
+            {#if connected}
+                <span class="small badge bg-success">Connected</span>
+            {:else}
+                <span class="small badge bg-danger">Reconnecting...</span>
+            {/if}
+        </div>
+    </j.Col>
+    <j.Col auto>
+        <span class="small text-muted">Quick create:</span>
+        <a href="/admin/accounts/create" class="small">+ Account</a>
+        <a href="/admin/roles/add" class="small">+ Roles</a>
+        <a href="/admin/offices/add" class="small">+ Offices</a>
+        <a href="/admin/document-types/add" class="small">+ Document Types</a>
+        <a href="/admin/document-tags/add" class="small">+ Document Tags</a>
+    </j.Col>
+</j.Row>
+<hr class="text-muted" />
+<j.RowCol>
+    <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-people me-2"></i>Accounts</span>
+            <h3>{accountsTotal}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{accountsActive} Active</span>
             </div>
         </div>
-
-        <hr />
-        <div class="row mb-4">
-            <div class="col">
-                <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
-                    <div class="stat-card bg-white shadow-sm p-3">
-                        <span class="small text-muted"><i class="bi bi-people me-2"></i>Accounts</span>
-                        <h3>{accountsTotal}</h3>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{accountsActive} Active</span>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white shadow-sm p-3">
-                        <span class="small text-muted"><i class="bi bi-shield-lock me-2"></i>Roles</span>
-                        <h3>{rolesTotal}</h3>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{rolesActive} Active</span>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white shadow-sm p-3">
-                        <span class="small text-muted"><i class="bi bi-geo-alt me-2"></i>Offices</span>
-                        <h3>{officesTotal}</h3>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{officesActive} Active</span>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white shadow-sm p-3">
-                        <span class="small text-muted"><i class="bi bi-file-earmark-code me-2"></i>Document Types</span>
-                        <h3>{docTypesTotal}</h3>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{docTypesActive} Active</span>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white shadow-sm p-3">
-                        <span class="small text-muted"><i class="bi bi-tags me-2"></i>Document Tags</span>
-                        <h3>{docTagsTotal}</h3>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{docTagsActive} Active</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-shield-lock me-2"></i>Roles</span>
+            <h3>{rolesTotal}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{rolesActive} Active</span>
             </div>
         </div>
-
-        <div class="row mb-4">
-            <div class="col-12 col-sm-8">
-                <div class="bg-white p-3">
-                    <div class="d-flex justify-content-between">
-                        <h5>System Activity</h5>
-                        <a href="/admin/audit-trail" class="small">View more</a>
-                    </div>
-                    <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
-                        <li class="list-group-item">
-                            <div class="d-flex">
-                                <span class="text-muted small me-auto">Timestamp</span>
-                                <span class="text-muted small">Actor</span>
-                            </div>
-                        </li>
-                        {#each systemActivity as activity}
-                            <li class="list-group-item">
-                                <div class="d-flex">
-                                    <span class="text-danger me-auto">{App.Format.date(activity.created_at).toDatetime()}</span>
-                                    <span class="me-2"
-                                        >{(() => {
-                                            const id = (activity.api_endpoint.match(/\/(\d+)$/) || [])[1];
-                                            return activity.details + (id ? ': ' + id : '');
-                                        })()}</span
-                                    >
-                                    <span class="mx-2 text-muted">/</span>
-                                    <span>{activity.full_name_2}</span>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-geo-alt me-2"></i>Offices</span>
+            <h3>{officesTotal}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{officesActive} Active</span>
             </div>
-            <div class="col-12 col-sm-4">
-                <div class="bg-white p-3">
-                    <div class="d-flex justify-content-between">
-                        <h5>Active Users</h5>
-                        <a href="/admin/audit-trail" class="small">View more</a>
-                    </div>
-                    <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
-                        <li class="list-group-item">
-                            <div class="d-flex">
-                                <span class="text-muted small me-auto">Last Seen</span>
-                                <span class="text-muted small">User</span>
-                            </div>
-                        </li>
-                        {#each activeUsers as user}
-                            <li class="list-group-item">
-                                <div class="d-flex">
-                                    <span class="me-auto">{App.Format.date(user.last_seen).toDatetime()}</span>
-                                    <span>{user.account.user.full_name_2}</span>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
+        </div>
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-file-earmark-code me-2"></i>Document Types</span>
+            <h3>{docTypesTotal}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{docTypesActive} Active</span>
+            </div>
+        </div>
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-tags me-2"></i>Document Tags</span>
+            <h3>{docTagsTotal}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>{docTagsActive} Active</span>
             </div>
         </div>
     </div>
-</div>
+</j.RowCol>
+<j.Row>
+    <j.Col span="8">
+        <div class="bg-white p-3">
+            <div class="d-flex justify-content-between">
+                <h5>System Activity</h5>
+                <a href="/admin/audit-trail" class="small">View more</a>
+            </div>
+            <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
+                <li class="list-group-item">
+                    <div class="d-flex">
+                        <span class="text-muted small me-auto">Timestamp</span>
+                        <span class="text-muted small">Actor</span>
+                    </div>
+                </li>
+                {#each systemActivity as activity}
+                    <li class="list-group-item">
+                        <div class="d-flex">
+                            <span class="text-danger me-auto">{App.Format.date(activity.created_at).toDatetime()}</span>
+                            <span class="me-2"
+                                >{(() => {
+                                    const id = (activity.api_endpoint.match(/\/(\d+)$/) || [])[1];
+                                    return activity.details + (id ? ': ' + id : '');
+                                })()}</span
+                            >
+                            <span class="mx-2 text-muted">/</span>
+                            <span>{activity.full_name_2}</span>
+                        </div>
+                    </li>
+                {/each}
+            </ul>
+        </div>
+    </j.Col>
+    <j.Col span="4">
+        <div class="bg-white p-3">
+            <div class="d-flex justify-content-between">
+                <h5>Active Users</h5>
+                <a href="/admin/audit-trail" class="small">View more</a>
+            </div>
+            <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
+                <li class="list-group-item">
+                    <div class="d-flex">
+                        <span class="text-muted small me-auto">Last Seen</span>
+                        <span class="text-muted small">User</span>
+                    </div>
+                </li>
+                {#each activeUsers as user}
+                    <li class="list-group-item">
+                        <div class="d-flex">
+                            <span class="me-auto">{App.Format.date(user.last_seen).toDatetime()}</span>
+                            <span>{user.account.user.full_name_2}</span>
+                        </div>
+                    </li>
+                {/each}
+            </ul>
+        </div>
+    </j.Col>
+</j.Row>
 
 <style>
     .stat-card {

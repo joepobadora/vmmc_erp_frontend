@@ -5,6 +5,9 @@
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
     import z from 'zod';
+    import Auth from '$lib/components/Auth.svelte';
+
+    let auth = $state();
 
     let { data } = $props();
 
@@ -149,6 +152,9 @@
 
         // update personal information
         try {
+            // password auth
+            if (!(await auth.confirm())) return;
+
             // udpate button state
             updatingPersonalInfo = true;
 
@@ -179,6 +185,8 @@
         }
     }
 </script>
+
+<Auth bind:me={auth} warning="You are about to update your settings." />
 
 <j.Row centerx>
     <j.Col span="8">
@@ -223,11 +231,9 @@
                     <p class="text-danger small mb-auto {errors.confirmNewPassword ? '' : 'd-none'}">{errors.confirmNewPassword?.[0]}</p>
                 </j.Col>
             </j.Row>
-            <j.Row endx>
-                <j.Col auto>
-                    <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingAccount} onClick={updateAccount} />
-                </j.Col>
-            </j.Row>
+            <j.RowCol endx>
+                <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingAccount} onClick={updateAccount} />
+            </j.RowCol>
         </j.Card>
 
         <!-- personal information -->
@@ -285,11 +291,9 @@
                     <p class="text-danger small mb-auto {errors.birthdate ? '' : 'd-none'}">{errors.birthdate?.[0]}</p>
                 </j.Col>
             </j.Row>
-            <j.Row endx>
-                <j.Col auto>
-                    <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingPersonalInfo} onClick={updatePersonalInfo} />
-                </j.Col>
-            </j.Row>
+            <j.RowCol endx>
+                <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingPersonalInfo} onClick={updatePersonalInfo} />
+            </j.RowCol>
         </j.Card>
 
         <!-- signature -->
@@ -298,22 +302,18 @@
                 <h5>Signature</h5>
                 <p class="small">Set your official signature details as they will appear on documents and records that require your authorization.</p>
             </j.RowCol>
-            <j.Row centerx>
-                <j.Col auto>
-                    {#if loadingSignatureImage}
-                        <div class="d-flex justify-content-center align-items-center border border-secondary-subtle" style="width: 300px; height: 200px;">
-                            <div class="spinner-border text-secondary"></div>
-                        </div>
-                    {:else}
-                        <img src={imgSrc} alt="" width="300" height="200" class="border border-secondary-subtle" />
-                    {/if}
-                </j.Col>
-            </j.Row>
-            <j.Row endx>
-                <j.Col auto>
-                    <j.Button label="Open Sign Pad" variant="outline-primary" icon="bi-box-arrow-up-right" href="/settings/sign-pad" />
-                </j.Col>
-            </j.Row>
+            <j.RowCol centerx>
+                {#if loadingSignatureImage}
+                    <div class="d-flex justify-content-center align-items-center border border-secondary-subtle" style="width: 300px; height: 200px;">
+                        <div class="spinner-border text-secondary"></div>
+                    </div>
+                {:else}
+                    <img src={imgSrc} alt="signature" width="300" height="200" class="border border-secondary-subtle" />
+                {/if}
+            </j.RowCol>
+            <j.RowCol endx>
+                <j.Button label="Open Sign Pad" variant="outline-primary" icon="bi-box-arrow-up-right" href="/settings/sign-pad" />
+            </j.RowCol>
         </j.Card>
     </j.Col>
 </j.Row>

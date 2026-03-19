@@ -18,7 +18,7 @@
 </script>
 
 <div class={`row mb-${mb} ${justify} ${align}`}>
-    <div class="col">
+    <div class={justify == '' ? 'col' : 'col-auto'}>
         {@render children?.()}
     </div>
 </div>

@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import j from '$lib/components/helper';
 
     let year = $state('');
 
@@ -11,13 +12,15 @@
 
 <div class="border-top pt-3 my-5 text-muted small">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 d-flex align-items-center">©&nbsp<span bind:innerText={year} contenteditable=""></span>&nbspVeterans Memorial Medical Center • Developed by IMISS</div>
-            <div class="col-md-6 d-flex justify-content-md-end mt-2 mt-md-0">
+        <j.Row>
+            <j.Col>
+                ©&nbsp<span bind:innerText={year} contenteditable=""></span>&nbspVeterans Memorial Medical Center • Developed by IMISS
+            </j.Col>
+            <j.Col auto>
                 <a href="https://privacy.gov.ph/data-privacy-act/" target="_blank" class="custom-link me-3"><i class="bi bi-shield-lock"></i> Data Privacy</a>
                 <a href="https://vmmc.gov.ph/" target="_blank" class="custom-link me-3"><i class="bi bi-globe"></i> Website</a>
                 <a href="https://www.facebook.com/vmmc.miso/" target="_blank" class="custom-link me-3"><i class="bi bi-facebook"></i> Facebook - @IMISS</a>
-            </div>
-        </div>
+            </j.Col>
+        </j.Row>
     </div>
 </div>

@@ -3,8 +3,11 @@
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
     import z from 'zod';
+    import j from '$lib/components/helper';
+    import Auth from '$lib/components/Auth.svelte';
+
+    let auth = $state();
 
     let { data } = $props();
 
@@ -41,6 +44,9 @@
 
         // update personal information
         try {
+            // password auth
+            if (!(await auth.confirm())) return;
+
             // udpate button state
             saving = true;
 
@@ -71,6 +77,9 @@
 
     async function destroy() {
         try {
+            // password auth
+            if (!(await auth.confirm())) return;
+
             // udpate button state
             deleting = true;
 
@@ -94,128 +103,106 @@
     }
 </script>
 
-<div class="row">
-    <div class="col">
-        <!-- controls -->
-        <div class="row mb-4">
-            <!-- breadcrumbs -->
-            <div class="col">
-                <nav style="--bs-breadcrumb-divider: '>';">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-                        <li class="breadcrumb-item small"><a href="/admin/offices?page={page.url.searchParams.get('page')}">Offices</a></li>
-                        <li class="breadcrumb-item small active">Edit</li>
-                    </ol>
-                </nav>
-            </div>
+<Auth bind:me={auth} warning="You are about to update an office." />
+
+<j.RowCol>
+    <nav style="--bs-breadcrumb-divider: '>';">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
+            <li class="breadcrumb-item small"><a href="/admin/offices?page={page.url.searchParams.get('page')}">Offices</a></li>
+            <li class="breadcrumb-item small active">Edit</li>
+        </ol>
+    </nav>
+</j.RowCol>
+
+<j.Card>
+    <j.RowCol>
+        <h5>Edit office</h5>
+        <p class="small text-muted">
+            A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
+        </p>
+    </j.RowCol>
+    <hr class="text-muted" />
+    <h5>Office</h5>
+    <j.Row>
+        <j.Col span="6">
+            <label for="password" class="form-label small">Division<span class="ms-1 text-danger">*</span></label>
+            <input
+                bind:value={division}
+                oninput={(e) => (division = e.target.value.toUpperCase())}
+                type="text"
+                class="form-control form-control-sm {errors.division ? 'is-invalid' : ''}"
+                id="password"
+                placeholder="Division"
+            />
+            <p class="text-danger small mb-auto {errors.division ? '' : 'd-none'}">{errors.division?.[0]}</p>
+        </j.Col>
+    </j.Row>
+    <j.Row>
+        <j.Col span="6">
+            <label for="username" class="form-label small">Department<span class="ms-1 text-danger">*</span></label>
+            <input
+                bind:value={department}
+                oninput={(e) => (department = e.target.value.toUpperCase())}
+                type="text"
+                class="form-control form-control-sm {errors.department ? 'is-invalid' : ''}"
+                id="username"
+                placeholder="Department"
+            />
+            <p class="text-danger small mb-auto {errors.department ? '' : 'd-none'}">{errors.department?.[0]}</p>
+        </j.Col>
+        <j.Col span="3">
+            <label for="confirmPassword" class="form-label small">Dept. Abbreviation<span class="ms-1 text-danger">*</span></label>
+            <input
+                bind:value={abbreviation}
+                oninput={(e) => (abbreviation = e.target.value.toUpperCase())}
+                type="text"
+                class="form-control form-control-sm {errors.abbreviation ? 'is-invalid' : ''}"
+                id="confirmPassword"
+                placeholder="Abbreviation"
+            />
+            <p class="text-danger small mb-auto {errors.abbreviation ? '' : 'd-none'}">{errors.abbreviation?.[0]}</p>
+        </j.Col>
+    </j.Row>
+    <j.Row>
+        <j.Col span="6">
+            <label for="office" class="form-label small">Office</label>
+            <input bind:value={office} oninput={(e) => (office = e.target.value.toUpperCase())} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
+        </j.Col>
+    </j.Row>
+    <j.RowCol>
+        <label for="status" class="form-label small">Status</label>
+        <div class="form-check form-switch">
+            <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
+            <label class="form-check-label small" for="status">Active</label>
         </div>
-        <div class="row">
-            <div class="col">
-                <!-- account -->
-                <div class="card shadow-sm border-0 p-2 mb-4">
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <h5>Edit office</h5>
-                            <p class="small text-muted">
-                                A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
-                            </p>
-                        </div>
-                        <hr class="text-muted" />
-                        <h5>Office</h5>
-                        <div class="row mb-3">
-                            <div class="col-12 col-sm-6">
-                                <label for="password" class="form-label small">Division<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={division}
-                                    oninput={(e) => (division = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.division ? 'is-invalid' : ''}"
-                                    id="password"
-                                    placeholder="Division"
-                                />
-                                <p class="text-danger small mb-auto {errors.division ? '' : 'd-none'}">{errors.division?.[0]}</p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-12 col-md-6">
-                                <label for="username" class="form-label small">Department<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={department}
-                                    oninput={(e) => (department = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.department ? 'is-invalid' : ''}"
-                                    id="username"
-                                    placeholder="Department"
-                                />
-                                <p class="text-danger small mb-auto {errors.department ? '' : 'd-none'}">{errors.department?.[0]}</p>
-                            </div>
-                            <div class="col-12 col-sm-3">
-                                <label for="confirmPassword" class="form-label small">Dept. Abbreviation<span class="ms-1 text-danger">*</span></label>
-                                <input
-                                    bind:value={abbreviation}
-                                    oninput={(e) => (abbreviation = e.target.value.toUpperCase())}
-                                    type="text"
-                                    class="form-control form-control-sm {errors.abbreviation ? 'is-invalid' : ''}"
-                                    id="confirmPassword"
-                                    placeholder="Abbreviation"
-                                />
-                                <p class="text-danger small mb-auto {errors.abbreviation ? '' : 'd-none'}">{errors.abbreviation?.[0]}</p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-12 col-md-6">
-                                <label for="office" class="form-label small">Office</label>
-                                <input bind:value={office} oninput={(e) => (office = e.target.value.toUpperCase())} type="text" class="form-control form-control-sm" id="office" placeholder="Office" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-12 col-md-6">
-                                <label for="status" class="form-label small">Status</label>
-                                <div class="form-check form-switch">
-                                    <input bind:checked={status} class="form-check-input" type="checkbox" id="status" />
-                                    <label class="form-check-label small" for="status">Active</label>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="text-muted" />
-                        <h5>Maintenance</h5>
-                        <div class="row mb-4">
-                            <div class="col">
-                                <label for="password" class="form-label small">Office</label>
-                                <div>
-                                    <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
-                                        {#if deleting}
-                                            <span class="spinner-border spinner-border-sm me-2"></span>
-                                            Deleting...
-                                        {:else}
-                                            <i class="bi bi-x-lg me-2"></i>
-                                            Delete Office
-                                        {/if}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column flex-sm-row justify-content-sm-end">
-                            <button
-                                type="button"
-                                class="btn btn-light border btn-sm px-3 me-3 {saving == true ? 'd-none' : ''}"
-                                onclick={() => {
-                                    goto(`/admin/offices?page=${page.url.searchParams.get('page')}`);
-                                }}>Cancel</button
-                            >
-                            <button onclick={save} disabled={saving} type="button" class="btn btn-primary btn-sm px-3">
-                                {#if saving}
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    Saving...
-                                {:else}
-                                    <i class="bi bi-check-lg me-2"></i>
-                                    Save
-                                {/if}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    </j.RowCol>
+    <hr class="text-muted" />
+    <h5>Maintenance</h5>
+    <j.RowCol>
+        <label for="password" class="form-label small">Office</label>
+        <div>
+            <button onclick={destroy} disabled={deleting} type="button" class="btn btn-danger btn-sm px-3">
+                {#if deleting}
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Deleting...
+                {:else}
+                    <i class="bi bi-x-lg me-2"></i>
+                    Delete Office
+                {/if}
+            </button>
         </div>
-    </div>
-</div>
+    </j.RowCol>
+    <j.RowCol endx>
+        <div class="d-flex gap-2">
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
+                onclick={() => {
+                    goto(`/admin/offices?page=${page.url.searchParams.get('page')}`);
+                }}>Cancel</button
+            >
+            <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+        </div>
+    </j.RowCol>
+</j.Card>

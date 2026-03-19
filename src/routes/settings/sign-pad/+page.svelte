@@ -4,6 +4,9 @@
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import Auth from '$lib/components/Auth.svelte';
+
+    let auth = $state();
 
     let updatingSignature = $state(false);
 
@@ -41,6 +44,9 @@
 
         // update signature
         try {
+            // password auth
+            if (!(await auth.confirm())) return;
+
             updatingSignature = true;
 
             const result = await App.API.post('/settings/signature/update', {
@@ -64,6 +70,8 @@
     }
 </script>
 
+<Auth bind:me={auth} warning="You are about to update your signature." />
+
 <j.Row centerx>
     <j.Col span="8">
         <!-- controls -->
@@ -82,22 +90,28 @@
                 <h5>Signature</h5>
                 <p class="small">Please sign inside the designated area.</p>
             </j.RowCol>
-            <j.Row centerx>
-                <j.Col auto>
-                    <div style="position: relative;">
-                        <div style="position: absolute; top:100px ; pointer-events: none; width: 300px; height: 200px;">
-                            <hr class="mb-0 mx-auto" width="80%;" />
-                            <p class="text-center text-secondary small">( sign here )</p>
-                        </div>
+            <j.RowCol centerx>
+                <div style="position: relative;">
+                    <div style="position: absolute; top:100px ; pointer-events: none; width: 300px; height: 200px;">
+                        <hr class="mb-0 mx-auto" width="80%;" />
+                        <p class="text-center text-secondary small">( sign here )</p>
                     </div>
-                    <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle" bind:this={canvasEl}> </canvas>
-                </j.Col>
-            </j.Row>
-            <j.Row endx>
-                <j.Col auto>
+                </div>
+                <canvas id="myCanvas" width="300" height="200" class="border border-secondary-subtle" bind:this={canvasEl}> </canvas>
+            </j.RowCol>
+            <j.RowCol endx>
+                <div class="d-flex gap-2">
+                    <j.Button label="Clear" variant="light" onClick={clearCanvas} />
+                    <j.Button
+                        label="Cancel"
+                        variant="light"
+                        onClick={() => {
+                            goto('/settings');
+                        }}
+                    />
                     <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={updatingSignature} onClick={updateSignature} />
-                </j.Col>
-            </j.Row>
+                </div>
+            </j.RowCol>
         </j.Card>
     </j.Col>
 </j.Row>
