@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
     import z from 'zod';
     import { page } from '$app/state';
 
