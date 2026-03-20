@@ -25,6 +25,8 @@
 
     let errors = $state({});
 
+    const p = new App.ParamBuilder(page.url.searchParams);
+
     const schema = z.object({
         office: z
             .string()
@@ -74,7 +76,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
+                    goto(`/admin/accounts${p.toString()}`);
                     Alert.show('success', 'Saving success.', result.data.success_code);
                 }, 600);
             } else {
@@ -101,7 +103,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
+                    goto(`/admin/accounts${p.toString()}`);
                     Alert.show('success', 'Resetting success.', result.data.success_code);
                 }, 600);
             } else {
@@ -128,7 +130,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/admin/accounts?page=${page.url.searchParams.get('page')}`);
+                    goto(`/admin/accounts${p.toString()}`);
                     Alert.show('success', 'Deletion success.', result.data.success_code);
                 }, 600);
             } else {
@@ -178,7 +180,7 @@
         <nav style="--bs-breadcrumb-divider: '>';">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-                <li class="breadcrumb-item small"><a href="/admin/accounts?page={page.url.searchParams.get('page')}">Accounts</a></li>
+                <li class="breadcrumb-item small"><a href="/admin/accounts{p.toString()}">Accounts</a></li>
                 <li class="breadcrumb-item small active">Edit</li>
             </ol>
         </nav>
@@ -440,7 +442,7 @@
                 type="button"
                 class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
                 onclick={() => {
-                    goto(`/admin/accounts?page=${Number(page.url.searchParams.get('page'))}`);
+                    goto(`/admin/accounts${p.toString()}`);
                 }}>Cancel</button
             >
             <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />

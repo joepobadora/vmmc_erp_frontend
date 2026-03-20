@@ -19,6 +19,8 @@
 
     let errors = $state({});
 
+    const p = new App.ParamBuilder(page.url.searchParams);
+
     const schema = z.object({
         division: z.string().nonempty('Required.'),
         abbreviation: z.string().nonempty('Required.'),
@@ -57,7 +59,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/admin/offices?page=${page.url.searchParams.get('page')}`);
+                    goto(`/admin/offices${p.toString()}`);
                     Alert.show('success', 'Update success.', result.data.success_code);
                 }, 600);
             } else {
@@ -79,7 +81,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-            <li class="breadcrumb-item small"><a href="/admin/offices?page={page.url.searchParams.get('page')}">Offices</a></li>
+            <li class="breadcrumb-item small"><a href="/admin/offices{p.toString()}">Offices</a></li>
             <li class="breadcrumb-item small active">Add</li>
         </ol>
     </nav>
@@ -153,7 +155,7 @@
                 type="button"
                 class="btn btn-light border btn-sm px-3{saving == true ? 'd-none' : ''}"
                 onclick={() => {
-                    goto(`/admin/offices?page=${page.url.searchParams.get('page')}`);
+                    goto(`/admin/offices${p.toString()}`);
                 }}>Cancel</button
             >
             <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />

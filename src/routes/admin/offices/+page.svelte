@@ -9,11 +9,18 @@
     let loadingData = $state('false');
     let offices = $state([]);
 
-    let tablePage = $state(page.url.searchParams.get('page') || 1);
+    const p = new App.ParamBuilder(page.url.searchParams);
+
+    let tablePage = $state(p.get('page') || 1);
 
     let filter = $state({
-        search: null,
-        status: null,
+        search: p.get('search') || null,
+        status: Boolean(p.get('status')) || null,
+    });
+
+    // react to changes and update params
+    $effect(() => {
+        p.set('page', tablePage).set('search', filter.search).set('office', filter.office).set('status', filter.status).set('role', filter.role);
     });
 
     // debounce and react to filter
@@ -68,7 +75,7 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/add?page=${tablePage}`}><i class="bi bi-plus-lg me-2"></i>Add</a>
+        <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/add${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Add</a>
     </j.Col>
 </j.Row>
 <j.Row endy>
@@ -102,7 +109,7 @@
                         <strong
                             class="custom-link"
                             onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}?page=${tablePage}`);
+                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}>{item.short_name}</strong
                         >
                     </div>
@@ -110,7 +117,7 @@
                         <span
                             class="text-info custom-link"
                             onclick={() => {
-                                goto(page.url.pathname + `/edit/${item.id}?page=${tablePage}`);
+                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
                             }}>Edit</span
                         >
                     </div>

@@ -6,13 +6,15 @@
     import j from '$lib/components/helper';
 
     const { data } = $props();
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 </script>
 
 <j.RowCol>
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-            <li class="breadcrumb-item small"><a href="/admin/audit-trail?page={page.url.searchParams.get('page')}">Audit Trail</a></li>
+            <li class="breadcrumb-item small"><a href="/admin/audit-trail{p.toString()}">Audit Trail</a></li>
             <li class="breadcrumb-item small active">View</li>
         </ol>
     </nav>
@@ -107,7 +109,7 @@
             type="button"
             class="btn btn-primary btn-sm px-3"
             onclick={() => {
-                goto(`/admin/audit-trail?page=${page.url.searchParams.get('page')}`);
+                goto(`/admin/audit-trail${p.toString()}`);
             }}>Okay</button
         >
     </j.RowCol>

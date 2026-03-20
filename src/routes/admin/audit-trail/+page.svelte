@@ -8,15 +8,22 @@
     let loadingData = $state('false');
     let logs = $state([]);
 
-    let tablePage = $state(page.url.searchParams.get('page') || 1);
-
     let today = new Date();
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
+    const p = new App.ParamBuilder(page.url.searchParams);
+
+    let tablePage = $state(p.get('page') || 1);
+
     let filter = $state({
-        start_date: App.Format.date(firstDayOfMonth).toISODate(),
-        end_date: App.Format.date(today).toISODate(),
-        search: null,
+        start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
+        end_date: p.get('end_date') || App.Format.date(today).toISODate(),
+        search: p.get('search') || null,
+    });
+
+    // react to changes and update params
+    $effect(() => {
+        p.set('page', tablePage).set('start_date', filter.start_date).set('end_date', filter.end_date).set('search', filter.search);
     });
 
     // debounce and react to filter
@@ -146,7 +153,7 @@
                                     <span
                                         class="custom-link text-danger"
                                         onclick={() => {
-                                            goto(page.url.pathname + `/view/${item.id}?page=${tablePage}`);
+                                            goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                                         }}>{App.Format.date(item.created_at).toDatetime()}</span
                                     >
                                 </div>

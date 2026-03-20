@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import j from '$lib/components/helper';
+    import App from '$lib/assets/js/bootstrap';
 
     let { data } = $props();
 
@@ -13,6 +14,8 @@
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 </script>
 
 <!-- controls -->
@@ -21,7 +24,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-            <li class="breadcrumb-item small"><a href="/admin/roles?page={page.url.searchParams.get('page')}">Roles</a></li>
+            <li class="breadcrumb-item small"><a href="/admin/roles{p.toString()}">Roles</a></li>
             <li class="breadcrumb-item small active">View</li>
         </ol>
     </nav>
@@ -365,7 +368,7 @@
             type="button"
             class="btn btn-primary btn-sm px-3"
             onclick={() => {
-                goto(`/admin/roles?page=${page.url.searchParams.get('page')}`);
+                goto(`/admin/roles${p.toString()}`);
             }}>Okay</button
         >
     </j.RowCol>

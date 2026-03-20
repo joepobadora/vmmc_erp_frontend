@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import j from '$lib/components/helper';
+    import App from '$lib/assets/js/bootstrap';
 
     let { data } = $props();
 
@@ -10,6 +11,8 @@
     let department = $state(data.department ?? '');
     let office = $state(data.office ?? '');
     let status = $state(data.status ?? false);
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 </script>
 
 <!-- controls -->
@@ -18,7 +21,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/admin">Admin Console</a></li>
-            <li class="breadcrumb-item small"><a href="/admin/offices?page={page.url.searchParams.get('page')}">Offices</a></li>
+            <li class="breadcrumb-item small"><a href="/admin/offices{p.toString()}">Offices</a></li>
             <li class="breadcrumb-item small active">View</li>
         </ol>
     </nav>
@@ -61,7 +64,7 @@
             type="button"
             class="btn btn-primary btn-sm px-3"
             onclick={() => {
-                goto(`/admin/offices?page=${page.url.searchParams.get('page')}`);
+                goto(`/admin/offices${p.toString()}`);
             }}>Okay</button
         >
     </j.RowCol>
