@@ -1,96 +1,52 @@
 <!-- +page.svelte -->
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
+    import j from '$lib/components/helper';
+
+    const sections = [
+        {
+            title: 'Document Manager',
+            links: [
+                { href: '/dex/dms/documents', icon: 'bi-folder', label: 'Documents' },
+                { href: '/dex/dms/reference-copies', icon: 'bi-folder', label: 'Reference Copies' },
+                { href: '/dex/dms/drafts', icon: 'bi-pencil-square', label: 'Drafts' },
+                { href: '/dex/dms/archive', icon: 'bi-archive', label: 'Archive' },
+                { href: '/dex/dms/trash', icon: 'bi-trash', label: 'Trash' },
+            ],
+        },
+        {
+            title: 'Tracker',
+            links: [
+                { href: '/dex/dts/incoming', icon: 'bi-box-arrow-in-down', label: 'Incoming' },
+                { href: '/dex/dts/inbox', icon: 'bi-inbox', label: 'Inbox' },
+                { href: '/dex/dts/outgoing', icon: 'bi-send', label: 'Outgoing' },
+                { href: '/dex/dts/drafts', icon: 'bi-file-earmark-text', label: 'Drafts' },
+                { href: '/dex/dts/broadcast-inbox', icon: 'bi-megaphone', label: 'Broadcast Inbox' },
+                { href: '/dex/dts/archive', icon: 'bi-archive', label: 'Archive' },
+                { href: '/dex/dts/trash', icon: 'bi-trash', label: 'Trash' },
+            ],
+        },
+    ];
 </script>
 
-<div class="row">
-    <div class="col">
-        <div class="accordion accordion-flush border" id="accordionFlushExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                        Document Manager
-                    </button>
-                </h2>
-                <div id="flush-collapseOne" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <div class="list-group list-group-flush">
-                            <a href="/dex/dms/documents" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/documents')}>
-                                <i class="bi bi-folder me-2"></i>Documents
-                            </a>
-
-                            <a href="/dex/dms/reference-copies" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/reference-copies')}>
-                                <i class="bi bi-folder me-2"></i>Reference Copies
-                            </a>
-
-                            <a href="/dex/dms/drafts" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/drafts')}>
-                                <i class="bi bi-pencil-square me-2"></i>Drafts
-                            </a>
-
-                            <a href="/dex/dms/archive" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/archive')}>
-                                <i class="bi bi-archive me-2"></i>Archive
-                            </a>
-
-                            <a href="/dex/dms/trash" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dms/trash')}>
-                                <i class="bi bi-trash me-2"></i>Trash
-                            </a>
-                        </div>
-                    </div>
-                </div>
+<j.Card border noshadow p="0">
+    <div class="list-group list-group-flush">
+        {#each sections as section}
+            <div class="list-group-item small">
+                <strong>{section.title}</strong>
             </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                        Tracker
-                    </button>
-                </h2>
-                <div id="flush-collapseTwo" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <div class="list-group list-group-flush">
-                            <a href="/dex/dts/incoming" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/incoming')}>
-                                <i class="bi bi-box-arrow-in-down me-2"></i>Incoming
-                            </a>
-
-                            <a href="/dex/dts/inbox" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/inbox')}>
-                                <i class="bi bi-inbox me-2"></i>Inbox
-                            </a>
-
-                            <a href="/dex/dts/outgoing" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/outgoing')}>
-                                <i class="bi bi-send me-2"></i>Outgoing
-                            </a>
-
-                            <a href="/dex/dts/drafts" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/drafts')}>
-                                <i class="bi bi-file-earmark-text me-2"></i>Drafts
-                            </a>
-
-                            <a href="/dex/dts/broadcast-inbox" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/broadcast-inbox')}>
-                                <i class="bi bi-megaphone me-2"></i>Broadcast Inbox
-                            </a>
-
-                            <a href="/dex/dts/archive" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/archive')}>
-                                <i class="bi bi-archive me-2"></i>Archive
-                            </a>
-
-                            <a href="/dex/dts/trash" class="list-group-item list-group-item-action" class:active={$page.url.pathname.startsWith('/dex/dts/trash')}>
-                                <i class="bi bi-trash me-2"></i>Trash
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {#each section.links as link}
+                <span onclick={() => goto(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={page.url.pathname.startsWith(link.href)}>
+                    <i class={`bi ${link.icon} me-2`}></i>{link.label}
+                </span>
+            {/each}
+        {/each}
     </div>
-</div>
+</j.Card>
 
 <style>
-    /* Make accordion headers smaller */
-    .accordion-button {
-        font-size: 0.875rem; /* same as btn-sm */
-        padding: 0.5rem 0.75rem; /* same as btn-sm & form-control-sm */
-    }
-    /* Smaller accordion body */
-    .accordion-body {
-        font-size: 0.875rem;
-        padding: 0.75rem 1.25rem;
+    .cursor-pointer {
+        cursor: pointer;
     }
 </style>

@@ -1,7 +1,16 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import Table from '$lib/components/Table.svelte';
+    import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
+    import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
-    import Row from '$lib/components/helper/Row.svelte';
+
+    let { data } = $props();
+
+    let tagList = $state(data.tagList ?? []);
+
+    console.log(tagList);
 </script>
 
 <!-- controls -->
@@ -53,11 +62,13 @@
         </j.RowCol>
     </j.Col>
     <j.Col auto>
-        <label for="docmngtMyDocumentsTagButton" class="small text-muted ms-1">Tags</label>
-        <div>
-            <button type="button" class="btn btn-light border btn-sm px-3" id="docmngtMyDocumentsTagButton" data-bs-toggle="dropdown"><i class="bi bi-chevron-down small"></i></button>
-            <ul class="dropdown-menu dropdown-menu-end" id="docmngtMyDocumentsTagContainer"></ul>
-        </div>
+        <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Tag</label>
+        <select class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+            <option value={null}>All</option>
+            {#each tagList as tag}
+                <option value={tag.id}>{tag.name}</option>
+            {/each}
+        </select>
     </j.Col>
     <j.Col auto>
         <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>

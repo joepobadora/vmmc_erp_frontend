@@ -62,7 +62,7 @@
                 <i class="bi {icon} {!mainte ? 'text-primary' : 'text-secondary'}"></i>
             </div>
             <div>
-                <h6 class={!mainte ? 'text-dark' : 'text-secondary'}>{abbr}</h6>
+                <strong class={!mainte ? 'text-dark' : 'text-secondary'}>{abbr}</strong>
                 <p class="small text-secondary">{name}</p>
             </div>
         </div>

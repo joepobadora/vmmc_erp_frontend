@@ -8,7 +8,7 @@ export async function load() {
 
         if (result.data.success) {
             return {
-                officeList: data.office,
+                officeList: data,
             };
         } else {
             return {

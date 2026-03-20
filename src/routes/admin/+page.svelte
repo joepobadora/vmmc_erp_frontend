@@ -178,7 +178,7 @@
         <div class="bg-white p-3">
             <div class="d-flex justify-content-between">
                 <h5>Active Users</h5>
-                <a href="/admin/audit-trail" class="small">View more</a>
+                <!-- <a href="/admin/audit-trail" class="small">View more</a> -->
             </div>
             <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
                 <li class="list-group-item">
