@@ -15,6 +15,7 @@
 
     let name = $state(data.documentTag.name ?? '');
     let office = $state(data.documentTag.office ?? '');
+    let color = $state(data.documentTag.color ?? '#2980b9');
     let status = $state(data.documentTag.status ?? true);
 
     let saving = $state(false);
@@ -32,12 +33,16 @@
             .refine((val) => officeList.map((s) => s.short_name).includes(val), {
                 message: 'Invalid office selected.',
             }),
+        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+            message: 'Invalid hex color.',
+        }),
     });
 
     async function save() {
         const validate = schema.safeParse({
             name,
             office,
+            color,
         });
 
         if (!validate.success) {
@@ -58,6 +63,7 @@
             const result = await App.API.post(`/admin/document-tags/update/${page.params.id}`, {
                 name: name,
                 office: office,
+                color: color,
                 status: status,
             });
 
@@ -151,6 +157,16 @@
             </datalist>
         </j.Col>
     </j.Row>
+    <j.RowCol span="6">
+        <label for="colorfield" class="form-label small">Color</label>
+        <div class="input-group input-group-sm">
+            <input bind:value={color} type="text" class="form-control {errors.color ? 'is-invalid' : ''}" placeholder="#ffffff" name="passwordInput" id="colorfield" />
+            <div class="p-1 border">
+                <input bind:value={color} type="color" class="h-100 border-0" placeholder="#ffffff" name="passwordInput" id="colorselector" />
+            </div>
+        </div>
+        <p class="text-danger small mb-auto {errors.color ? '' : 'd-none'}">{errors.color?.[0]}</p>
+    </j.RowCol>
     <j.RowCol>
         <label for="status" class="form-label small">Status</label>
         <div class="form-check form-switch">

@@ -1,9 +1,9 @@
 <script>
-    import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
-    import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
+    import { page } from '$app/state';
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 </script>
 
 <!-- controls -->
@@ -12,7 +12,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item small"><a href="/dex/dms/drafts">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item small"><a href="/dex/dms/drafts{p.toString()}">(Document Manager) Drafts</a></li>
             <li class="breadcrumb-item small"><a href="/dex/dms/drafts/create">Create</a></li>
             <li class="breadcrumb-item small active">Source</li>
         </ol>
@@ -27,7 +27,7 @@
     <hr class="text-muted" />
     <j.Row>
         <j.Col span="6">
-            <a href="/dex/dms/drafts/create/file-upload" class="text-decoration-none module-link">
+            <a href="/dex/dms/drafts/create/file-upload{p.toString()}" class="text-decoration-none module-link">
                 <j.Card borderonly mb="1" p="0">
                     <j.Row mb="0" centery>
                         <j.Col>
@@ -43,7 +43,7 @@
     </j.Row>
     <j.Row>
         <j.Col span="6">
-            <a href="/dex/dms/drafts/create/record" class="text-decoration-none module-link">
+            <a href="/dex/dms/drafts/create/record{p.toString()}" class="text-decoration-none module-link">
                 <j.Card borderonly p="0">
                     <j.Row mb="0" centery>
                         <j.Col>

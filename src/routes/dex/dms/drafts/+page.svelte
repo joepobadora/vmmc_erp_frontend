@@ -10,7 +10,71 @@
 
     let tagList = $state(data.tagList ?? []);
 
-    console.log(tagList);
+    let loadingData = $state('false');
+    let drafts = $state([]);
+
+    let tags = [];
+
+    let today = new Date();
+    let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const p = new App.ParamBuilder(page.url.searchParams);
+
+    let tablePage = $state(p.get('page') || 1);
+
+    let filter = $state({
+        start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
+        end_date: p.get('end_date') || App.Format.date(today).toISODate(),
+        search: p.get('search') || null,
+    });
+
+    // react to changes and update params
+    $effect(() => {
+        p.set('page', tablePage).set('start_date', filter.start_date).set('end_date', filter.end_date).set('search', filter.search);
+    });
+
+    // debounce and react to filter
+    $effect(() => {
+        filter.start_date;
+        filter.end_date;
+        filter.search;
+
+        const timer = setTimeout(() => {
+            refreshTable();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    });
+
+    async function refreshTable() {
+        loadingData = true;
+
+        try {
+            const result = await App.API.post('/dex/dms/drafts', {
+                filter: filter,
+            });
+
+            const data = result.data.data;
+
+            if (result.data.success) {
+                drafts = data;
+            } else {
+                Alert.show('error', 'Request failed.', result.data.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            loadingData = false;
+        }
+    }
+
+    function resetFilter() {
+        filter = {
+            start_date: App.Format.date(firstDayOfMonth).toISODate(),
+            end_date: App.Format.date(today).toISODate(),
+            search: null,
+        };
+    }
 </script>
 
 <!-- controls -->
@@ -74,6 +138,14 @@
         <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
     </j.Col>
 </j.Row>
+
+<j.Card noshadow>
+    <div class="d-flex flex-row flex-wrap gap-2">
+        {#each tags as tag}
+            <div class="badge" style="background-color: {tag.color}; color: {App.Color.contrastThis(tag.color)}">{tag.name}<i class="bi bi-x-lg ms-2" style="cursor: pointer;"></i></div>
+        {/each}
+    </div>
+</j.Card>
 
 <!-- table -->
 <j.Card></j.Card>

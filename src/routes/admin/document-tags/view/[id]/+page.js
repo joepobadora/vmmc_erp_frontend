@@ -24,7 +24,7 @@ export async function load({ params }) {
         documentTagData.status = documentTagData.is_active == 1;
 
         return {
-            officeList: dropdownData.office,
+            officeList: dropdownData,
             documentTag: documentTagData,
         };
     } catch (err) {

@@ -129,7 +129,7 @@
                             onclick={() => {
                                 goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}>{item.name}</strong
-                        >
+                        ><i class="bi bi-tag-fill ms-2" style="color: {item.color}"></i>
                     </div>
                     <div>
                         <span

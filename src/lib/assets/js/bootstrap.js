@@ -3,6 +3,7 @@ import Auth from './utils/auth';
 import Format from './utils/formatter';
 import SignPad from './utils/signaturepad';
 import ParamBuilder from './utils/parambuilder';
+import Color from './utils/color';
 
 const App = {
     API,
@@ -10,6 +11,7 @@ const App = {
     Format,
     SignPad,
     ParamBuilder,
+    Color,
 };
 
 export default App;

@@ -2,7 +2,7 @@
     import j from '$lib/components/helper';
     import { draftHasSource, draftFile } from '$lib/stores/dms';
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
     import z from 'zod';
 
@@ -11,20 +11,34 @@
 
     let attaching = $state(false);
 
+    let errors = $state({});
+
+    const p = new App.ParamBuilder(page.url.searchParams);
+
+    const schema = z.object({
+        type: z.string().nonempty('Required.'),
+        size: z.string().nonempty('Required.'),
+    });
+
     function attach() {
         attaching = true;
 
         if ($draftFile) {
             setTimeout(() => {
                 $draftHasSource = true;
-                goto('/dex/dms/drafts/create');
+                goto(`/dex/dms/drafts/create${p.toString()}`);
                 attaching = false;
             }, 600);
         }
     }
 
+    function setFile(file) {
+        $draftFile = file;
+        console.log($draftFile);
+    }
+
     function handleFileChange(event) {
-        $draftFile = event.target.files[0];
+        $draftFile = setFile(event.target.files[0]);
     }
 
     function browseFiles(event) {
@@ -35,7 +49,7 @@
     function handleDrop(event) {
         event.preventDefault();
         addClass = '';
-        $draftFile = event.dataTransfer.files[0];
+        $draftFile = setFile(event.dataTransfer.files[0]);
     }
 
     function handleDragOver(event) {
@@ -54,7 +68,7 @@
     }
 
     $effect(() => {
-        if ($page.url.pathname == '/dex/dms/drafts/create/file-upload') {
+        if (page.url.pathname == '/dex/dms/drafts/create/file-upload') {
             $draftFile = null;
             addClass = '';
         }
@@ -128,11 +142,11 @@
             </ul>
         </j.RowCol>
 
-        <j.Row endx>
-            <j.Col auto>
+        <j.RowCol endx>
+            <div class="d-flex gap-2">
                 <button
                     type="button"
-                    class="btn btn-light border btn-sm px-3 me-3 {attaching == true ? 'd-none' : ''}"
+                    class="btn btn-light border btn-sm px-3 {attaching == true ? 'd-none' : ''}"
                     onclick={() => {
                         $draftFile = null;
                         addClass = '';
@@ -146,8 +160,8 @@
                         <i class="bi bi-link-45deg me-2"></i>Attach File
                     {/if}
                 </button>
-            </j.Col>
-        </j.Row>
+            </div>
+        </j.RowCol>
     </j.Card>
 </j.RowCol>
 

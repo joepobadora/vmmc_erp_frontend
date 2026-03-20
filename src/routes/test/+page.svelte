@@ -1,21 +1,15 @@
 <script>
-    import Auth from '$lib/components/Auth.svelte';
+    import { onMount } from 'svelte';
 
-    let auth = $state();
-
-    async function doSomething() {
-        const confirmed = await auth.confirm();
-
-        if (confirmed) {
-            console.log('User confirmed:', confirmed);
-        } else {
-            console.log('User canceled');
-        }
-    }
+    onMount(() => {
+        const colorInput = document.getElementById('colorInput');
+        colorInput.addEventListener('input', (e) => {
+            console.log('Selected color:', e.target.value);
+        });
+    });
 </script>
 
-<div class="container">
-    <button onclick={doSomething}>launch</button>
+<div class="mb-3">
+    <label for="colorInput" class="form-label badge bg-info">Pick a color</label>
+    <input type="color" class="form-control form-control-color" id="colorInput" value="#563d7c" title="Choose your color" />
 </div>
-
-<Auth bind:me={auth} />

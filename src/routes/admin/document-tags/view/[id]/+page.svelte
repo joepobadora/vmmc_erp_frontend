@@ -10,6 +10,7 @@
 
     let name = $state(data.documentTag.name ?? '');
     let office = $state(data.documentTag.office ?? '');
+    let color = $state(data.documentTag.color ?? '#2980b9');
     let status = $state(data.documentTag.status ?? true);
 
     const p = new App.ParamBuilder(page.url.searchParams);
@@ -36,11 +37,11 @@
     <h5>Document Tag</h5>
     <j.Row>
         <j.Col span="6">
-            <label for="username" class="form-label small">Tag<span class="ms-1 text-danger">*</span></label>
+            <label for="username" class="form-label small">Tag</label>
             <input bind:value={name} type="text" class="form-control form-control-sm" id="username" disabled />
         </j.Col>
         <j.Col span="6">
-            <label for="office" class="form-label small">Office<span class="ms-1 text-danger">*</span></label>
+            <label for="office" class="form-label small">Office</label>
             <input bind:value={office} list="officeList" type="text" class="form-control form-control-sm" id="office" disabled />
             <datalist id="officeList">
                 {#each officeList as office}
@@ -49,6 +50,15 @@
             </datalist>
         </j.Col>
     </j.Row>
+    <j.RowCol span="6">
+        <label for="username" class="form-label small">Color</label>
+        <div class="input-group input-group-sm">
+            <input bind:value={color} type="text" class="form-control form-control-sm" id="username" disabled />
+            <div class="p-1 border">
+                <input bind:value={color} type="color" class="h-100 border-0" placeholder="#ffffff" name="passwordInput" id="colorselector" disabled />
+            </div>
+        </div>
+    </j.RowCol>
     <j.RowCol>
         <label for="status" class="form-label small">Status</label>
         <div>
