@@ -62,6 +62,7 @@
             search: null,
             status: null,
         };
+        tablePage = 1;
     }
 </script>
 

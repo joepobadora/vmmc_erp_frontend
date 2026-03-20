@@ -4,6 +4,7 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
+    import { ta } from 'zod/v4/locales';
 
     let loadingData = $state('false');
     let logs = $state([]);
@@ -67,6 +68,7 @@
             end_date: App.Format.date(today).toISODate(),
             search: null,
         };
+        tablePage = 1;
     }
 </script>
 

@@ -9,6 +9,14 @@
 
     let officeList = $state([]);
 
+    let saving = $state(false);
+
+    let errors = $state({});
+
+    if ($draftFile) {
+        $draftFile.ext = $draftFile.name.split('.').pop().toUpperCase();
+    }
+
     onMount(() => {
         if (!$draftHasSource) {
             goto('/dex/dms/drafts/create/source');
@@ -51,7 +59,7 @@
             </j.Col>
             <j.Col span="6">
                 <label for="name" class="form-label small">Type</label>
-                <input value={$draftFile.type} type="text" class="form-control form-control-sm" id="name" disabled />
+                <input value={$draftFile.ext} type="text" class="form-control form-control-sm" id="name" disabled />
             </j.Col>
         </j.Row>
     {/if}
@@ -135,9 +143,16 @@
         </j.Col>
     </j.Row>
 
-    <j.Row endx>
-        <j.Col auto>
+    <j.RowCol endx>
+        <div class="d-flex gap-2">
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3{saving == true ? 'd-none' : ''}"
+                onclick={() => {
+                    goto(`/admin/accounts${p.toString()}`);
+                }}>Cancel</button
+            >
             <button onclick={save} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>
-        </j.Col>
-    </j.Row>
+        </div>
+    </j.RowCol>
 </j.Card>

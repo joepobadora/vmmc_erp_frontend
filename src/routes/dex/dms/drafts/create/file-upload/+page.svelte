@@ -6,7 +6,7 @@
     import App from '$lib/assets/js/bootstrap';
     import z from 'zod';
 
-    let addClass = '';
+    let addClass = $state('');
     let fileInput;
 
     let attaching = $state(false);
@@ -16,8 +16,25 @@
     const p = new App.ParamBuilder(page.url.searchParams);
 
     const schema = z.object({
-        type: z.string().nonempty('Required.'),
-        size: z.string().nonempty('Required.'),
+        ext: z.string().refine(
+            (value) => {
+                const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv'];
+                return allowedExtensions.includes(value.toLowerCase());
+            },
+            {
+                message: 'Invalid file type.',
+            }
+        ),
+        size: z.number().refine(
+            (value) => {
+                // Define the maximum file size in bytes
+                const maxSize = 25 * 1024 * 1024; // 25MB
+                return value <= maxSize;
+            },
+            {
+                message: 'File size exceeds the maximum limit.',
+            }
+        ),
     });
 
     function attach() {
@@ -34,11 +51,25 @@
 
     function setFile(file) {
         $draftFile = file;
-        console.log($draftFile);
+        $draftFile.ext = $draftFile.name.split('.').pop().toUpperCase();
+
+        const { ext, size } = $draftFile;
+
+        const validate = schema.safeParse({
+            ext,
+            size,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
     }
 
     function handleFileChange(event) {
-        $draftFile = setFile(event.target.files[0]);
+        setFile(event.target.files[0]);
     }
 
     function browseFiles(event) {
@@ -49,7 +80,7 @@
     function handleDrop(event) {
         event.preventDefault();
         addClass = '';
-        $draftFile = setFile(event.dataTransfer.files[0]);
+        setFile(event.dataTransfer.files[0]);
     }
 
     function handleDragOver(event) {
@@ -62,9 +93,10 @@
         addClass = '';
     }
 
-    function clear() {
+    function reset() {
         $draftFile = null;
         addClass = '';
+        errors = {};
     }
 
     $effect(() => {
@@ -126,11 +158,13 @@
             <j.Row>
                 <j.Col span="6">
                     <label for="name" class="form-label small">Size</label>
-                    <input value={App.Format.number($draftFile.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
+                    <input value={App.Format.number($draftFile.size).toFileSize()} type="text" class="form-control form-control-sm {errors.size ? 'is-invalid' : ''}" id="name" disabled />
+                    <p class="text-danger small mb-auto {errors.size ? '' : 'd-none'}">{errors.size?.[0]}</p>
                 </j.Col>
                 <j.Col span="6">
                     <label for="name" class="form-label small">Type</label>
-                    <input value={$draftFile.type} type="text" class="form-control form-control-sm" id="name" disabled />
+                    <input value={$draftFile.ext} type="text" class="form-control form-control-sm {errors.ext ? 'is-invalid' : ''}" id="name" disabled />
+                    <p class="text-danger small mb-auto {errors.ext ? '' : 'd-none'}">{errors.ext?.[0]}</p>
                 </j.Col>
             </j.Row>
         {/if}
@@ -144,22 +178,8 @@
 
         <j.RowCol endx>
             <div class="d-flex gap-2">
-                <button
-                    type="button"
-                    class="btn btn-light border btn-sm px-3 {attaching == true ? 'd-none' : ''}"
-                    onclick={() => {
-                        $draftFile = null;
-                        addClass = '';
-                    }}>Clear</button
-                >
-                <button onclick={attach} disabled={attaching} type="button" class="btn btn-primary btn-sm px-3">
-                    {#if attaching}
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        Attaching...
-                    {:else}
-                        <i class="bi bi-link-45deg me-2"></i>Attach File
-                    {/if}
-                </button>
+                <button type="button" class="btn btn-light border btn-sm px-3 {attaching == true || !$draftFile ? 'd-none' : ''}" onclick={reset}>Change</button>
+                <j.Button label="Attach File" loadinglabel="Attaching" icon="bi-link-45deg" loading={attaching} onClick={attach} disabled={errors.size || errors.ext} />
             </div>
         </j.RowCol>
     </j.Card>

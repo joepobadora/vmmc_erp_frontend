@@ -73,6 +73,7 @@
             status: null,
             role: null,
         };
+        tablePage = 1;
     }
 </script>
 

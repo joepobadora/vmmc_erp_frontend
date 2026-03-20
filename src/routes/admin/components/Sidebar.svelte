@@ -15,6 +15,9 @@
 
 <j.Card border noshadow p="0">
     <div class="list-group list-group-flush">
+        <div class="list-group-item small">
+            <strong>System</strong>
+        </div>
         {#each links as link}
             <span onclick={() => goto(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={page.url.pathname.startsWith(link.href)}>
                 <i class={`bi ${link.icon} me-2`}></i>{link.label}
