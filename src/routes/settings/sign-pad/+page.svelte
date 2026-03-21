@@ -49,8 +49,13 @@
 
             updatingSignature = true;
 
-            const result = await App.API.post('/settings/signature/update', {
-                signature: signPad.SaveAsBase64(),
+            const file = await signPad.SaveAsPNG('signature');
+
+            const formData = new FormData();
+            formData.append('signature', file);
+
+            const result = await App.API.post('/settings/signature/update', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             if (result.data.success) {

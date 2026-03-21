@@ -12,4 +12,4 @@ const draftRecord = writable(null);
 // used to store the document source
 const documentSource = writable(null);
 
-export { draftHasSource, draftFile, draftRecord };
+export { draftHasSource, draftFile, draftRecord, documentSource };

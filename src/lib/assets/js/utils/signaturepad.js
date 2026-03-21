@@ -127,6 +127,15 @@ class SignPad {
         return this.canvas.toDataURL();
     }
 
+    SaveAsPNG(filename) {
+    return new Promise((resolve) => {
+        this.canvas.toBlob((blob) => {
+            const file = new File([blob], (filename + '.png'), { type: "image/png" });
+            resolve(file);
+        }, "image/png");
+    });
+}
+
     Valid(thresholdPercent = 1) {
         const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         const pixels = imageData.data;
