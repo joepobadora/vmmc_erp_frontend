@@ -15,11 +15,11 @@
     let details = $state('');
     let tag = $state(null);
     let tags = $state([]);
-    let reviewer = $state('');
+    let reviewer = $state(null);
     let reviewers = $state([]);
-    let approver = $state('');
+    let approver = $state(null);
     let approvers = $state([]);
-    let signatory = $state('');
+    let signatory = $state(null);
     let signatories = $state([]);
 
     let typeList = $state(data.typeList ?? []);
@@ -44,24 +44,26 @@
                 message: 'Invalid document type selected.',
             }),
         name: z.string().nonempty('Required.'),
+        reviewers: z.array(z.any()).nonempty('At lease one reviewer is required.'),
+        approvers: z.array(z.any()).nonempty('At lease one approver is required.'),
     });
 
     const reviewerSchema = z.object({
-        reviewer: z
-            .string()
-            .nonempty('Required.')
-            .refine((val) => accountList.map((a) => a.user.full_name_2).includes(val), {
-                message: 'Invalid reviewer selected.',
-            }),
+        reviewer: z.refine((val) => accountList.map((a) => a.id).includes(val), {
+            message: 'Invalid reviewer selected.',
+        }),
     });
 
     const approverSchema = z.object({
-        approver: z
-            .string()
-            .nonempty('Required.')
-            .refine((val) => accountList.map((a) => a.user.full_name_2).includes(val), {
-                message: 'Invalid approver selected.',
-            }),
+        approver: z.refine((val) => accountList.map((a) => a.id).includes(val), {
+            message: 'Invalid approver selected.',
+        }),
+    });
+
+    const signatorySchema = z.object({
+        signatory: z.refine((val) => accountList.map((a) => a.id).includes(val), {
+            message: 'Invalid approver selected.',
+        }),
     });
 
     onMount(() => {
@@ -74,6 +76,8 @@
         const validate = schema.safeParse({
             type,
             name,
+            reviewers,
+            approvers,
         });
 
         if (!validate.success) {
@@ -94,6 +98,14 @@
         tags = tags.filter((t) => t !== tag);
     }
     function handleReviewerSelect() {
+        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === reviewer);
+
+        if (opt) {
+            reviewer = Number(opt.dataset.id);
+        }
+
+        const obj = accountList.find((a) => a.id === reviewer);
+
         const validate = reviewerSchema.safeParse({
             reviewer,
         });
@@ -105,16 +117,25 @@
             errors = {};
         }
 
-        if (!reviewers.includes(reviewer)) {
-            reviewers = [...reviewers, reviewer];
+        if (!reviewers.includes(obj)) {
+            reviewers = [...reviewers, obj];
         }
-        console.log(reviewer);
+
         reviewer = null;
     }
     function handleReviewerRemove(reviewer) {
         reviewers = reviewers.filter((r) => r !== reviewer);
     }
+
     function handleApproverSelect() {
+        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === approver);
+
+        if (opt) {
+            approver = Number(opt.dataset.id);
+        }
+
+        const obj = accountList.find((a) => a.id === approver);
+
         const validate = approverSchema.safeParse({
             approver,
         });
@@ -125,10 +146,47 @@
         } else {
             errors = {};
         }
-        console.log(approver);
+
+        if (!approvers.includes(obj)) {
+            approvers = [...approvers, obj];
+        }
+
+        approver = null;
     }
+
+    function handleApproverRemove(approver) {
+        approvers = approvers.filter((a) => a !== approver);
+    }
+
     function handleSignatorySelect() {
-        console.log(signatory);
+        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === signatory);
+
+        if (opt) {
+            signatory = Number(opt.dataset.id);
+        }
+
+        const obj = accountList.find((a) => a.id === signatory);
+
+        const validate = signatorySchema.safeParse({
+            signatory,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
+
+        if (!signatories.includes(obj)) {
+            signatories = [...signatories, obj];
+        }
+
+        signatory = null;
+    }
+
+    function handleSignatoryRemove(signatory) {
+        signatories = signatories.filter((s) => s !== signatory);
     }
 </script>
 
@@ -176,7 +234,8 @@
     <j.Row>
         <j.Col span="6">
             <label for="office" class="form-label small">Document Type<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={type} list="typeList" type="text" class="form-control form-control-sm" id="office" placeholder="Type and choose..." />
+            <input bind:value={type} list="typeList" type="text" class="form-control form-control-sm {errors.type ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
+            <p class="text-danger small mb-auto {errors.type ? '' : 'd-none'}">{errors.type?.[0]}</p>
             <datalist id="typeList">
                 {#each typeList as type}
                     <option value={type.name}></option>
@@ -187,7 +246,8 @@
     <j.Row>
         <j.Col>
             <label for="password" class="form-label small">Name<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={name} type="text" class="form-control form-control-sm" id="password" placeholder="Name" />
+            <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="password" placeholder="Name" />
+            <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
         </j.Col>
     </j.Row>
     <j.Row>
@@ -215,34 +275,61 @@
         <j.Col span="4">
             <label for="office" class="form-label small">Reviewers<span class="ms-1 text-danger">*</span></label>
             <div class="input-group input-group-sm">
-                <input bind:value={reviewer} list="accountList" type="text" class="form-control form-control-sm {errors.reviewer ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
+                <input
+                    bind:value={reviewer}
+                    list="accountList"
+                    type="text"
+                    class="form-control form-control-sm {errors.reviewer || errors.reviewers ? 'is-invalid' : ''}"
+                    id="office"
+                    placeholder="Type and choose..."
+                />
                 <button onclick={handleReviewerSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
             </div>
             <p class="text-danger small mb-auto {errors.reviewer ? '' : 'd-none'}">{errors.reviewer?.[0]}</p>
+            <p class="text-danger small mb-auto {errors.reviewers ? '' : 'd-none'}">{errors.reviewers?.[0]}</p>
             <div class="d-flex flex-row flex-wrap gap-2 my-3">
                 {#each reviewers as reviewer}
-                    <j.Tag name={reviewer} onRemove={() => handleReviewerRemove(reviewer)} border />
+                    <j.Tag name={reviewer.user.full_name_2} onRemove={() => handleReviewerRemove(reviewer)} border />
                 {/each}
             </div>
         </j.Col>
         <j.Col span="4">
             <label for="office" class="form-label small">Approvers<span class="ms-1 text-danger">*</span></label>
             <div class="input-group input-group-sm">
-                <input bind:value={approver} list="accountList" type="text" class="form-control form-control-sm {errors.approver ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
+                <input
+                    bind:value={approver}
+                    list="accountList"
+                    type="text"
+                    class="form-control form-control-sm {errors.approver || errors.approvers ? 'is-invalid' : ''}"
+                    id="office"
+                    placeholder="Type and choose..."
+                />
                 <button onclick={handleApproverSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
             </div>
             <p class="text-danger small mb-auto {errors.approver ? '' : 'd-none'}">{errors.approver?.[0]}</p>
+            <p class="text-danger small mb-auto {errors.approvers ? '' : 'd-none'}">{errors.approvers?.[0]}</p>
+            <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                {#each approvers as approver}
+                    <j.Tag name={approver.user.full_name_2} onRemove={() => handleApproverRemove(approver)} border />
+                {/each}
+            </div>
         </j.Col>
         <j.Col span="4">
             <label for="office" class="form-label small">Signatories</label>
             <div class="input-group input-group-sm">
-                <input bind:value={signatory} list="accountList" type="text" class="form-control form-control-sm" id="office" placeholder="Type and choose..." />
+                <input bind:value={signatory} list="accountList" type="text" class="form-control form-control-sm {errors.signatory ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
                 <button onclick={handleSignatorySelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
+            </div>
+            <p class="text-danger small mb-auto {errors.signatory ? '' : 'd-none'}">{errors.signatory?.[0]}</p>
+            <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                {#each signatories as signatory}
+                    <j.Tag name={signatory.user.full_name_2} onRemove={() => handleSignatoryRemove(signatory)} border />
+                {/each}
             </div>
         </j.Col>
         <datalist id="accountList">
             {#each accountList as account}
-                <option value={account.user.id}>{account.user.full_name_2}</option>
+                <option data-id={account.id} value={account.user.full_name_2}></option>
             {/each}
         </datalist>
     </j.Row>
@@ -253,7 +340,7 @@
                 type="button"
                 class="btn btn-light border btn-sm px-3{saving == true ? 'd-none' : ''}"
                 onclick={() => {
-                    goto(`/admin/accounts${p.toString()}`);
+                    goto(`/dex/dms/drafts${p.toString()}`);
                 }}>Cancel</button
             >
             <button onclick={test} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>

@@ -12,8 +12,7 @@
 
     let loadingData = $state('false');
     let drafts = $state([]);
-
-    let tags = [];
+    let tag = $state(null);
 
     let today = new Date();
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -26,6 +25,7 @@
         start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
         end_date: p.get('end_date') || App.Format.date(today).toISODate(),
         search: p.get('search') || null,
+        tags: p.get('tags') || [],
     });
 
     // react to changes and update params
@@ -74,6 +74,16 @@
             end_date: App.Format.date(today).toISODate(),
             search: null,
         };
+    }
+
+    function handleTagSelect() {
+        if (!filter.tags.includes(tag)) {
+            filter.tags = [...filter.tags, tag];
+        }
+        tag = null;
+    }
+    function handleTagRemove(tag) {
+        filter.tags = filter.tags.filter((t) => t !== tag);
     }
 </script>
 
@@ -127,10 +137,10 @@
     </j.Col>
     <j.Col auto>
         <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Tag</label>
-        <select class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+        <select onchange={handleTagSelect} bind:value={tag} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
             <option value={null}>All</option>
             {#each tagList as tag}
-                <option value={tag.id}>{tag.name}</option>
+                <option value={tag}>{tag.name}</option>
             {/each}
         </select>
     </j.Col>
@@ -139,13 +149,11 @@
     </j.Col>
 </j.Row>
 
-<j.Card noshadow>
-    <div class="d-flex flex-row flex-wrap gap-2">
-        {#each tags as tag}
-            <div class="badge" style="background-color: {tag.color}; color: {App.Color.contrastThis(tag.color)}">{tag.name}<i class="bi bi-x-lg ms-2" style="cursor: pointer;"></i></div>
-        {/each}
-    </div>
-</j.Card>
+<div class="d-flex flex-row flex-wrap gap-2 my-3">
+    {#each filter.tags as tag}
+        <j.Tag name={tag.name} color={tag.color} onRemove={() => handleTagRemove(tag)} />
+    {/each}
+</div>
 
 <!-- table -->
 <j.Card></j.Card>

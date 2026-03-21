@@ -1,6 +1,6 @@
 <script>
     import j from '$lib/components/helper';
-    import { draftHasSource, draftFile } from '$lib/stores/dms';
+    import { draftHasSource, draftFile, documentSource } from '$lib/stores/dms';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
@@ -43,6 +43,7 @@
         if ($draftFile) {
             setTimeout(() => {
                 $draftHasSource = true;
+                $documentSource = 'DOCSRC1'; // source code for file
                 goto(`/dex/dms/drafts/create${p.toString()}`);
                 attaching = false;
             }, 600);
