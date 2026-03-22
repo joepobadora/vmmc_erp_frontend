@@ -1,32 +1,37 @@
 <script>
-    let options = ['Apple', 'Banana', 'Orange'];
-    let selected = [];
+    let file = null;
 
-    function addItem(event) {
-        const value = event.target.value;
-        if (value && !selected.includes(value)) {
-            selected = [...selected, value];
+    async function handleSubmit() {
+        if (!file) {
+            alert('Please select a file first.');
+            return;
         }
-        event.target.value = '';
-    }
 
-    function removeItem(item) {
-        selected = selected.filter((v) => v !== item);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('http://localhost/api/test/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Upload successful:', result);
+                alert('File uploaded successfully!');
+            } else {
+                console.error('Upload failed:', response.statusText);
+                alert('Upload failed.');
+            }
+        } catch (err) {
+            console.error('Error uploading file:', err);
+            alert('Error uploading file.');
+        }
     }
 </script>
 
-<select class="form-select w-auto" on:change={addItem}>
-    <option value="">Choose a fruit</option>
-    {#each options as option}
-        <option value={option}>{option}</option>
-    {/each}
-</select>
-
-<div class="mt-3 d-flex flex-wrap gap-2">
-    {#each selected as item}
-        <span class="badge bg-secondary d-flex align-items-center gap-1">
-            {item}
-            <i class="bi bi-x ms-1" style="cursor:pointer" on:click={() => removeItem(item)}></i>
-        </span>
-    {/each}
-</div>
+<form on:submit|preventDefault={handleSubmit}>
+    <input type="file" on:change={(e) => (file = e.target.files[0])} />
+    <button type="submit">Upload</button>
+</form>
