@@ -16,12 +16,15 @@
                 body: formData,
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Upload successful:', result);
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('Upload successful:');
+                console.log('Path:', result.path);
+                console.log('Text :', result.text);
                 alert('File uploaded successfully!');
             } else {
-                console.error('Upload failed:', response.statusText);
+                console.error('Upload failed:', result.message);
                 alert('Upload failed.');
             }
         } catch (err) {
