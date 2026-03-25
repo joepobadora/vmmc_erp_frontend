@@ -76,19 +76,19 @@
     });
 
     async function save() {
-        // const validate = schema.safeParse({
-        //     type,
-        //     name,
-        //     reviewers,
-        //     approvers,
-        // });
+        const validate = schema.safeParse({
+            type,
+            name,
+            reviewers,
+            approvers,
+        });
 
-        // if (!validate.success) {
-        //     errors = validate.error.flatten().fieldErrors;
-        //     return;
-        // } else {
-        //     errors = {};
-        // }
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
 
         const formData = new FormData();
         formData.append('file', $draftFile);
@@ -118,7 +118,7 @@
 
             if (result.data.success) {
                 setTimeout(() => {
-                    console.log(result.data);
+                    goto(`/dex/dms/drafts${p.toString()}`);
                     Alert.show('success', 'Saving success.', result.data.success_code);
                 }, 600);
             } else {

@@ -156,4 +156,56 @@
 </div>
 
 <!-- table -->
-<j.Card></j.Card>
+<j.Card>
+    {#if loadingData}
+        <div class="d-flex justify-content-center p-4">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    {:else}
+        <Table data={drafts} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
+            <div slot="row" let:item class="row border-bottom custom-row small">
+                <div class="col">
+                    <div>
+                        <span class="text-muted me-2">Name:</span>
+                        <strong
+                            class="custom-link"
+                            onclick={() => {
+                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                            }}
+                        >
+                            {item.current_version?.name}
+                        </strong>
+                    </div>
+                    <div>
+                        <span class="text-muted me-2">Type:</span>
+                        <span>{item.state.state}</span>
+                    </div>
+                    <div>
+                        <span
+                            class="text-info custom-link"
+                            onclick={() => {
+                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                            }}>Edit</span
+                        >
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <span class="text-muted me-2">Status:</span>
+                        <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                    </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <div>
+                        <span class="text-muted me-2">Date created:</span>
+                        <span>{App.Format.date(item.created_at).toFullMonthDate()}</span>
+                    </div>
+                    <div>
+                        <span class="text-muted me-2">By:</span>
+                        <span>{item.creator.user.full_name_2}</span>
+                    </div>
+                </div>
+            </div>
+        </Table>
+    {/if}
+</j.Card>
