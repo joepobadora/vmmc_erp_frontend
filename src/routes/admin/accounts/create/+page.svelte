@@ -436,7 +436,7 @@
         <div class="d-flex gap-2">
             <button
                 type="button"
-                class="btn btn-light border btn-sm px-3{saving == true ? 'd-none' : ''}"
+                class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
                 onclick={() => {
                     goto(`/admin/accounts${p.toString()}`);
                 }}>Cancel</button

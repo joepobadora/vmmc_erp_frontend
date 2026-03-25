@@ -3,7 +3,7 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
-    import { draftHasSource, draftFile, draftRecord } from '$lib/stores/dms';
+    import { draftHasSource, draftFile, draftRecord, documentSource } from '$lib/stores/dms';
     import j from '$lib/components/helper';
     import z from 'zod';
     import { page } from '$app/state';
@@ -71,27 +71,35 @@
 
     onMount(() => {
         if (!$draftHasSource) {
-            // goto('/dex/dms/drafts/create/source');
+            goto('/dex/dms/drafts/create/source');
         }
     });
 
-    async function test() {
-        const validate = schema.safeParse({
-            type,
-            name,
-            reviewers,
-            approvers,
-        });
+    async function save() {
+        // const validate = schema.safeParse({
+        //     type,
+        //     name,
+        //     reviewers,
+        //     approvers,
+        // });
 
-        if (!validate.success) {
-            errors = validate.error.flatten().fieldErrors;
-            return;
-        } else {
-            errors = {};
-        }
+        // if (!validate.success) {
+        //     errors = validate.error.flatten().fieldErrors;
+        //     return;
+        // } else {
+        //     errors = {};
+        // }
 
         const formData = new FormData();
         formData.append('file', $draftFile);
+        formData.append('source', $documentSource);
+        formData.append('type', type);
+        formData.append('name', name);
+        formData.append('details', details);
+        formData.append('tags', JSON.stringify(tags));
+        formData.append('reviewers', JSON.stringify(reviewers));
+        formData.append('approvers', JSON.stringify(approvers));
+        formData.append('signatories', JSON.stringify(signatories));
 
         // saving account
         try {
@@ -101,7 +109,7 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post('/test/upload', formData, {
+            const result = await App.API.post('/dex/dms/drafts/store', formData, {
                 headers: {
                     // Let Axios set the boundary automatically
                     'Content-Type': 'multipart/form-data',
@@ -377,12 +385,12 @@
         <div class="d-flex gap-2">
             <button
                 type="button"
-                class="btn btn-light border btn-sm px-3{saving == true ? 'd-none' : ''}"
+                class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
                 onclick={() => {
                     goto(`/dex/dms/drafts${p.toString()}`);
                 }}>Cancel</button
             >
-            <button onclick={test} type="button" class="btn btn-primary btn-sm px-3"><i class="bi bi-check2 me-2"></i>Save</button>
+            <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
         </div>
     </j.RowCol>
 </j.Card>
