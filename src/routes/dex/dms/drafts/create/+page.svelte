@@ -7,6 +7,9 @@
     import j from '$lib/components/helper';
     import z from 'zod';
     import { page } from '$app/state';
+    import Auth from '$lib/components/Auth.svelte';
+
+    let auth = $state();
 
     let { data } = $props();
 
@@ -72,7 +75,7 @@
         }
     });
 
-    function test() {
+    async function test() {
         const validate = schema.safeParse({
             type,
             name,
@@ -85,6 +88,40 @@
             return;
         } else {
             errors = {};
+        }
+
+        const formData = new FormData();
+        formData.append('file', $draftFile);
+
+        // saving account
+        try {
+            // password auth
+            if (!(await auth.confirm())) return;
+
+            // udpate button state
+            saving = true;
+
+            const result = await App.API.post('/test/upload', formData, {
+                headers: {
+                    // Let Axios set the boundary automatically
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    console.log(result.data);
+                    Alert.show('success', 'Saving success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Saving failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            saving = false;
         }
     }
 
@@ -189,6 +226,8 @@
         signatories = signatories.filter((s) => s !== signatory);
     }
 </script>
+
+<Auth bind:me={auth} warning="You are about to create a draft document." />
 
 <!-- controls -->
 <j.RowCol>
