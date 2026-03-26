@@ -3,9 +3,14 @@
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
     import { onMount } from 'svelte';
+    import { page } from '$app/state';
+
+    let { data } = $props();
 
     let file = $state(null);
     let loadingDocumentFile = $state(false);
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 
     // onmount
     onMount(() => {
@@ -17,7 +22,7 @@
         loadingDocumentFile = true;
 
         try {
-            const result = await App.API.post('/dex/dms/drafts/view/file', { id: 16 }, { responseType: 'blob' });
+            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.id }, { responseType: 'blob' });
 
             // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
@@ -42,7 +47,7 @@
     </nav>
 </j.RowCol>
 
-<div class="border border-secondary-light overflow-y-auto overflow-x-hidden pt-5" style="max-height: 1500px;">
+<div class="border border-secondary-light overflow-y-auto overflow-x-hidden pt-4" style="max-height: 1500px;">
     <j.Row>
         <j.Col></j.Col>
         <j.Col>
