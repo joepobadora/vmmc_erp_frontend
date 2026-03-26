@@ -2,7 +2,7 @@
     import { onMount, tick } from 'svelte';
 
     export let src;
-    export let scale = 1;
+    export let scale = 1.5;
     export let onLoaded = null; // callback from parent
 
     let numPages = 0;
@@ -43,5 +43,5 @@
 </script>
 
 {#each Array(numPages) as _, i}
-    <canvas bind:this={canvases[i]} class="mb-4"></canvas>
+    <canvas bind:this={canvases[i]} class="mb-4 shadow-sm"></canvas>
 {/each}

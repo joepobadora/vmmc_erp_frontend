@@ -1,7 +1,7 @@
 <script>
     import App from '$lib/assets/js/bootstrap';
 
-    let { name, color = '#ffffff', onRemove = () => {}, border = false } = $props();
+    let { name, color = '#ffffff', onRemove = null, border = false } = $props();
 
     function handleRemove() {
         if (onRemove) {

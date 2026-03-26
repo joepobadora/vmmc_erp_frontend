@@ -173,12 +173,12 @@
                                 goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}
                         >
-                            {item.current_version?.name}
+                            {item.latest_version?.name}
                         </strong>
                     </div>
                     <div>
                         <span class="text-muted me-2">Type:</span>
-                        <span>{item.state.state}</span>
+                        <span>{item.latest_version?.document_type?.name}</span>
                     </div>
                     <div>
                         <span
@@ -191,8 +191,12 @@
                 </div>
                 <div class="col">
                     <div>
-                        <span class="text-muted me-2">Status:</span>
-                        <span class="badge bg-{item.is_active == true ? 'success' : 'danger'}">{item.is_active == true ? 'Active' : 'Inactive'}</span>
+                        <span class="text-muted me-2">Tags:</span>
+                    </div>
+                    <div class="d-flex flex-row flex-wrap gap-2">
+                        {#each item.tags as tag}
+                            <j.Tag name={tag.name} color={tag.color} />
+                        {/each}
                     </div>
                 </div>
                 <div class="col-auto ms-auto">

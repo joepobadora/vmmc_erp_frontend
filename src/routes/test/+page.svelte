@@ -32,7 +32,7 @@
     }
 </script>
 
-<div class="flex justify-center">
+<div class="d-flex justify-content-center">
     <PdfViewer src="/my-document.pdf" onLoaded={handleLoaded} />
     <!-- <div class="position-absolute top-0 left-0">
             {#if pdfInfo}
