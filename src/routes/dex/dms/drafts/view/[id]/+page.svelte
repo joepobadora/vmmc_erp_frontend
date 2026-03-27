@@ -22,7 +22,7 @@
         loadingDocumentFile = true;
 
         try {
-            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.id }, { responseType: 'blob' });
+            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
 
             // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
@@ -47,7 +47,7 @@
     </nav>
 </j.RowCol>
 
-<div class="border border-secondary-light overflow-y-auto overflow-x-hidden pt-4" style="max-height: 1500px;">
+<div class="bg-secondary-subtle overflow-auto pt-4" style="max-height: 1500px;">
     <j.Row>
         <j.Col></j.Col>
         <j.Col>

@@ -1,7 +1,29 @@
 import App from '$lib/assets/js/bootstrap';
 
 export async function load({ params }) {
-    return {
-        id: params.id,
-    };
+    try {
+        const documentResult = await App.API.get(`/dex/dms/drafts/${params.id}`);
+        const documentData = documentResult.data.data;
+        if (!documentResult.data.success) {
+            return {
+                error: documentResult.data.error_code,
+            };
+        }
+
+        // const dropdownResult = await App.API.get('/admin/accounts/create/dropdown');
+        // const dropdownData = dropdownResult.data.data;
+        // if (!dropdownResult.data.success) {
+        //     return {
+        //         error: dropdownResult.data.error_code,
+        //     };
+        // }
+
+        return {
+            document: documentData,
+        };
+    } catch (err) {
+        return {
+            error: err.message,
+        };
+    }
 }

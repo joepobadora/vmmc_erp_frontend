@@ -2,7 +2,7 @@
     import { onMount, tick } from 'svelte';
 
     export let src;
-    export let scale = 1.5;
+    // export let scale = 1.5;
     export let onLoaded = null; // callback from parent
 
     let numPages = 0;
@@ -23,7 +23,12 @@
 
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
-            const viewport = page.getViewport({ scale });
+
+            // First get a viewport at scale 1 to check width
+            const testViewport = page.getViewport({ scale: 1 });
+            const chosenScale = testViewport.width > 1000 ? 0.7 : 1.5;
+
+            const viewport = page.getViewport({ scale: chosenScale });
 
             const canvas = canvases[pageNum - 1];
             const context = canvas.getContext('2d');
