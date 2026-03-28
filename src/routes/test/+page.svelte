@@ -28,7 +28,7 @@
         for (let i = 0; i < signPads.length; i++) {
             signs[i] = await signPads[i].SaveAsPNG('signature');
         }
-        console.log(signs);
+        console.log(signs[1]);
     }
 </script>
 
