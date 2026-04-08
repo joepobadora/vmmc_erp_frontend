@@ -4,14 +4,13 @@
     import j from '$lib/components/helper';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
+    import { goto } from '$app/navigation';
 
     let { data } = $props();
 
     let file = $state(null);
     let loadingDocumentFile = $state(false);
     let pdfData = $state(null);
-
-    console.log(data);
 
     let documentNo = $state(data.document.document_no);
     let currentState = $state(data.document.state.state.enumeration);
@@ -20,74 +19,15 @@
     let name = $state(data.document.state.state.enumeration);
     let details = $state(data.document.latest_version.details);
     let tags = $state(data.document.tags);
+    let reviewers = $state(data.document.latest_version.workflow.reviewers);
+    let approvers = $state(data.document.latest_version.workflow.approvers);
+    let signatories = $state(data.document.latest_version.workflow.signatories);
     let currentVersion = $state(data.document.latest_version.version_no);
     let versionDate = $state(App.Format.date(data.document.latest_version.created_at).toFullMonthDate());
     let changeLog = $state(data.document.latest_version.change_log);
-    // let lifecycles = $state(data.document.latest_version.lifecycles);
-    let lifecycles = [
-        {
-            created_at: '2026-03-27T14:20:00',
-            state: { enumeration: 'Archived' },
-            is_original: true,
-            office: { short_name: 'Records Archive' },
-        },
-        {
-            created_at: '2026-03-27T10:05:00',
-            state: { enumeration: 'Approved' },
-            is_original: true,
-            office: { short_name: 'Management' },
-        },
-        {
-            created_at: '2026-03-26T15:10:00',
-            state: { enumeration: 'Under Review' },
-            is_original: false,
-            office: { short_name: 'HR Dept' },
-        },
-        {
-            created_at: '2026-03-26T13:42:00',
-            state: { enumeration: 'Submitted for Review' },
-            is_original: false,
-            office: { short_name: 'HR Dept' },
-        },
-        {
-            created_at: '2026-03-25T11:30:00',
-            state: { enumeration: 'Tagged & Classified' },
-            is_original: true,
-            office: { short_name: 'Records' },
-        },
-        {
-            created_at: '2026-03-25T09:15:00',
-            state: { enumeration: 'Draft Created' },
-            is_original: true,
-            office: { short_name: 'Records' },
-        },
-        {
-            created_at: '2026-03-24T16:50:00',
-            state: { enumeration: 'Uploaded' },
-            is_original: true,
-            office: { short_name: 'Receiving' },
-        },
-        {
-            created_at: '2026-03-24T14:10:00',
-            state: { enumeration: 'Received' },
-            is_original: false,
-            office: { short_name: 'Front Desk' },
-        },
-        {
-            created_at: '2026-03-24T11:00:00',
-            state: { enumeration: 'Logged' },
-            is_original: false,
-            office: { short_name: 'Front Desk' },
-        },
-        {
-            created_at: '2026-03-24T09:30:00',
-            state: { enumeration: 'Initialized' },
-            is_original: true,
-            office: { short_name: 'System' },
-        },
-    ];
+    let lifecycles = $state(data.document.latest_version.lifecycles);
 
-    let activeTab = $state('history');
+    let activeTab = $state('overview');
 
     function selectTab(tab) {
         activeTab = tab;
@@ -225,6 +165,42 @@
                     {/each}
                 </div>
             </j.RowCol>
+            <j.Row>
+                <j.Col span="4">
+                    <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each reviewers as reviewer}
+                            <j.Tag name={reviewer.user.full_name_2} border />
+                        {/each}
+                    </div>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="exampleFormControlTextarea1" class="form-label small">Approvers</label>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each approvers as approver}
+                            <j.Tag name={approver.user.full_name_2} border />
+                        {/each}
+                    </div>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="exampleFormControlTextarea1" class="form-label small">Signatories</label>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each signatories as signatory}
+                            <j.Tag name={signatory.user.full_name_2} border />
+                        {/each}
+                    </div>
+                </j.Col>
+            </j.Row>
+
+            <j.RowCol endx>
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm px-3"
+                    onclick={() => {
+                        goto(`/dex/dms/drafts${p.toString()}`);
+                    }}>Okay</button
+                >
+            </j.RowCol>
         </j.Card>
     </div>
 
@@ -261,7 +237,7 @@
                         <!-- Timeline item -->
                         <div class="mb-3 position-relative">
                             <!-- Dot -->
-                            <div class="position-absolute start-0 translate-middle rounded-circle {index === 0 ? 'bg-primary' : 'bg-light border'}" style="width:14px; height:14px;"></div>
+                            <div class="position-absolute start-0 translate-middle rounded-circle {index === 0 ? 'bg-primary' : 'bg-secondary-subtle'}" style="width:14px; height:14px;"></div>
                             <!-- Content -->
                             <div class="ms-4 px-3 py-2 border bg-light">
                                 <j.RowCol mb="0">
@@ -303,12 +279,22 @@
                     {/each}
                 </div>
             </j.RowCol>
+
+            <j.RowCol endx>
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm px-3"
+                    onclick={() => {
+                        goto(`/dex/dms/drafts${p.toString()}`);
+                    }}>Okay</button
+                >
+            </j.RowCol>
         </j.Card>
     </div>
 
     <!-- PREVIEW -->
     <div class="tab-pane {activeTab === 'preview' ? 'active' : 'd-none'}">
-        <div class="bg-secondary-subtle overflow-auto pt-4" style="max-height: 1500px;">
+        <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
             <j.Row>
                 <j.Col></j.Col>
                 <j.Col>
@@ -325,5 +311,15 @@
                 <j.Col></j.Col>
             </j.Row>
         </div>
+
+        <j.RowCol endx>
+            <button
+                type="button"
+                class="btn btn-primary btn-sm px-3"
+                onclick={() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                }}>Okay</button
+            >
+        </j.RowCol>
     </div>
 </div>

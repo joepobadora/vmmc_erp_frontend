@@ -71,7 +71,7 @@
 
     onMount(() => {
         if (!$draftHasSource) {
-            goto('/dex/dms/drafts/create/source');
+            // goto('/dex/dms/drafts/create/source');
         }
     });
 
@@ -275,6 +275,12 @@
                 <input value={$draftFile.ext} type="text" class="form-control form-control-sm" id="name" disabled />
             </j.Col>
         </j.Row>
+        <j.RowCol>
+            <label for="password" class="form-label small">Attachment</label>
+            <div>
+                <j.Button label="Change File" loadinglabel="Resetting" icon="bi-arrow-repeat" onClick={() => goto('/dex/dms/drafts/create/file-upload')} />
+            </div>
+        </j.RowCol>
     {/if}
     <hr class="text-muted" />
     <h5>Details</h5>

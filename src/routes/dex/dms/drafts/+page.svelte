@@ -112,11 +112,11 @@
 <j.Row endy>
     <j.Col auto>
         <label for="from" class="small text-muted ms-1">Date from</label>
-        <input type="date" class="form-control form-control-sm" id="from" placeholder="YYYY-MM-DD" />
+        <input bind:value={filter.start_date} type="date" class="form-control form-control-sm" id="from" placeholder="YYYY-MM-DD" />
     </j.Col>
     <j.Col auto>
-        <label for="docmngtMyDocumentsToDatePicker" class="small text-muted ms-1">Date to</label>
-        <input type="date" class="form-control form-control-sm" id="docmngtMyDocumentsToDatePicker" placeholder="YYYY-MM-DD" />
+        <label for="to" class="small text-muted ms-1">Date to</label>
+        <input bind:value={filter.end_date} type="date" class="form-control form-control-sm" id="to" placeholder="YYYY-MM-DD" />
     </j.Col>
     <j.Col>
         <j.Row mb="0">

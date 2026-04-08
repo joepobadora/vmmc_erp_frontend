@@ -10,14 +10,6 @@ export async function load({ params }) {
             };
         }
 
-        // const dropdownResult = await App.API.get('/admin/accounts/create/dropdown');
-        // const dropdownData = dropdownResult.data.data;
-        // if (!dropdownResult.data.success) {
-        //     return {
-        //         error: dropdownResult.data.error_code,
-        //     };
-        // }
-
         return {
             document: documentData,
         };
