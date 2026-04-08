@@ -5,6 +5,7 @@
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import { permissions } from '$lib/stores/access';
 
     let { data } = $props();
 
@@ -24,6 +25,8 @@
         status: Boolean(p.get('status')) || null,
         role: Number(p.get('role')) || null,
     });
+
+    console.log($permissions);
 
     // react to changes and update params
     $effect(() => {
@@ -138,14 +141,20 @@
                 <div class="col">
                     <div>
                         <span class="text-muted me-2">Name:</span>
-                        <strong
-                            class="custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                            }}
-                        >
-                            {item.user.full_name_2}
-                        </strong>
+                        {#if $permissions.includes('ADMIN.ACC_VIEW')}
+                            <strong
+                                class="custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                {item.user.full_name_2}
+                            </strong>
+                        {:else}
+                            <strong>
+                                {item.user.full_name_2}
+                            </strong>
+                        {/if}
                     </div>
                     <div>
                         <span class="text-muted me-2">Username:</span>

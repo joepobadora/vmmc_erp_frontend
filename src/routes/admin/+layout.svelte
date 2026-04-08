@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import Sidebar from './components/Sidebar.svelte';
     import Footer from '$lib/components/Footer.svelte';
+    import { modules } from '$lib/stores/access';
 
     let auth = null;
 
@@ -14,6 +15,10 @@
         if (!auth) {
             goto('/login');
         }
+
+        if (!$modules.includes('ADMIN0')) {
+            goto('/403');
+        }
     });
 </script>
 
@@ -22,21 +27,23 @@
 </svelte:head>
 
 {#if auth == true}
-    <!-- navbar -->
-    <div class="row mb-5">
-        <div class="col px-0">
-            <Navbar title="VMMC ERP - Admin Console" titleRoute="/admin" showHome />
+    {#if $modules.includes('ADMIN0')}
+        <!-- navbar -->
+        <div class="row mb-5">
+            <div class="col px-0">
+                <Navbar title="VMMC ERP - Admin Console" titleRoute="/admin" showHome />
+            </div>
         </div>
-    </div>
 
-    <!-- main -->
-    <div class="container mb-auto">
-        <div class="row">
-            <div class="col-md-2"><Sidebar /></div>
-            <div class="col-md-10"><slot /></div>
+        <!-- main -->
+        <div class="container mb-auto">
+            <div class="row">
+                <div class="col-md-2"><Sidebar /></div>
+                <div class="col-md-10"><slot /></div>
+            </div>
         </div>
-    </div>
 
-    <!-- footer -->
-    <Footer />
+        <!-- footer -->
+        <Footer />
+    {/if}
 {/if}
