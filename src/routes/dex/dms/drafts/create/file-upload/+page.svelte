@@ -1,6 +1,6 @@
 <script>
     import j from '$lib/components/helper';
-    import { draftHasSource, draftFile, documentSource } from '$lib/stores/dms';
+    import { draft } from '$lib/stores/dms';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import App from '$lib/assets/js/bootstrap';
@@ -40,10 +40,9 @@
     function attach() {
         attaching = true;
 
-        if ($draftFile) {
+        if ($draft.file) {
             setTimeout(() => {
-                $draftHasSource = true;
-                $documentSource = 'DOCSRC1'; // source code for file
+                $draft.source = 'DOCSRC1'; // source code for file
                 goto(`/dex/dms/drafts/create${p.toString()}`);
                 attaching = false;
             }, 600);
@@ -51,10 +50,10 @@
     }
 
     function setFile(file) {
-        $draftFile = file;
-        $draftFile.ext = $draftFile.name.split('.').pop().toUpperCase();
+        $draft.file = file;
+        $draft.file.ext = $draft.file.name.split('.').pop().toUpperCase();
 
-        const { ext, size } = $draftFile;
+        const { ext, size } = $draft.file;
 
         const validate = schema.safeParse({
             ext,
@@ -95,14 +94,14 @@
     }
 
     function reset() {
-        $draftFile = null;
+        $draft.file = null;
         addClass = '';
         errors = {};
     }
 
     $effect(() => {
         if (page.url.pathname == '/dex/dms/drafts/create/file-upload') {
-            $draftFile = null;
+            $draft.file = null;
             addClass = '';
         }
     });
@@ -130,7 +129,7 @@
             </p>
         </j.RowCol>
         <hr class="text-muted" />
-        {#if !$draftFile}
+        {#if !$draft.file}
             <j.Row centerx>
                 <j.Col span="6">
                     <div
@@ -153,18 +152,18 @@
             <j.Row>
                 <j.Col>
                     <label for="name" class="form-label small">Name</label>
-                    <input value={$draftFile.name} type="text" class="form-control form-control-sm" id="name" disabled />
+                    <input value={$draft.file.name} type="text" class="form-control form-control-sm" id="name" disabled />
                 </j.Col>
             </j.Row>
             <j.Row>
                 <j.Col span="6">
                     <label for="name" class="form-label small">Size</label>
-                    <input value={App.Format.number($draftFile.size).toFileSize()} type="text" class="form-control form-control-sm {errors.size ? 'is-invalid' : ''}" id="name" disabled />
+                    <input value={App.Format.number($draft.file.size).toFileSize()} type="text" class="form-control form-control-sm {errors.size ? 'is-invalid' : ''}" id="name" disabled />
                     <p class="text-danger small mb-auto {errors.size ? '' : 'd-none'}">{errors.size?.[0]}</p>
                 </j.Col>
                 <j.Col span="6">
                     <label for="name" class="form-label small">Type</label>
-                    <input value={$draftFile.ext} type="text" class="form-control form-control-sm {errors.ext ? 'is-invalid' : ''}" id="name" disabled />
+                    <input value={$draft.file.ext} type="text" class="form-control form-control-sm {errors.ext ? 'is-invalid' : ''}" id="name" disabled />
                     <p class="text-danger small mb-auto {errors.ext ? '' : 'd-none'}">{errors.ext?.[0]}</p>
                 </j.Col>
             </j.Row>
@@ -179,7 +178,7 @@
 
         <j.RowCol endx>
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-light border btn-sm px-3 {attaching == true || !$draftFile ? 'd-none' : ''}" onclick={reset}>Change</button>
+                <button type="button" class="btn btn-light border btn-sm px-3 {attaching == true || !$draft.file ? 'd-none' : ''}" onclick={reset}>Change</button>
                 <j.Button label="Attach File" loadinglabel="Attaching" icon="bi-link-45deg" loading={attaching} onClick={attach} disabled={errors.size || errors.ext} />
             </div>
         </j.RowCol>

@@ -3,7 +3,7 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import { onMount } from 'svelte';
-    import { draftHasSource, draftFile, draftRecord, documentSource } from '$lib/stores/dms';
+    import { draft } from '$lib/stores/dms';
     import j from '$lib/components/helper';
     import z from 'zod';
     import { page } from '$app/state';
@@ -13,17 +13,17 @@
 
     let { data } = $props();
 
-    let type = $state('');
-    let name = $state('');
-    let details = $state('');
+    let type = $state($draft.documentType ?? '');
+    let name = $state($draft.name ?? '');
+    let details = $state($draft.details ?? '');
     let tag = $state(null);
-    let tags = $state([]);
+    let tags = $state($draft.tags ?? []);
     let reviewer = $state(null);
-    let reviewers = $state([]);
+    let reviewers = $state($draft.reviewers ?? []);
     let approver = $state(null);
-    let approvers = $state([]);
+    let approvers = $state($draft.approvers ?? []);
     let signatory = $state(null);
-    let signatories = $state([]);
+    let signatories = $state($draft.signatories ?? []);
 
     let typeList = $state(data.typeList ?? []);
     let tagList = $state(data.tagList ?? []);
@@ -33,8 +33,8 @@
 
     let errors = $state({});
 
-    if ($draftFile) {
-        $draftFile.ext = $draftFile.name.split('.').pop().toUpperCase();
+    if ($draft.file) {
+        $draft.file.ext = $draft.file.name.split('.').pop().toUpperCase();
     }
 
     const p = new App.ParamBuilder(page.url.searchParams);
@@ -70,8 +70,8 @@
     });
 
     onMount(() => {
-        if (!$draftHasSource) {
-            // goto('/dex/dms/drafts/create/source');
+        if (!$draft.source) {
+            goto('/dex/dms/drafts/create/source');
         }
     });
 
@@ -91,8 +91,8 @@
         }
 
         const formData = new FormData();
-        formData.append('file', $draftFile);
-        formData.append('source', $documentSource);
+        formData.append('file', $draft.file);
+        formData.append('source', $draft.source);
         formData.append('type', type);
         formData.append('name', name);
         formData.append('details', details);
@@ -133,15 +133,29 @@
         }
     }
 
+    function changeAttachment() {
+        $draft.documentType = type;
+        $draft.name = name;
+        $draft.details = details;
+        $draft.tags = tags;
+        $draft.reviewers = reviewers;
+        $draft.approvers = approvers;
+        $draft.signatories = signatories;
+
+        goto('/dex/dms/drafts/create/file-upload');
+    }
+
     function handleTagSelect() {
         if (!tags.includes(tag)) {
             tags = [...tags, tag];
         }
         tag = null;
     }
+
     function handleTagRemove(tag) {
         tags = tags.filter((t) => t !== tag);
     }
+
     function handleReviewerSelect() {
         const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === reviewer);
 
@@ -168,6 +182,7 @@
 
         reviewer = null;
     }
+
     function handleReviewerRemove(reviewer) {
         reviewers = reviewers.filter((r) => r !== reviewer);
     }
@@ -256,29 +271,29 @@
             Create a new draft to capture and organize information before finalizing the document. Drafts can be saved, edited, and updated as needed prior to review or approval.
         </p>
     </j.RowCol>
-    {#if $draftFile}
+    {#if $draft.file}
         <hr class="text-muted" />
         <h5>File</h5>
         <j.Row>
             <j.Col>
                 <label for="name" class="form-label small">Name</label>
-                <input value={$draftFile.name} type="text" class="form-control form-control-sm" id="name" disabled />
+                <input value={$draft.file.name} type="text" class="form-control form-control-sm" id="name" disabled />
             </j.Col>
         </j.Row>
         <j.Row>
             <j.Col span="6">
                 <label for="name" class="form-label small">Size</label>
-                <input value={App.Format.number($draftFile.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
+                <input value={App.Format.number($draft.file.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
             </j.Col>
             <j.Col span="6">
                 <label for="name" class="form-label small">Type</label>
-                <input value={$draftFile.ext} type="text" class="form-control form-control-sm" id="name" disabled />
+                <input value={$draft.file.ext} type="text" class="form-control form-control-sm" id="name" disabled />
             </j.Col>
         </j.Row>
         <j.RowCol>
             <label for="password" class="form-label small">Attachment</label>
             <div>
-                <j.Button label="Change File" loadinglabel="Resetting" icon="bi-arrow-repeat" onClick={() => goto('/dex/dms/drafts/create/file-upload')} />
+                <j.Button label="Change File" loadinglabel="Resetting" icon="bi-arrow-repeat" onClick={changeAttachment} />
             </div>
         </j.RowCol>
     {/if}
