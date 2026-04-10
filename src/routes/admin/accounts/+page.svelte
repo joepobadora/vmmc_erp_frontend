@@ -26,8 +26,6 @@
         role: Number(p.get('role')) || null,
     });
 
-    console.log($permissions);
-
     // react to changes and update params
     $effect(() => {
         p.set('page', tablePage).set('search', filter.search).set('office', filter.office).set('status', filter.status).set('role', filter.role);
