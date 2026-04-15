@@ -36,7 +36,6 @@ export async function load({ params }) {
         }
 
         accountData.office = accountData.office.short_name;
-        accountData.user.suffix_id = Number(accountData.user.suffix_id);
         accountData.user.birthdate = App.Format.date(accountData.user.birthdate).toISODate();
         accountData.role_id = Number(accountData.role_id);
 
@@ -53,6 +52,8 @@ export async function load({ params }) {
                 error: dropdownResult.data.error_code,
             };
         }
+
+        console.log(accountData);
 
         return {
             suffixList: dropdownData.suffix,

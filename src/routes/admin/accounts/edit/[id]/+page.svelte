@@ -251,10 +251,10 @@
         </j.Col>
         <j.Col span="3">
             <label for="suffix" class="form-label small">Suffix</label>
-            <select bind:value={user.suffix_id} class="form-select form-select-sm" id="suffix">
-                <option value={0} selected>N/A</option>
+            <select bind:value={user.suffix_code} class="form-select form-select-sm" id="suffix">
+                <option value={null} selected>N/A</option>
                 {#each suffixList as suffix}
-                    <option value={suffix.id}>{suffix.enumeration}</option>
+                    <option value={suffix.code}>{suffix.enumeration}</option>
                 {/each}
             </select>
         </j.Col>
