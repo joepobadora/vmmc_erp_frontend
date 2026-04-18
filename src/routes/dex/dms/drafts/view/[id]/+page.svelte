@@ -13,7 +13,7 @@
     let pdfData = $state(null);
 
     let documentNo = $state(data.document.document_no);
-    let currentState = $state(data.document.state.state.enumeration);
+    let currentState = $state(data.document.state.state);
     let variant = $state(data.document.state.is_original);
     let documentType = $state(data.document.latest_version.document_type.name);
     let name = $state(data.document.state.state.enumeration);
