@@ -17,9 +17,9 @@
                 ©&nbsp<span bind:innerText={year} contenteditable=""></span>&nbspVeterans Memorial Medical Center • Developed by IMISS
             </j.Col>
             <j.Col auto>
-                <a href="https://privacy.gov.ph/data-privacy-act/" target="_blank" class="custom-link me-3"><i class="bi bi-shield-lock"></i> Data Privacy</a>
-                <a href="https://vmmc.gov.ph/" target="_blank" class="custom-link me-3"><i class="bi bi-globe"></i> Website</a>
-                <a href="https://www.facebook.com/vmmc.miso/" target="_blank" class="custom-link me-3"><i class="bi bi-facebook"></i> Facebook - @IMISS</a>
+                <a href="https://privacy.gov.ph/data-privacy-act/" target="_blank" class="custom-link me-3"><i class="bi bi-shield-lock me-1"></i>Data Privacy</a>
+                <a href="https://vmmc.gov.ph/" target="_blank" class="custom-link me-3"><i class="bi bi-globe me-1"></i>Website</a>
+                <a href="https://www.facebook.com/vmmc.miso/" target="_blank" class="custom-link me-3"><i class="bi bi-facebook me-1"></i>Facebook - @IMISS</a>
             </j.Col>
         </j.Row>
     </div>

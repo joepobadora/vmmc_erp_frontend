@@ -5,6 +5,7 @@
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import { permissions } from '$lib/stores/access';
 
     let loadingData = $state('false');
     let roles = $state([]);
@@ -76,7 +77,9 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/add${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Add</a>
+        {#if $permissions.includes('ADMIN.ROLES_CREATE')}
+            <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/add${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Add</a>
+        {/if}
     </j.Col>
 </j.Row>
 <j.Row endy>
@@ -108,24 +111,34 @@
                 <div class="col">
                     <div>
                         <span class="text-muted me-2">Name:</span>
-                        <strong
-                            class="custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                            }}>{item.name}</strong
-                        >
+                        {#if $permissions.includes('ADMIN.ROLES_VIEW')}
+                            <strong
+                                class="custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                {item.name}
+                            </strong>
+                        {:else}
+                            <strong>{item.name}</strong>
+                        {/if}
                     </div>
                     <div>
                         <span class="text-muted me-2">Code:</span>
                         <span>{item.code}</span>
                     </div>
                     <div>
-                        <span
-                            class="text-info custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                            }}>Edit</span
-                        >
+                        {#if $permissions.includes('ADMIN.ROLES_EDIT')}
+                            <span
+                                class="text-info custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                Edit
+                            </span>
+                        {/if}
                     </div>
                 </div>
                 <div class="col">

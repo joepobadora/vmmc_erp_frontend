@@ -5,6 +5,7 @@
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import { permissions } from '$lib/stores/access';
 
     let loadingData = $state('false');
     let logs = $state([]);
@@ -144,12 +145,18 @@
             <div slot="row" let:item class="row border-bottom custom-row small">
                 <div class="col">
                     <div>
-                        <span
-                            class="custom-link text-danger"
-                            onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                            }}>{App.Format.date(item.created_at).toDatetime()}</span
-                        >
+                        {#if $permissions.includes('ADMIN.AUDIT_VIEW')}
+                            <span
+                                class="custom-link text-danger"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                {App.Format.date(item.created_at).toDatetime()}
+                            </span>
+                        {:else}
+                            <span class="text-danger">{App.Format.date(item.created_at).toDatetime()}</span>
+                        {/if}
                     </div>
                 </div>
                 <div class="col">

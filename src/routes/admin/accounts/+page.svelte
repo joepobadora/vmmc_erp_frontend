@@ -88,7 +88,9 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/create${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Create</a>
+        {#if $permissions.includes('ADMIN.ACC_CREATE')}
+            <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/create${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Create</a>
+        {/if}
     </j.Col>
 </j.Row>
 <j.Row endy>
@@ -159,12 +161,16 @@
                         <span>{item.username}</span>
                     </div>
                     <div>
-                        <span
-                            class="text-info custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                            }}>Edit</span
-                        >
+                        {#if $permissions.includes('ADMIN.ACC_EDIT')}
+                            <span
+                                class="text-info custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                Edit
+                            </span>
+                        {/if}
                     </div>
                 </div>
                 <div class="col">
