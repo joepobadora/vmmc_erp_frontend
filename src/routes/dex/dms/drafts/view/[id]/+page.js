@@ -10,8 +10,6 @@ export async function load({ params }) {
             };
         }
 
-        console.log(documentData);
-
         return {
             document: documentData,
         };

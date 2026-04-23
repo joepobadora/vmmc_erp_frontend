@@ -1,41 +1,38 @@
 <script>
-    import { goto } from '$app/navigation';
+    import PdfViewer from '$lib/components/PDFViewer.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
-    import { draft } from '$lib/stores/dms';
     import j from '$lib/components/helper';
     import z from 'zod';
-    import { page } from '$app/state';
     import Auth from '$lib/components/Auth.svelte';
+    import { onMount } from 'svelte';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
 
     let auth = $state();
 
     let { data } = $props();
 
-    let type = $state($draft.documentType ?? '');
-    let name = $state($draft.name ?? '');
-    let details = $state($draft.details ?? '');
+    let file = $state(null);
+    let loadingDocumentFile = $state(false);
+    let pdfData = $state(null);
+
+    let doc = $state(data.document);
     let tag = $state(null);
-    let tags = $state($draft.tags ?? []);
     let reviewer = $state(null);
-    let reviewers = $state($draft.reviewers ?? []);
     let approver = $state(null);
-    let approvers = $state($draft.approvers ?? []);
     let signatory = $state(null);
-    let signatories = $state($draft.signatories ?? []);
+    let changelog = $state('');
 
     let typeList = $state(data.typeList ?? []);
     let tagList = $state(data.tagList ?? []);
     let accountList = $state(data.accountList ?? []);
 
+    let activeTab = $state('overview');
+
     let saving = $state(false);
 
     let errors = $state({});
-
-    if ($draft.file) {
-        $draft.file.ext = $draft.file.name.split('.').pop().toUpperCase();
-    }
 
     const p = new App.ParamBuilder(page.url.searchParams);
 
@@ -49,6 +46,7 @@
         name: z.string().nonempty('Required.'),
         reviewers: z.array(z.any()).nonempty('At lease one reviewer is required.'),
         approvers: z.array(z.any()).nonempty('At lease one approver is required.'),
+        changelog: z.string().nonempty('Required.'),
     });
 
     const reviewerSchema = z.object({
@@ -69,18 +67,13 @@
         }),
     });
 
-    onMount(() => {
-        if (!$draft.source) {
-            // goto('/dex/dms/drafts/create/source');
-        }
-    });
-
     async function save() {
         const validate = schema.safeParse({
-            type,
-            name,
-            reviewers,
-            approvers,
+            type: doc.latest_version.document_type.name,
+            name: doc.latest_version.name,
+            reviewers: doc.latest_version.workflow.reviewers,
+            approvers: doc.latest_version.workflow.approvers,
+            changelog,
         });
 
         if (!validate.success) {
@@ -90,17 +83,6 @@
             errors = {};
         }
 
-        const formData = new FormData();
-        formData.append('file', $draft.file);
-        formData.append('source', $draft.source);
-        formData.append('type', type);
-        formData.append('name', name);
-        formData.append('details', details);
-        formData.append('tags', JSON.stringify(tags));
-        formData.append('reviewers', JSON.stringify(reviewers));
-        formData.append('approvers', JSON.stringify(approvers));
-        formData.append('signatories', JSON.stringify(signatories));
-
         // saving account
         try {
             // password auth
@@ -109,11 +91,18 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post('/dex/dms/drafts/store', formData, {
-                headers: {
-                    // Let Axios set the boundary automatically
-                    'Content-Type': 'multipart/form-data',
-                },
+            const result = await App.API.post(`/dex/dms/drafts/update/${page.params.id}`, {
+                source: doc.latest_version.source_code,
+                file: doc.latest_version.file,
+                state: doc.state,
+                type: doc.latest_version.document_type.name,
+                name: doc.latest_version.name,
+                details: doc.latest_version.details,
+                tags: JSON.stringify(doc.tags),
+                reviewers: JSON.stringify(doc.latest_version.workflow.reviewers),
+                approvers: JSON.stringify(doc.latest_version.workflow.approvers),
+                signatories: JSON.stringify(doc.latest_version.workflow.signatories),
+                change_log: changelog,
             });
 
             if (result.data.success) {
@@ -133,27 +122,45 @@
         }
     }
 
-    function changeAttachment() {
-        $draft.documentType = type;
-        $draft.name = name;
-        $draft.details = details;
-        $draft.tags = tags;
-        $draft.reviewers = reviewers;
-        $draft.approvers = approvers;
-        $draft.signatories = signatories;
+    function selectTab(tab) {
+        activeTab = tab;
+    }
 
-        goto('/dex/dms/drafts/create/file-upload');
+    // onmount
+    onMount(() => {
+        initFile();
+    });
+
+    // init pdf file
+    async function initFile() {
+        loadingDocumentFile = true;
+
+        try {
+            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+
+            // Convert blob to ArrayBuffer → Uint8Array
+            const buf = await result.data.arrayBuffer();
+            file = { data: new Uint8Array(buf) };
+        } catch (err) {
+            console.log(err.message + ': UNABLE TO RETRIEVE FILE');
+        } finally {
+            loadingDocumentFile = false;
+        }
+    }
+
+    function handleOnloaded(data) {
+        pdfData = data;
     }
 
     function handleTagSelect() {
-        if (!tags.includes(tag)) {
-            tags = [...tags, tag];
+        if (!doc.tags.includes(tag)) {
+            doc.tags = [...doc.tags, tag];
         }
         tag = null;
     }
 
     function handleTagRemove(tag) {
-        tags = tags.filter((t) => t !== tag);
+        doc.tags = doc.tags.filter((t) => t !== tag);
     }
 
     function handleReviewerSelect() {
@@ -176,15 +183,15 @@
             errors = {};
         }
 
-        if (!reviewers.includes(obj)) {
-            reviewers = [...reviewers, obj];
+        if (!doc.latest_version.workflow.reviewers.includes(obj)) {
+            doc.latest_version.workflow.reviewers = [...doc.latest_version.workflow.reviewers, obj];
         }
 
         reviewer = null;
     }
 
     function handleReviewerRemove(reviewer) {
-        reviewers = reviewers.filter((r) => r !== reviewer);
+        doc.latest_version.workflow.reviewers = doc.latest_version.workflow.reviewers.filter((r) => r !== reviewer);
     }
 
     function handleApproverSelect() {
@@ -207,15 +214,15 @@
             errors = {};
         }
 
-        if (!approvers.includes(obj)) {
-            approvers = [...approvers, obj];
+        if (!doc.latest_version.workflow.approvers.includes(obj)) {
+            doc.latest_version.workflow.approvers = [...doc.latest_version.workflow.approvers, obj];
         }
 
         approver = null;
     }
 
     function handleApproverRemove(approver) {
-        approvers = approvers.filter((a) => a !== approver);
+        doc.latest_version.workflow.approvers = doc.latest_version.workflow.approvers.filter((a) => a !== approver);
     }
 
     function handleSignatorySelect() {
@@ -238,180 +245,252 @@
             errors = {};
         }
 
-        if (!signatories.includes(obj)) {
-            signatories = [...signatories, obj];
+        if (!doc.latest_version.workflow.signatories.includes(obj)) {
+            doc.latest_version.workflow.signatories = [...doc.latest_version.workflow.signatories, obj];
         }
 
         signatory = null;
     }
 
     function handleSignatoryRemove(signatory) {
-        signatories = signatories.filter((s) => s !== signatory);
+        doc.latest_version.workflow.signatories = doc.latest_version.workflow.signatories.filter((s) => s !== signatory);
     }
 </script>
 
-<Auth bind:me={auth} warning="You are about to create a draft document." />
+<Auth bind:me={auth} warning="You are about to update a draft document." />
 
 <!-- controls -->
 <j.RowCol>
     <!-- breadcrumbs -->
-    <nav style="--bs-breadcrumb-divider: '>';">
+    <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item small"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item small"><a href="/dex/dms/drafts">(Document Manager) Drafts</a></li>
-            <li class="breadcrumb-item small active">Edit</li>
+            <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/drafts">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item active">Edit</li>
         </ol>
     </nav>
 </j.RowCol>
 
-<j.Card>
-    <j.RowCol>
-        <h5>Edit a draft document</h5>
-        <p class="small text-muted">
-            Create a new draft to capture and organize information before finalizing the document. Drafts can be saved, edited, and updated as needed prior to review or approval.
-        </p>
-    </j.RowCol>
-    {#if $draft.file}
-        <hr class="text-muted" />
-        <h5>File</h5>
-        <j.Row>
-            <j.Col>
-                <label for="name" class="form-label small">Name</label>
-                <input value={$draft.file.name} type="text" class="form-control form-control-sm" id="name" disabled />
-            </j.Col>
-        </j.Row>
-        <j.Row>
-            <j.Col span="6">
-                <label for="name" class="form-label small">Size</label>
-                <input value={App.Format.number($draft.file.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
-            </j.Col>
-            <j.Col span="6">
-                <label for="name" class="form-label small">Type</label>
-                <input value={$draft.file.ext} type="text" class="form-control form-control-sm" id="name" disabled />
-            </j.Col>
-        </j.Row>
-        <j.RowCol>
-            <label for="password" class="form-label small">Attachment</label>
-            <div>
-                <j.Button label="Change File" loadinglabel="Resetting" icon="bi-arrow-repeat" onClick={changeAttachment} />
+<j.RowCol>
+    <ul class="nav nav-tabs small">
+        <li class="nav-item">
+            <a
+                class="nav-link {activeTab === 'overview' ? 'active' : ''}"
+                href=""
+                onclick={(e) => {
+                    e.preventDefault();
+                    selectTab('overview');
+                }}
+            >
+                Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a
+                class="nav-link {activeTab === 'preview' ? 'active' : ''}"
+                href=""
+                onclick={(e) => {
+                    e.preventDefault();
+                    selectTab('preview');
+                }}
+            >
+                File Preview
+            </a>
+        </li>
+    </ul>
+</j.RowCol>
+
+<div class="tab-content">
+    <!-- OVERVIEW -->
+    <div class="tab-pane {activeTab === 'overview' ? 'active' : 'd-none'}">
+        <j.Card>
+            <j.RowCol>
+                <h5>Edit draft document</h5>
+                <p class="small text-muted">
+                    A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
+                </p>
+            </j.RowCol>
+            <hr class="text-muted" />
+            <h5>Document</h5>
+            <j.Row>
+                <j.Col span="6">
+                    <label for="username" class="form-label small">Document No.</label>
+                    <input bind:value={doc.document_no} class="form-control form-control-sm" id="username" disabled />
+                </j.Col>
+                <j.Col span="3">
+                    <label for="username" class="form-label small">Current State</label>
+                    <input bind:value={doc.state.state.enumeration} class="form-control form-control-sm" id="username" disabled />
+                </j.Col>
+                <j.Col span="3">
+                    <label for="username" class="form-label small">Variant</label>
+                    <div>
+                        <span class="badge bg-{doc.state.is_original == 1 ? 'primary' : 'secondary'}">{doc.state.is_original == 1 ? 'Original' : 'Reference Copy'}</span>
+                    </div>
+                </j.Col>
+            </j.Row>
+            <j.Row>
+                <j.Col span="6">
+                    <label for="office" class="form-label small">Document Type<span class="ms-1 text-danger">*</span></label>
+                    <input
+                        bind:value={doc.latest_version.document_type.name}
+                        list="typeList"
+                        type="text"
+                        class="form-control form-control-sm {errors.type ? 'is-invalid' : ''}"
+                        id="office"
+                        placeholder="Type and choose..."
+                    />
+                    <p class="text-danger small mb-auto {errors.type ? '' : 'd-none'}">{errors.type?.[0]}</p>
+                    <datalist id="typeList">
+                        {#each typeList as type}
+                            <option value={type.name}></option>
+                        {/each}
+                    </datalist>
+                </j.Col>
+            </j.Row>
+            <j.RowCol>
+                <label for="password" class="form-label small">Name</label>
+                <input bind:value={doc.latest_version.name} type="text" class="form-control form-control-sm" id="password" placeholder="Name" />
+            </j.RowCol>
+            <j.RowCol>
+                <label for="exampleFormControlTextarea1" class="form-label small">Details</label>
+                <textarea bind:value={doc.latest_version.details} class="form-control form-control-sm" id="exampleFormControlTextarea1" rows="5"></textarea>
+            </j.RowCol>
+            <j.RowCol span="6">
+                <label for="docmngtMyDocumentsStatusDropdown" class="form-label small">Tag</label>
+                <select onchange={handleTagSelect} bind:value={tag} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+                    {#each tagList as tag}
+                        <option value={tag}>{tag.name}</option>
+                    {/each}
+                </select>
+                <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                    {#each doc.tags as tag}
+                        <j.Tag name={tag.name} color={tag.color} onRemove={() => handleTagRemove(tag)} />
+                    {/each}
+                </div>
+            </j.RowCol>
+            <j.Row>
+                <j.Col span="4">
+                    <label for="office" class="form-label small">Reviewers<span class="ms-1 text-danger">*</span></label>
+                    <div class="input-group input-group-sm">
+                        <input
+                            bind:value={reviewer}
+                            list="accountList"
+                            type="text"
+                            class="form-control form-control-sm {errors.reviewer || errors.reviewers ? 'is-invalid' : ''}"
+                            id="office"
+                            placeholder="Type and choose..."
+                        />
+                        <button onclick={handleReviewerSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
+                    </div>
+                    <p class="text-danger small mb-auto {errors.reviewer ? '' : 'd-none'}">{errors.reviewer?.[0]}</p>
+                    <p class="text-danger small mb-auto {errors.reviewers ? '' : 'd-none'}">{errors.reviewers?.[0]}</p>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each doc.latest_version.workflow.reviewers as reviewer}
+                            <j.Tag name={reviewer.user.full_name_2} onRemove={() => handleReviewerRemove(reviewer)} border />
+                        {/each}
+                    </div>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="office" class="form-label small">Approvers<span class="ms-1 text-danger">*</span></label>
+                    <div class="input-group input-group-sm">
+                        <input
+                            bind:value={approver}
+                            list="accountList"
+                            type="text"
+                            class="form-control form-control-sm {errors.approver || errors.approvers ? 'is-invalid' : ''}"
+                            id="office"
+                            placeholder="Type and choose..."
+                        />
+                        <button onclick={handleApproverSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
+                    </div>
+                    <p class="text-danger small mb-auto {errors.approver ? '' : 'd-none'}">{errors.approver?.[0]}</p>
+                    <p class="text-danger small mb-auto {errors.approvers ? '' : 'd-none'}">{errors.approvers?.[0]}</p>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each doc.latest_version.workflow.approvers as approver}
+                            <j.Tag name={approver.user.full_name_2} onRemove={() => handleApproverRemove(approver)} border />
+                        {/each}
+                    </div>
+                </j.Col>
+                <j.Col span="4">
+                    <label for="office" class="form-label small">Signatories</label>
+                    <div class="input-group input-group-sm">
+                        <input
+                            bind:value={signatory}
+                            list="accountList"
+                            type="text"
+                            class="form-control form-control-sm {errors.signatory ? 'is-invalid' : ''}"
+                            id="office"
+                            placeholder="Type and choose..."
+                        />
+                        <button onclick={handleSignatorySelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
+                    </div>
+                    <p class="text-danger small mb-auto {errors.signatory ? '' : 'd-none'}">{errors.signatory?.[0]}</p>
+                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                        {#each doc.latest_version.workflow.signatories as signatory}
+                            <j.Tag name={signatory.user.full_name_2} onRemove={() => handleSignatoryRemove(signatory)} border />
+                        {/each}
+                    </div>
+                </j.Col>
+                <datalist id="accountList">
+                    {#each accountList as account}
+                        <option data-id={account.id} value={account.user.full_name_2}></option>
+                    {/each}
+                </datalist>
+            </j.Row>
+
+            <j.RowCol>
+                <label for="changelog" class="form-label small">Changelog<span class="ms-1 text-danger">*</span></label>
+                <textarea bind:value={changelog} class="form-control form-control-sm {errors.changelog ? 'is-invalid' : ''}" id="changelog" rows="3"></textarea>
+                <p class="text-danger small mb-auto {errors.changelog ? '' : 'd-none'}">{errors.changelog?.[0]}</p>
+                <span class="small text-muted fst-italic">Describe what changed and the reason behind it.</span>
+            </j.RowCol>
+
+            <j.RowCol endx>
+                <div class="d-flex gap-2">
+                    <button
+                        type="button"
+                        class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
+                        onclick={() => {
+                            goto(`/dex/dms/drafts${p.toString()}`);
+                        }}>Cancel</button
+                    >
+                    <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+                </div>
+            </j.RowCol>
+        </j.Card>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="tab-pane {activeTab === 'preview' ? 'active' : 'd-none'}">
+        <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
+            <j.Row>
+                <j.Col></j.Col>
+                <j.Col>
+                    {#if loadingDocumentFile}
+                        <j.RowCol centerx>
+                            <div class="spinner-border text-secondary"></div>
+                        </j.RowCol>
+                    {:else if file}
+                        <div>
+                            <PdfViewer src={file} onLoaded={handleOnloaded} />
+                        </div>
+                    {/if}
+                </j.Col>
+                <j.Col></j.Col>
+            </j.Row>
+        </div>
+
+        <j.RowCol endx>
+            <div class="d-flex gap-2">
+                <button
+                    type="button"
+                    class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
+                    onclick={() => {
+                        goto(`/dex/dms/drafts${p.toString()}`);
+                    }}>Cancel</button
+                >
+                <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
             </div>
         </j.RowCol>
-    {/if}
-    <hr class="text-muted" />
-    <h5>Details</h5>
-    <j.Row>
-        <j.Col span="6">
-            <label for="office" class="form-label small">Document Type<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={type} list="typeList" type="text" class="form-control form-control-sm {errors.type ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
-            <p class="text-danger small mb-auto {errors.type ? '' : 'd-none'}">{errors.type?.[0]}</p>
-            <datalist id="typeList">
-                {#each typeList as type}
-                    <option value={type.name}></option>
-                {/each}
-            </datalist>
-        </j.Col>
-    </j.Row>
-    <j.Row>
-        <j.Col>
-            <label for="password" class="form-label small">Name<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="password" placeholder="Name" />
-            <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
-        </j.Col>
-    </j.Row>
-    <j.Row>
-        <j.Col>
-            <label for="exampleFormControlTextarea1" class="form-label small">Details</label>
-            <textarea bind:value={details} class="form-control form-control-sm" id="exampleFormControlTextarea1" rows="5" placeholder="Details"></textarea>
-        </j.Col>
-    </j.Row>
-    <j.RowCol span="6">
-        <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Tag</label>
-        <select onchange={handleTagSelect} bind:value={tag} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
-            {#each tagList as tag}
-                <option value={tag}>{tag.name}</option>
-            {/each}
-        </select>
-        <div class="d-flex flex-row flex-wrap gap-2 my-3">
-            {#each tags as tag}
-                <j.Tag name={tag.name} color={tag.color} onRemove={() => handleTagRemove(tag)} />
-            {/each}
-        </div>
-    </j.RowCol>
-    <hr class="text-muted" />
-    <h5>Participants</h5>
-    <j.Row>
-        <j.Col span="4">
-            <label for="office" class="form-label small">Reviewers<span class="ms-1 text-danger">*</span></label>
-            <div class="input-group input-group-sm">
-                <input
-                    bind:value={reviewer}
-                    list="accountList"
-                    type="text"
-                    class="form-control form-control-sm {errors.reviewer || errors.reviewers ? 'is-invalid' : ''}"
-                    id="office"
-                    placeholder="Type and choose..."
-                />
-                <button onclick={handleReviewerSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
-            </div>
-            <p class="text-danger small mb-auto {errors.reviewer ? '' : 'd-none'}">{errors.reviewer?.[0]}</p>
-            <p class="text-danger small mb-auto {errors.reviewers ? '' : 'd-none'}">{errors.reviewers?.[0]}</p>
-            <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                {#each reviewers as reviewer}
-                    <j.Tag name={reviewer.user.full_name_2} onRemove={() => handleReviewerRemove(reviewer)} border />
-                {/each}
-            </div>
-        </j.Col>
-        <j.Col span="4">
-            <label for="office" class="form-label small">Approvers<span class="ms-1 text-danger">*</span></label>
-            <div class="input-group input-group-sm">
-                <input
-                    bind:value={approver}
-                    list="accountList"
-                    type="text"
-                    class="form-control form-control-sm {errors.approver || errors.approvers ? 'is-invalid' : ''}"
-                    id="office"
-                    placeholder="Type and choose..."
-                />
-                <button onclick={handleApproverSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
-            </div>
-            <p class="text-danger small mb-auto {errors.approver ? '' : 'd-none'}">{errors.approver?.[0]}</p>
-            <p class="text-danger small mb-auto {errors.approvers ? '' : 'd-none'}">{errors.approvers?.[0]}</p>
-            <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                {#each approvers as approver}
-                    <j.Tag name={approver.user.full_name_2} onRemove={() => handleApproverRemove(approver)} border />
-                {/each}
-            </div>
-        </j.Col>
-        <j.Col span="4">
-            <label for="office" class="form-label small">Signatories</label>
-            <div class="input-group input-group-sm">
-                <input bind:value={signatory} list="accountList" type="text" class="form-control form-control-sm {errors.signatory ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
-                <button onclick={handleSignatorySelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
-            </div>
-            <p class="text-danger small mb-auto {errors.signatory ? '' : 'd-none'}">{errors.signatory?.[0]}</p>
-            <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                {#each signatories as signatory}
-                    <j.Tag name={signatory.user.full_name_2} onRemove={() => handleSignatoryRemove(signatory)} border />
-                {/each}
-            </div>
-        </j.Col>
-        <datalist id="accountList">
-            {#each accountList as account}
-                <option data-id={account.id} value={account.user.full_name_2}></option>
-            {/each}
-        </datalist>
-    </j.Row>
-
-    <j.RowCol endx>
-        <div class="d-flex gap-2">
-            <button
-                type="button"
-                class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
-                onclick={() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                }}>Cancel</button
-            >
-            <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
-        </div>
-    </j.RowCol>
-</j.Card>
+    </div>
+</div>

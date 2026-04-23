@@ -10,31 +10,20 @@ export async function load({ params }) {
             };
         }
 
-        return {
-            document: documentData,
-        };
-    } catch (err) {
-        return {
-            error: err.message,
-        };
-    }
-
-    try {
-        const result = await App.API.get('/dex/dms/drafts/create/dropdown');
-
-        const data = result.data.data;
-
-        if (result.data.success) {
+        const dropdownResult = await App.API.get('/dex/dms/drafts/create/dropdown');
+        const dropdownData = dropdownResult.data.data;
+        if (!dropdownResult.data.success) {
             return {
-                typeList: data.type,
-                tagList: data.tag,
-                accountList: data.account,
-            };
-        } else {
-            return {
-                error: result.data.error_code,
+                error: dropdownResult.data.error_code,
             };
         }
+
+        return {
+            typeList: dropdownData.type,
+            tagList: dropdownData.tag,
+            accountList: dropdownData.account,
+            document: documentData,
+        };
     } catch (err) {
         return {
             error: err.message,

@@ -33,10 +33,6 @@
 
     let errors = $state({});
 
-    if ($draft.file) {
-        $draft.file.ext = $draft.file.name.split('.').pop().toUpperCase();
-    }
-
     const p = new App.ParamBuilder(page.url.searchParams);
 
     const schema = z.object({
@@ -271,7 +267,7 @@
             Create a new draft to capture and organize information before finalizing the document. Drafts can be saved, edited, and updated as needed prior to review or approval.
         </p>
     </j.RowCol>
-    {#if $draft.file}
+    {#if $draft.source == 'DOCSRC1'}
         <hr class="text-muted" />
         <h5>File</h5>
         <j.Row>
@@ -325,7 +321,7 @@
         </j.Col>
     </j.Row>
     <j.RowCol span="6">
-        <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Tag</label>
+        <label for="docmngtMyDocumentsStatusDropdown" class="form-label small">Tag</label>
         <select onchange={handleTagSelect} bind:value={tag} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
             {#each tagList as tag}
                 <option value={tag}>{tag.name}</option>

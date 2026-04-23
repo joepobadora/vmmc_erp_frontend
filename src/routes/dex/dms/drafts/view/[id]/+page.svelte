@@ -13,10 +13,10 @@
     let pdfData = $state(null);
 
     let documentNo = $state(data.document.document_no);
-    let currentState = $state(data.document.state.state);
+    let currentState = $state(data.document.state.state.enumeration);
     let variant = $state(data.document.state.is_original);
-    let documentType = $state(data.document.latest_version.document_type.name);
-    let name = $state(data.document.state.state.enumeration);
+    let type = $state(data.document.latest_version.document_type.name);
+    let name = $state(data.document.latest_version.name);
     let details = $state(data.document.latest_version.details);
     let tags = $state(data.document.tags);
     let reviewers = $state(data.document.latest_version.workflow.reviewers);
@@ -25,7 +25,7 @@
     let currentVersion = $state(data.document.latest_version.version_no);
     let versionDate = $state(App.Format.date(data.document.latest_version.created_at).toFullMonthDate());
     let changeLog = $state(data.document.latest_version.change_log);
-    let lifecycles = $state(data.document.latest_version.lifecycles);
+    let lifecycles = $state(data.document.lifecycles);
 
     let activeTab = $state('overview');
 
@@ -146,7 +146,7 @@
             <j.Row>
                 <j.Col span="6">
                     <label for="office" class="form-label small">Document Type</label>
-                    <input bind:value={documentType} class="form-control form-control-sm" id="office" disabled />
+                    <input bind:value={type} class="form-control form-control-sm" id="office" disabled />
                 </j.Col>
             </j.Row>
             <j.RowCol>
@@ -157,7 +157,7 @@
                 <label for="exampleFormControlTextarea1" class="form-label small">Details</label>
                 <textarea bind:value={details} class="form-control form-control-sm" id="exampleFormControlTextarea1" rows="5" disabled></textarea>
             </j.RowCol>
-            <j.RowCol>
+            <j.RowCol span="6">
                 <label for="exampleFormControlTextarea1" class="form-label small">Tags</label>
                 <div class="d-flex flex-row flex-wrap gap-2 my-3">
                     {#each tags as tag}
@@ -260,8 +260,14 @@
                                         <j.Col auto>
                                             <span class="small">Variant: </span>
                                         </j.Col>
-                                        <j.Col auto>
+                                        <j.Col>
                                             <span class="badge bg-{lifecycle.is_original == true ? 'primary' : 'secondary'}">{lifecycle.is_original == true ? 'Original' : 'Reference Copy'}</span>
+                                        </j.Col>
+                                        <j.Col auto>
+                                            <span class="small">Version: </span>
+                                        </j.Col>
+                                        <j.Col auto>
+                                            <span class="small">{lifecycle.version.version_no}</span>
                                         </j.Col>
                                     </j.Row>
 
