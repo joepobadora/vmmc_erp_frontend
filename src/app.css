@@ -34,7 +34,7 @@ body {
 
 .custom-row:hover {
     /* box-shadow: inset 3px 0 0 0 #336699; */
-    box-shadow: inset 3px 0 0 0 #567159;
+    box-shadow: inset 3px 0 0 0 #008080;
     /* X offset = +2px → left side */
     background-color: #f6f8fa !important;
 }

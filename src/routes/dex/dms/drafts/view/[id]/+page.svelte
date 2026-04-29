@@ -2,9 +2,12 @@
     import PdfViewer from '$lib/components/PDFViewer.svelte';
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
+    import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+
+    let authPost = $state();
 
     let { data } = $props();
 
@@ -37,8 +40,31 @@
 
     const p = new App.ParamBuilder(page.url.searchParams);
 
-    function post() {
-        return;
+    async function post() {
+        try {
+            // password auth
+            if (!(await authPost.confirm())) return;
+
+            // udpate button state
+            posting = true;
+
+            const result = await App.API.post(`/dex/dms/drafts/post/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                    Alert.show('success', 'Posting success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Posting failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            posting = false;
+        }
     }
 
     // onmount
@@ -67,6 +93,8 @@
         pdfData = data;
     }
 </script>
+
+<Auth bind:me={authPost} warning="You are about to post a draft document." />
 
 <!-- controls -->
 <j.RowCol>
