@@ -29,11 +29,17 @@
 
     let activeTab = $state('overview');
 
+    let posting = $state(false);
+
     function selectTab(tab) {
         activeTab = tab;
     }
 
     const p = new App.ParamBuilder(page.url.searchParams);
+
+    function post() {
+        return;
+    }
 
     // onmount
     onMount(() => {
@@ -192,15 +198,7 @@
                 </j.Col>
             </j.Row>
 
-            <j.RowCol endx>
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm px-3"
-                    onclick={() => {
-                        goto(`/dex/dms/drafts${p.toString()}`);
-                    }}>Okay</button
-                >
-            </j.RowCol>
+            {@render actionButtons()}
         </j.Card>
     </div>
 
@@ -286,15 +284,7 @@
                 </div>
             </j.RowCol>
 
-            <j.RowCol endx>
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm px-3"
-                    onclick={() => {
-                        goto(`/dex/dms/drafts${p.toString()}`);
-                    }}>Okay</button
-                >
-            </j.RowCol>
+            {@render actionButtons()}
         </j.Card>
     </div>
 
@@ -318,7 +308,14 @@
             </j.Row>
         </div>
 
-        <j.RowCol endx>
+        {@render actionButtons()}
+    </div>
+</div>
+
+{#snippet actionButtons()}
+    <j.RowCol endx>
+        <div class="d-flex gap-2">
+            <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"
@@ -326,6 +323,6 @@
                     goto(`/dex/dms/drafts${p.toString()}`);
                 }}>Okay</button
             >
-        </j.RowCol>
-    </div>
-</div>
+        </div>
+    </j.RowCol>
+{/snippet}

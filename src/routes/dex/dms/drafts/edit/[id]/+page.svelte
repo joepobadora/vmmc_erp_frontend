@@ -9,7 +9,8 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
 
-    let auth = $state();
+    let authSave = $state();
+    let authDelete = $state();
 
     let { data } = $props();
 
@@ -31,6 +32,7 @@
     let activeTab = $state('overview');
 
     let saving = $state(false);
+    let deleting = $state(false);
 
     let errors = $state({});
 
@@ -86,7 +88,7 @@
         // saving account
         try {
             // password auth
-            if (!(await auth.confirm())) return;
+            if (!(await authSave.confirm())) return;
 
             // udpate button state
             saving = true;
@@ -119,6 +121,33 @@
             Alert.show('error', 'Bad request.', err.message);
         } finally {
             saving = false;
+        }
+    }
+
+    async function destroy() {
+        try {
+            // password auth
+            if (!(await authDelete.confirm())) return;
+
+            // udpate button state
+            deleting = true;
+
+            const result = await App.API.post(`/dex/dms/drafts/destroy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            deleting = false;
         }
     }
 
@@ -257,7 +286,8 @@
     }
 </script>
 
-<Auth bind:me={auth} warning="You are about to update a draft document." />
+<Auth bind:me={authSave} warning="You are about to update a draft document." />
+<Auth bind:me={authDelete} warning="You are about to delete a draft document." />
 
 <!-- controls -->
 <j.RowCol>
@@ -445,18 +475,16 @@
                 <span class="small text-muted fst-italic">Describe what changed and the reason behind it.</span>
             </j.RowCol>
 
-            <j.RowCol endx>
-                <div class="d-flex gap-2">
-                    <button
-                        type="button"
-                        class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
-                        onclick={() => {
-                            goto(`/dex/dms/drafts${p.toString()}`);
-                        }}>Cancel</button
-                    >
-                    <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+            <hr class="text-muted" />
+            <h5>Maintenance</h5>
+            <j.RowCol>
+                <label for="password" class="form-label small">Draft Document</label>
+                <div>
+                    <j.Button label="Delete Draft Document" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={deleting} onClick={destroy} />
                 </div>
             </j.RowCol>
+
+            {@render actionButtons()}
         </j.Card>
     </div>
 
@@ -480,17 +508,21 @@
             </j.Row>
         </div>
 
-        <j.RowCol endx>
-            <div class="d-flex gap-2">
-                <button
-                    type="button"
-                    class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
-                    onclick={() => {
-                        goto(`/dex/dms/drafts${p.toString()}`);
-                    }}>Cancel</button
-                >
-                <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
-            </div>
-        </j.RowCol>
+        {@render actionButtons()}
     </div>
 </div>
+
+{#snippet actionButtons()}
+    <j.RowCol endx>
+        <div class="d-flex gap-2">
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
+                onclick={() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                }}>Cancel</button
+            >
+            <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+        </div>
+    </j.RowCol>
+{/snippet}
