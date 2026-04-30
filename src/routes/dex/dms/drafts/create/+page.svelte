@@ -22,8 +22,6 @@
     let reviewers = $state($draft.reviewers ?? []);
     let approver = $state(null);
     let approvers = $state($draft.approvers ?? []);
-    let signatory = $state(null);
-    let signatories = $state($draft.signatories ?? []);
 
     let typeList = $state(data.typeList ?? []);
     let tagList = $state(data.tagList ?? []);
@@ -59,12 +57,6 @@
         }),
     });
 
-    const signatorySchema = z.object({
-        signatory: z.refine((val) => accountList.map((a) => a.id).includes(val), {
-            message: 'Invalid approver selected.',
-        }),
-    });
-
     onMount(() => {
         if (!$draft.source) {
             goto('/dex/dms/drafts/create/source');
@@ -95,7 +87,6 @@
         formData.append('tags', JSON.stringify(tags));
         formData.append('reviewers', JSON.stringify(reviewers));
         formData.append('approvers', JSON.stringify(approvers));
-        formData.append('signatories', JSON.stringify(signatories));
 
         // saving account
         try {
@@ -136,7 +127,6 @@
         $draft.tags = tags;
         $draft.reviewers = reviewers;
         $draft.approvers = approvers;
-        $draft.signatories = signatories;
 
         goto('/dex/dms/drafts/create/file-upload');
     }
@@ -212,37 +202,6 @@
 
     function handleApproverRemove(approver) {
         approvers = approvers.filter((a) => a !== approver);
-    }
-
-    function handleSignatorySelect() {
-        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === signatory);
-
-        if (opt) {
-            signatory = Number(opt.dataset.id);
-        }
-
-        const obj = accountList.find((a) => a.id === signatory);
-
-        const validate = signatorySchema.safeParse({
-            signatory,
-        });
-
-        if (!validate.success) {
-            errors = validate.error.flatten().fieldErrors;
-            return;
-        } else {
-            errors = {};
-        }
-
-        if (!signatories.includes(obj)) {
-            signatories = [...signatories, obj];
-        }
-
-        signatory = null;
-    }
-
-    function handleSignatoryRemove(signatory) {
-        signatories = signatories.filter((s) => s !== signatory);
     }
 </script>
 
@@ -375,19 +334,6 @@
             <div class="d-flex flex-row flex-wrap gap-2 my-3">
                 {#each approvers as approver}
                     <j.Tag name={approver.user.full_name_2} onRemove={() => handleApproverRemove(approver)} border />
-                {/each}
-            </div>
-        </j.Col>
-        <j.Col span="4">
-            <label for="office" class="form-label small">Signatories</label>
-            <div class="input-group input-group-sm">
-                <input bind:value={signatory} list="accountList" type="text" class="form-control form-control-sm {errors.signatory ? 'is-invalid' : ''}" id="office" placeholder="Type and choose..." />
-                <button onclick={handleSignatorySelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
-            </div>
-            <p class="text-danger small mb-auto {errors.signatory ? '' : 'd-none'}">{errors.signatory?.[0]}</p>
-            <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                {#each signatories as signatory}
-                    <j.Tag name={signatory.user.full_name_2} onRemove={() => handleSignatoryRemove(signatory)} border />
                 {/each}
             </div>
         </j.Col>

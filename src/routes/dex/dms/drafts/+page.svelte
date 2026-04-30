@@ -170,7 +170,7 @@
     </j.Col>
 </j.Row>
 
-<div class="d-flex flex-row flex-wrap gap-2 my-3">
+<div class="d-flex flex-row flex-wrap gap-2 my-3 small">
     {#each filter.tags as tag}
         <j.Tag name={tag.name} color={tag.color} onRemove={() => handleTagRemove(tag)} />
     {/each}

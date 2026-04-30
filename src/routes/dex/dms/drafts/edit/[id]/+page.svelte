@@ -22,7 +22,6 @@
     let tag = $state(null);
     let reviewer = $state(null);
     let approver = $state(null);
-    let signatory = $state(null);
     let changelog = $state('');
 
     let typeList = $state(data.typeList ?? []);
@@ -63,12 +62,6 @@
         }),
     });
 
-    const signatorySchema = z.object({
-        signatory: z.refine((val) => accountList.map((a) => a.id).includes(val), {
-            message: 'Invalid approver selected.',
-        }),
-    });
-
     async function save() {
         const validate = schema.safeParse({
             type: doc.latest_version.document_type.name,
@@ -103,7 +96,6 @@
                 tags: JSON.stringify(doc.tags),
                 reviewers: JSON.stringify(doc.latest_version.workflow.reviewers),
                 approvers: JSON.stringify(doc.latest_version.workflow.approvers),
-                signatories: JSON.stringify(doc.latest_version.workflow.signatories),
                 change_log: changelog,
             });
 
@@ -252,37 +244,6 @@
 
     function handleApproverRemove(approver) {
         doc.latest_version.workflow.approvers = doc.latest_version.workflow.approvers.filter((a) => a !== approver);
-    }
-
-    function handleSignatorySelect() {
-        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === signatory);
-
-        if (opt) {
-            signatory = Number(opt.dataset.id);
-        }
-
-        const obj = accountList.find((a) => a.id === signatory);
-
-        const validate = signatorySchema.safeParse({
-            signatory,
-        });
-
-        if (!validate.success) {
-            errors = validate.error.flatten().fieldErrors;
-            return;
-        } else {
-            errors = {};
-        }
-
-        if (!doc.latest_version.workflow.signatories.includes(obj)) {
-            doc.latest_version.workflow.signatories = [...doc.latest_version.workflow.signatories, obj];
-        }
-
-        signatory = null;
-    }
-
-    function handleSignatoryRemove(signatory) {
-        doc.latest_version.workflow.signatories = doc.latest_version.workflow.signatories.filter((s) => s !== signatory);
     }
 </script>
 
@@ -441,26 +402,7 @@
                         {/each}
                     </div>
                 </j.Col>
-                <j.Col span="4">
-                    <label for="office" class="form-label small">Signatories</label>
-                    <div class="input-group input-group-sm">
-                        <input
-                            bind:value={signatory}
-                            list="accountList"
-                            type="text"
-                            class="form-control form-control-sm {errors.signatory ? 'is-invalid' : ''}"
-                            id="office"
-                            placeholder="Type and choose..."
-                        />
-                        <button onclick={handleSignatorySelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
-                    </div>
-                    <p class="text-danger small mb-auto {errors.signatory ? '' : 'd-none'}">{errors.signatory?.[0]}</p>
-                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                        {#each doc.latest_version.workflow.signatories as signatory}
-                            <j.Tag name={signatory.user.full_name_2} onRemove={() => handleSignatoryRemove(signatory)} border />
-                        {/each}
-                    </div>
-                </j.Col>
+
                 <datalist id="accountList">
                     {#each accountList as account}
                         <option data-id={account.id} value={account.user.full_name_2}></option>

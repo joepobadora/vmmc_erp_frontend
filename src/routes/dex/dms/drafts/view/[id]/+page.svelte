@@ -1,6 +1,7 @@
 <script>
     import PdfViewer from '$lib/components/PDFViewer.svelte';
     import App from '$lib/assets/js/bootstrap';
+    import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
     import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
@@ -8,6 +9,8 @@
     import { goto } from '$app/navigation';
 
     let authPost = $state();
+    let authReview = $state();
+    let authApprove = $state();
 
     let { data } = $props();
 
@@ -24,7 +27,6 @@
     let tags = $state(data.document.tags);
     let reviewers = $state(data.document.latest_version.workflow.reviewers);
     let approvers = $state(data.document.latest_version.workflow.approvers);
-    let signatories = $state(data.document.latest_version.workflow.signatories);
     let currentVersion = $state(data.document.latest_version.version_no);
     let versionDate = $state(App.Format.date(data.document.latest_version.created_at).toFullMonthDate());
     let changeLog = $state(data.document.latest_version.change_log);
@@ -33,6 +35,8 @@
     let activeTab = $state('overview');
 
     let posting = $state(false);
+    let reviewing = $state(false);
+    let approving = $state(false);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -67,6 +71,60 @@
         }
     }
 
+    async function review() {
+        try {
+            // password auth
+            if (!(await authReview.confirm())) return;
+
+            // udpate button state
+            reviewing = true;
+
+            const result = await App.API.post(`/dex/dms/drafts/review/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                    Alert.show('success', 'Reviewing success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Reviewing failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            reviewing = false;
+        }
+    }
+
+    async function approve() {
+        try {
+            // password auth
+            if (!(await authApprove.confirm())) return;
+
+            // udpate button state
+            approving = true;
+
+            const result = await App.API.post(`/dex/dms/drafts/approve/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                    Alert.show('success', 'Approving success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Approving failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            approving = false;
+        }
+    }
+
     // onmount
     onMount(() => {
         initFile();
@@ -95,6 +153,8 @@
 </script>
 
 <Auth bind:me={authPost} warning="You are about to post a draft document." />
+<Auth bind:me={authReview} warning="You are about to review a posted document." />
+<Auth bind:me={authApprove} warning="You are about to approve a posted document." />
 
 <!-- controls -->
 <j.RowCol>
@@ -213,14 +273,6 @@
                     <div class="d-flex flex-row flex-wrap gap-2 my-3">
                         {#each approvers as approver}
                             <j.Tag name={approver.user.full_name_2} border />
-                        {/each}
-                    </div>
-                </j.Col>
-                <j.Col span="4">
-                    <label for="exampleFormControlTextarea1" class="form-label small">Signatories</label>
-                    <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                        {#each signatories as signatory}
-                            <j.Tag name={signatory.user.full_name_2} border />
                         {/each}
                     </div>
                 </j.Col>
@@ -344,6 +396,8 @@
     <j.RowCol endx>
         <div class="d-flex gap-2">
             <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
+            <j.Button label="Review" loadinglabel="Reviewing" icon="bi-arrow-right" loading={reviewing} onClick={review} />
+            <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"
