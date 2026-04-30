@@ -202,12 +202,15 @@
                         <span>{item.latest_version?.document_type?.name}</span>
                     </div>
                     <div>
-                        <span
-                            class="text-info custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                            }}>Edit</span
-                        >
+                        <!-- allows edit for drafted, updated, and declined -->
+                        {#if item.state.state_code == 'DOCSTATE1' || item.state.state_code == 'DOCSTATE3' || item.state.state_code == 'DOCSTATE7'}
+                            <span
+                                class="text-info custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                }}>Edit</span
+                            >
+                        {/if}
                     </div>
                 </div>
                 <div class="col">

@@ -395,9 +395,17 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
-            <j.Button label="Review" loadinglabel="Reviewing" icon="bi-arrow-right" loading={reviewing} onClick={review} />
-            <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
+            {#if data.docTransitions.includes('DOCSTATE2')}
+                <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
+            {/if}
+
+            {#if data.docTransitions.includes('DOCSTATE5') && data.userTransitions.includes('DOCSTATE5')}
+                <j.Button label="Review" loadinglabel="Reviewing" icon="bi-arrow-right" loading={reviewing} onClick={review} />
+            {/if}
+
+            {#if data.docTransitions.includes('DOCSTATE6') && data.userTransitions.includes('DOCSTATE6')}
+                <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
+            {/if}
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"

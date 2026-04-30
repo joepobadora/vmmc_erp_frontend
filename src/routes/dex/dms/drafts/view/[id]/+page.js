@@ -10,8 +10,26 @@ export async function load({ params }) {
             };
         }
 
+        const docTransitionsResult = await App.API.get(`/dex/dms/drafts/allowed-doc-transitions/${params.id}`);
+        const docTransitionsData = docTransitionsResult.data.data;
+        if (!docTransitionsResult.data.success) {
+            return {
+                error: docTransitionsResult.data.error_code,
+            };
+        }
+
+        const userTransitionsResult = await App.API.get(`/dex/dms/drafts/allowed-user-transitions/${params.id}`);
+        const userTransitionsData = userTransitionsResult.data.data;
+        if (!userTransitionsResult.data.success) {
+            return {
+                error: userTransitionsResult.data.error_code,
+            };
+        }
+
         return {
             document: documentData,
+            docTransitions: docTransitionsData,
+            userTransitions: userTransitionsData,
         };
     } catch (err) {
         return {
