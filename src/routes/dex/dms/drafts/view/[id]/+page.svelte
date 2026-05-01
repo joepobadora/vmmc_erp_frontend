@@ -11,6 +11,7 @@
     let authPost = $state();
     let authReview = $state();
     let authApprove = $state();
+    let authDecline = $state();
 
     let { data } = $props();
 
@@ -37,6 +38,7 @@
     let posting = $state(false);
     let reviewing = $state(false);
     let approving = $state(false);
+    let declining = $state(false);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -125,6 +127,33 @@
         }
     }
 
+    async function decline() {
+        try {
+            // password auth
+            if (!(await authDecline.confirm())) return;
+
+            // udpate button state
+            declining = true;
+
+            const result = await App.API.post(`/dex/dms/drafts/decline/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                    Alert.show('success', 'Declining success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Declining failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            declining = false;
+        }
+    }
+
     // onmount
     onMount(() => {
         initFile();
@@ -155,6 +184,7 @@
 <Auth bind:me={authPost} warning="You are about to post a draft document." />
 <Auth bind:me={authReview} warning="You are about to review a posted document." />
 <Auth bind:me={authApprove} warning="You are about to approve a posted document." />
+<Auth bind:me={authDecline} warning="You are about to decline a document." />
 
 <!-- controls -->
 <j.RowCol>
@@ -395,15 +425,20 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
+            <!-- document is in draft -->
             {#if data.docTransitions.includes('DOCSTATE2')}
                 <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
             {/if}
 
+            <!-- document is in review and user is permitted to do so -->
             {#if data.docTransitions.includes('DOCSTATE5') && data.userTransitions.includes('DOCSTATE5')}
-                <j.Button label="Review" loadinglabel="Reviewing" icon="bi-arrow-right" loading={reviewing} onClick={review} />
+                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={reviewing} onClick={decline} />
+                <j.Button label="Review" loadinglabel="Reviewing" icon="bi-check-lg" loading={reviewing} onClick={review} />
             {/if}
 
+            <!-- document is in approval and user is permitted to do so -->
             {#if data.docTransitions.includes('DOCSTATE6') && data.userTransitions.includes('DOCSTATE6')}
+                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={reviewing} onClick={decline} />
                 <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
             {/if}
             <button
