@@ -46,6 +46,7 @@
         start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
         end_date: p.get('end_date') || App.Format.date(today).toISODate(),
         search: p.get('search') || null,
+        status: p.get('status') || null,
         tags: p.get('tags') || [],
     });
 
@@ -157,6 +158,16 @@
         </j.RowCol>
     </j.Col>
     <j.Col auto>
+        <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Status</label>
+        <select bind:value={filter.status} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
+            <option value={null} selected>All</option>
+            <option value="DOCSTATE1">Drafted</option>
+            <option value="DOCSTATE2">Posted</option>
+            <option value="DOCSTATE5">Reviewed</option>
+            <option value="DOCSTATE7">Declined</option>
+        </select>
+    </j.Col>
+    <j.Col auto>
         <label for="docmngtMyDocumentsStatusDropdown" class="small text-muted ms-1">Tag</label>
         <select onchange={handleTagSelect} bind:value={tag} class="form-select form-select-sm" id="docmngtMyDocumentsStatusDropdown">
             <option value={null}>All</option>
@@ -191,7 +202,8 @@
                         <strong
                             class="custom-link"
                             onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                // goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                goto(`/test2/${item.id}${p.toString()}`);
                             }}
                         >
                             {item.latest_version?.name}
