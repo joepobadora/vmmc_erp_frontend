@@ -26,10 +26,19 @@ export async function load({ params }) {
             };
         }
 
+        const userActionResult = await App.API.get(`/dex/dms/drafts/user-action/${params.id}`);
+        const userActionData = userActionResult.data.data;
+        if (!userActionResult.data.success) {
+            return {
+                error: userActionResult.data.error_code,
+            };
+        }
+
         return {
             document: documentData,
             docTransitions: docTransitionsData,
             userTransitions: userTransitionsData,
+            userAction: userActionData,
         };
     } catch (err) {
         return {
