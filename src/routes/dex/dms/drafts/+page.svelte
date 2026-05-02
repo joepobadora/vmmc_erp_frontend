@@ -46,13 +46,20 @@
         start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
         end_date: p.get('end_date') || App.Format.date(today).toISODate(),
         search: p.get('search') || null,
+        adv_search: p.get('search') || false,
         status: p.get('status') || null,
         tags: p.get('tags') || [],
     });
 
     // react to changes and update params
     $effect(() => {
-        p.set('page', tablePage).set('start_date', filter.start_date).set('end_date', filter.end_date).set('search', filter.search);
+        p.set('page', tablePage)
+            .set('start_date', filter.start_date)
+            .set('end_date', filter.end_date)
+            .set('search', filter.search)
+            .set('adv_search', filter.search)
+            .set('status', filter.status)
+            .set('tags', filter.tags);
     });
 
     // debounce and react to filter
@@ -60,6 +67,9 @@
         filter.start_date;
         filter.end_date;
         filter.search;
+        filter.adv_search;
+        filter.status;
+        filter.tags;
 
         const timer = setTimeout(() => {
             refreshTable();
@@ -95,6 +105,9 @@
             start_date: App.Format.date(firstDayOfMonth).toISODate(),
             end_date: App.Format.date(today).toISODate(),
             search: null,
+            adv_search: false,
+            status: null,
+            tags: [],
         };
     }
 
@@ -147,14 +160,14 @@
             </j.Col>
             <j.Col auto>
                 <div class="form-check mb-0">
-                    <input class="form-check-input" type="checkbox" value="" id="checkDefault" />
+                    <input bind:checked={filter.adv_search} class="form-check-input" type="checkbox" id="checkDefault" />
                     <label class="form-check-label small text-muted" for="checkDefault">Advanced search</label>
-                    <i title="This will include file content, file name, and record content in your query." class="bi bi-question-circle-fill ms-1 text-primary"></i>
+                    <i title="Activates smart and full text search, also includes file contents." class="bi bi-question-circle-fill ms-1 text-primary"></i>
                 </div>
             </j.Col>
         </j.Row>
         <j.RowCol mb="0">
-            <input type="text" class="form-control form-control-sm" placeholder="Search by document no., name, or details..." id="docmngtMyDocumentsSearchInput" />
+            <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by document no., name, or details..." id="docmngtMyDocumentsSearchInput" />
         </j.RowCol>
     </j.Col>
     <j.Col auto>
@@ -177,7 +190,7 @@
         </select>
     </j.Col>
     <j.Col auto>
-        <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+        <button onclick={resetFilter} type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
     </j.Col>
 </j.Row>
 
@@ -202,8 +215,7 @@
                         <strong
                             class="custom-link"
                             onclick={() => {
-                                // goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                                goto(`/test2/${item.id}${p.toString()}`);
+                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}
                         >
                             {item.latest_version?.name}

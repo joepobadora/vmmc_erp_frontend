@@ -9,6 +9,7 @@
     import { goto } from '$app/navigation';
 
     import DocumentStateIndicator from './DocumentStateIndicator.svelte';
+    import DocumentLifecycleIndicator from './DocumentLifecycleIndicator.svelte';
 
     let authPost = $state();
     let authReview = $state();
@@ -22,7 +23,6 @@
     let pdfData = $state(null);
 
     let documentNo = $state(data.document.document_no);
-    let currentState = $state(data.document.state.state.enumeration);
     let currentStateCode = $state(data.document.state.state.code);
     let variant = $state(data.document.state.is_original);
     let type = $state(data.document.latest_version.document_type.name);
@@ -31,10 +31,10 @@
     let tags = $state(data.document.tags);
     let reviewers = $state(data.document.actorProgress.reviewers);
     let approvers = $state(data.document.actorProgress.approvers);
-    let currentVersion = $state(data.document.latest_version.version_no);
-    let versionDate = $state(App.Format.date(data.document.latest_version.created_at).toFullMonthDate());
-    let changeLog = $state(data.document.latest_version.change_log);
+    let versions = $state(data.document.versions);
     let lifecycles = $state(data.document.lifecycles);
+
+    console.log(data);
 
     let activeTab = $state('overview');
 
@@ -301,84 +301,45 @@
     <!-- HISTORY -->
     <div class="tab-pane {activeTab === 'history' ? 'active' : 'd-none'}">
         <j.Card>
-            <h5>Version</h5>
-            <j.Row>
-                <j.Col span="6">
-                    <label for="username" class="form-label small">Current Version</label>
-                    <input bind:value={currentVersion} class="form-control form-control-sm" id="username" disabled />
-                </j.Col>
-                <j.Col span="3">
-                    <label for="username" class="form-label small">Date Created</label>
-                    <input bind:value={versionDate} class="form-control form-control-sm" id="username" disabled />
-                </j.Col>
-            </j.Row>
             <j.Row>
                 <j.Col>
-                    <label for="office" class="form-label small">What's changed?</label>
-                    <input bind:value={changeLog} class="form-control form-control-sm" id="office" disabled />
+                    <h5>Versions</h5>
+                    <j.Row>
+                        <j.Col span="2">
+                            <span class="text-muted small">No</span>
+                        </j.Col>
+                        <j.Col>
+                            <span class="text-muted small">Changelog</span>
+                        </j.Col>
+                        <j.Col>
+                            <span class="text-muted small">Timestamp</span>
+                        </j.Col>
+                    </j.Row>
+                    {#each versions as version, i}
+                        <div class="text-muted small">
+                            <j.Row>
+                                <j.Col span="2">
+                                    <span class="{i === 0 ? 'text-primary' : ''} fw-semibold">{version.version_no}</span>
+                                </j.Col>
+                                <j.Col>
+                                    <span class={i === 0 ? 'text-primary' : ''}>{version.change_log}</span>
+                                </j.Col>
+                                <j.Col>
+                                    <span class={i === 0 ? 'text-primary' : ''}>{App.Format.date(version.created_at).toDatetime()}</span>
+                                </j.Col>
+                            </j.Row>
+                        </div>
+                        <hr class="text-muted" />
+                    {/each}
+                </j.Col>
+
+                <j.Col auto>
+                    <h5>Lifecycle</h5>
+                    <j.RowCol>
+                        <DocumentLifecycleIndicator {lifecycles} />
+                    </j.RowCol>
                 </j.Col>
             </j.Row>
-
-            <hr class="text-muted" />
-            <h5>Lifecycle</h5>
-
-            <j.RowCol>
-                <div class="position-relative ms-2 mt-4">
-                    <!-- Vertical line -->
-                    <div class="position-absolute top-0 bottom-0 start-0 bg-primary-subtle" style="width:1px;"></div>
-
-                    {#each lifecycles as lifecycle, index}
-                        <!-- Timeline item -->
-                        <div class="mb-3 position-relative">
-                            <!-- Dot -->
-                            <div class="position-absolute start-0 translate-middle rounded-circle {index === 0 ? 'bg-primary' : 'bg-secondary-subtle'}" style="width:14px; height:14px;"></div>
-                            <!-- Content -->
-                            <div class="ms-4 px-3 py-2 border bg-light">
-                                <j.RowCol mb="0">
-                                    <j.Row mb="0">
-                                        <j.Col auto>
-                                            <span class="small">Date: </span>
-                                        </j.Col>
-                                        <j.Col>
-                                            <span class="small text-danger">{App.Format.date(lifecycle.created_at).toDatetime()}</span>
-                                        </j.Col>
-                                        <j.Col auto>
-                                            <span class="small">State: </span>
-                                        </j.Col>
-                                        <j.Col auto>
-                                            <span class="small">{lifecycle.state.enumeration}</span>
-                                        </j.Col>
-                                    </j.Row>
-
-                                    <j.Row mb="0">
-                                        <j.Col auto>
-                                            <span class="small">Variant: </span>
-                                        </j.Col>
-                                        <j.Col>
-                                            <span class="badge bg-{lifecycle.is_original == true ? 'primary' : 'secondary'}">{lifecycle.is_original == true ? 'Original' : 'Reference Copy'}</span>
-                                        </j.Col>
-                                        <j.Col auto>
-                                            <span class="small">Version: </span>
-                                        </j.Col>
-                                        <j.Col auto>
-                                            <span class="small">{lifecycle.version.version_no}</span>
-                                        </j.Col>
-                                    </j.Row>
-
-                                    <j.Row mb="0">
-                                        <j.Col auto>
-                                            <span class="small">Office: </span>
-                                        </j.Col>
-                                        <j.Col auto>
-                                            <span class="small">{lifecycle.office.short_name}</span>
-                                        </j.Col>
-                                    </j.Row>
-                                </j.RowCol>
-                            </div>
-                        </div>
-                    {/each}
-                </div>
-            </j.RowCol>
 
             {@render actionButtons()}
         </j.Card>
@@ -437,30 +398,3 @@
         </div>
     </j.RowCol>
 {/snippet}
-
-<style>
-    .progress-container {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    .state {
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        background: #eee;
-        position: relative;
-    }
-    .state.active {
-        background: #4caf50;
-        color: white;
-        font-weight: bold;
-    }
-    .connector {
-        flex: 1;
-        height: 2px;
-        background: #ccc;
-    }
-    .connector.active {
-        background: #4caf50;
-    }
-</style>

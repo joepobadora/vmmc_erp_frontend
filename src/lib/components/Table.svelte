@@ -59,6 +59,7 @@
         <div class="col">
             <div>
                 <!-- svelte-ignore slot_element_deprecated -->
+                <!-- {#each paginatedData as item, i (i)} -->
                 {#each paginatedData as item (item.id || item)}
                     <slot name="row" {item}>
                         <!-- fallback row -->

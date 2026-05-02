@@ -180,7 +180,7 @@
                 <h5>Active Users</h5>
                 <!-- <a href="/admin/audit-trail" class="small">View more</a> -->
             </div>
-            <ul class="list-group list-group-flush small overflow-auto" style="max-height: 650px;">
+            <ul class="list-group list-group-flush small overflow-auto">
                 <li class="list-group-item">
                     <div class="d-flex">
                         <span class="text-muted small me-auto">Last Seen</span>
