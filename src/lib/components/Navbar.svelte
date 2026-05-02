@@ -54,11 +54,15 @@
 </script>
 
 <!-- Navbar -->
-<div class="bg-primary p-3 pb-2 shadow-sm">
+<div class="custom-bg-color p-3 pb-2 shadow-sm">
     <j.Row mb="0">
-        <j.Col>
-            <a href={titleRoute} class="text-decoration-none"><h5 class="text-light fw-normal">{title}</h5></a>
+        <j.Col auto>
+            <a href={titleRoute} class="text-decoration-none d-flex gap-2">
+                <img src="/vmmc_logo.png" alt="" height="24px" width="24px" />
+                <h5 class="text-light fw-normal">{title}</h5>
+            </a>
         </j.Col>
+        <j.Col></j.Col>
         <j.Col auto>
             <div class="dropdown text-light">
                 <a class="nav-link dropdown-toggle" href="/" data-bs-toggle="dropdown" aria-label="menu button">
@@ -120,3 +124,17 @@
         </div>
     </div>
 </div>
+
+<style>
+    .custom-bg-color {
+        /* Base teal background */
+        background-color: #004d4d;
+
+        background-image:
+    /* Primary teal wash, but lighter and more diffuse */
+            radial-gradient(circle at 0% 0%, rgba(0, 128, 128, 0.6) 0%, transparent 80%),
+            /* Muted indigo accent, softer opacity */ radial-gradient(circle at 100% 0%, rgba(74, 86, 153, 0.08) 0%, transparent 70%),
+            /* Cyan lift, more subtle */ radial-gradient(circle at 50% 150%, rgba(77, 182, 172, 0.5) 0%, transparent 90%),
+            /* Dark ocean depth, softened */ radial-gradient(circle at 100% 100%, rgba(0, 51, 51, 0.4) 0%, transparent 80%);
+    }
+</style>

@@ -39,6 +39,7 @@
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     const p = new App.ParamBuilder(page.url.searchParams);
+    window.history.replaceState({}, document.title, window.location.pathname); // ensure no lingering outdated params
 
     let tablePage = $state(p.get('page') || 1);
 
@@ -46,10 +47,16 @@
         start_date: p.get('start_date') || App.Format.date(firstDayOfMonth).toISODate(),
         end_date: p.get('end_date') || App.Format.date(today).toISODate(),
         search: p.get('search') || null,
-        adv_search: p.get('search') || false,
+        adv_search: p.get('adv_search') === 'true' || false,
         status: p.get('status') || null,
-        tags: p.get('tags') || [],
+        tags: hydrateTags(p.get('tags'), tagList),
     });
+
+    function hydrateTags(idsString, tagList) {
+        if (!idsString) return [];
+        const ids = idsString.split(',').map(Number);
+        return tagList.filter((tag) => ids.includes(tag.id));
+    }
 
     // react to changes and update params
     $effect(() => {
@@ -57,9 +64,9 @@
             .set('start_date', filter.start_date)
             .set('end_date', filter.end_date)
             .set('search', filter.search)
-            .set('adv_search', filter.search)
+            .set('adv_search', filter.adv_search)
             .set('status', filter.status)
-            .set('tags', filter.tags);
+            .set('tags', filter.tags.map((tag) => tag.id).join(','));
     });
 
     // debounce and react to filter

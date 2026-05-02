@@ -196,7 +196,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dms/drafts">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/drafts{p.toString()}">(Document Manager) Drafts</a></li>
             <li class="breadcrumb-item active">View</li>
         </ol>
     </nav>
