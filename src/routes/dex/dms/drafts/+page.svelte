@@ -8,23 +8,23 @@
 
     const statusMap = {
         // Cluster 1: Drafting / Editing / Posting
-        DOCSTATE1: { label: 'DRAFTED', color: '#336699' }, // blue
-        DOCSTATE3: { label: 'UPDATED', color: '#336699' }, // blue
-        DOCSTATE2: { label: 'POSTED', color: '#336699' }, // blue
+        DOCSTATE1: { label: 'DRAFTED', color: '#E8EDF2' }, // blue
+        DOCSTATE3: { label: 'UPDATED', color: '#E8EDF2' }, // blue
+        DOCSTATE2: { label: 'POSTED', color: '#547A95' }, // blue
 
         // Cluster 2: Review / Decision
-        DOCSTATE5: { label: 'REVIEWED', color: '#d6901e' }, // amber
-        DOCSTATE6: { label: 'APPROVED', color: '#d6901e' }, // amber
-        DOCSTATE7: { label: 'DECLINED', color: '#d6901e' }, // amber
+        DOCSTATE5: { label: 'REVIEWED', color: '#2C3947' }, // amber
+        DOCSTATE6: { label: 'APPROVED', color: '#E8EDF2' }, // amber
+        DOCSTATE7: { label: 'DECLINED', color: '#D96868' }, // amber
 
         // Cluster 3: Finalization / Routing
-        DOCSTATE10: { label: 'SIGNED', color: '#2e8b57' }, // green
-        DOCSTATE11: { label: 'ROUTED', color: '#2e8b57' }, // green
+        DOCSTATE10: { label: 'SIGNED', color: '#547A95' }, // green
+        DOCSTATE11: { label: 'ROUTED', color: '#547A95' }, // green
 
         // Cluster 4: Closure / End States
-        DOCSTATE8: { label: 'DOWNLOADED', color: '#6c757d' }, // gray
-        DOCSTATE9: { label: 'ARCHIVED', color: '#6c757d' }, // gray
-        DOCSTATE4: { label: 'DELETED', color: '#6c757d' }, // gray
+        DOCSTATE8: { label: 'DOWNLOADED', color: '#547A95' }, // gray
+        DOCSTATE9: { label: 'ARCHIVED', color: '#547A95' }, // gray
+        DOCSTATE4: { label: 'DELETED', color: '#D96868' }, // gray
     };
 
     let { data } = $props();

@@ -14,6 +14,7 @@
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     const p = new App.ParamBuilder(page.url.searchParams);
+    window.history.replaceState({}, document.title, window.location.pathname); // ensure no lingering outdated params
 
     let tablePage = $state(p.get('page') || 1);
 
@@ -97,19 +98,8 @@
 
     <!-- search -->
     <j.Col>
-        <j.Row mb="0">
-            <j.Col>
-                <label for="docmngtMyDocumentsSearchInput" class="small text-muted ms-1">Search</label>
-            </j.Col>
-            <j.Col auto>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="checkDefault" />
-                    <label class="form-check-label small text-muted" for="checkDefault">Advanced search</label>
-                    <i title="This will include changed database 'values' in your query." class="bi bi-question-circle-fill ms-1 text-primary"></i>
-                </div>
-            </j.Col>
-        </j.Row>
-        <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by name..." id="docmngtMyDocumentsSearchInput" />
+        <label for="docmngtMyDocumentsSearchInput" class="small text-muted ms-1">Search</label>
+        <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by name or route..." id="docmngtMyDocumentsSearchInput" />
     </j.Col>
 
     <!-- reset button -->

@@ -10,7 +10,7 @@
     });
 </script>
 
-<div class="border-top pt-3 my-5 text-muted small">
+<div class="border-top py-3 mt-5 text-muted small footer-gradient">
     <div class="container">
         <j.Row>
             <j.Col>
@@ -24,3 +24,9 @@
         </j.Row>
     </div>
 </div>
+
+<style>
+    .footer-gradient {
+        background: linear-gradient(to left, #f8f9fa, /* light gray */ #e9ecef, /* slightly darker gray */ #dee2e6 /* soft neutral edge */);
+    }
+</style>

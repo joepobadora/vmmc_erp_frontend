@@ -3,6 +3,7 @@
     import App from '$lib/assets/js/bootstrap';
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
+    import Footer from '$lib/components/Footer.svelte';
 
     let auth = null;
 
@@ -31,6 +32,12 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12"><slot /></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <Footer />
         </div>
     </div>
 {/if}

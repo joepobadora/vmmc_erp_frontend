@@ -11,6 +11,7 @@
     let offices = $state([]);
 
     const p = new App.ParamBuilder(page.url.searchParams);
+    window.history.replaceState({}, document.title, window.location.pathname); // ensure no lingering outdated params
 
     let tablePage = $state(p.get('page') || 1);
 
