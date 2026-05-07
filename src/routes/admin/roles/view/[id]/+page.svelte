@@ -80,6 +80,7 @@
                         <div class="small"><i class="bi {permissions.includes('DMS.DOCS_ROUTE') == true ? checked : unchecked} me-2"></i>Route</div>
                     </td>
                     <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                         <div class="small"><i class="bi {permissions.includes('DMS.DOCS_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
                     </td>
                     <td>
@@ -92,12 +93,13 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_ARCHIVE') == true ? checked : unchecked} me-2"></i>Archive</div>
@@ -133,7 +135,9 @@
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>

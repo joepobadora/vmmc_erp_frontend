@@ -8,7 +8,6 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
 
-    import DocumentStateIndicator from '../../../../components/DocumentStateIndicator.svelte';
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
     let authPost = $state();
@@ -256,9 +255,6 @@
                     <span class="badge bg-{variant == true ? 'primary' : 'secondary'}">{variant == true ? 'Original' : 'Reference Copy'}</span>
                 </j.Col>
             </j.Row>
-            <j.RowCol>
-                <DocumentStateIndicator currentState={currentStateCode} />
-            </j.RowCol>
             <hr class="text-muted" />
             <j.Row>
                 <j.Col span="6">
@@ -278,20 +274,6 @@
                     {/each}
                 </div>
             </j.RowCol>
-            <j.Row>
-                <j.Col span="4">
-                    <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
-                    {#each reviewers as reviewer}
-                        <div class="small"><i class="bi {reviewer.acted == true ? checked : unchecked} me-2"></i>{reviewer.account.user.full_name_2}</div>
-                    {/each}
-                </j.Col>
-                <j.Col span="4">
-                    <label for="exampleFormControlTextarea1" class="form-label small">Approvers</label>
-                    {#each approvers as approver}
-                        <div class="small"><i class="bi {approver.acted == true ? checked : unchecked} me-2"></i>{approver.account.user.full_name_2}</div>
-                    {/each}
-                </j.Col>
-            </j.Row>
             {@render actionButtons()}
         </j.Card>
     </div>
@@ -329,6 +311,22 @@
                         </div>
                         <hr class="text-muted" />
                     {/each}
+                    <div class="mb-4"></div>
+                    <h5>Draft Actors</h5>
+                    <j.Row>
+                        <j.Col>
+                            <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
+                            {#each reviewers as reviewer}
+                                <div class="small"><i class="bi {reviewer.acted == true ? checked : unchecked} me-2"></i>{reviewer.account.user.full_name_2}</div>
+                            {/each}
+                        </j.Col>
+                        <j.Col>
+                            <label for="exampleFormControlTextarea1" class="form-label small">Approvers</label>
+                            {#each approvers as approver}
+                                <div class="small"><i class="bi {approver.acted == true ? checked : unchecked} me-2"></i>{approver.account.user.full_name_2}</div>
+                            {/each}
+                        </j.Col>
+                    </j.Row>
                 </j.Col>
 
                 <j.Col auto>
@@ -370,6 +368,16 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3 {false == true ? 'd-none' : ''}"
+                onclick={() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                }}><i class="bi bi-download me-2"></i>Download File</button
+            >
+
+            <j.Button label="Sign" loadinglabel="Posting" icon="bi-vector-pen" />
+
             <!-- document is in draft -->
             {#if data.docTransitions.includes('DOCSTATE2')}
                 <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />

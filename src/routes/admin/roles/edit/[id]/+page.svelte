@@ -179,6 +179,10 @@
                     </td>
                     <td>
                         <div class="form-check">
+                            <input bind:checked={permissions['DMS.DOCS_EDIT']} class="form-check-input" type="checkbox" id="dmsDocumentsEdit" />
+                            <label class="form-check-label small" for="dmsDocumentsEdit">Edit</label>
+                        </div>
+                        <div class="form-check">
                             <input bind:checked={permissions['DMS.DOCS_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsDocumentsDownload" />
                             <label class="form-check-label small" for="dmsDocumentsDownload">Download</label>
                         </div>
@@ -199,6 +203,10 @@
                             <input bind:checked={permissions['DMS.REFCOPIES_VIEW']} class="form-check-input" type="checkbox" id="dmsRefView" />
                             <label class="form-check-label small" for="dmsRefView">View</label>
                         </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.REFCOPIES_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsRefDownload" />
+                            <label class="form-check-label small" for="dmsRefDownload">Download</label>
+                        </div>
                     </td>
                     <td>
                         <div class="form-check">
@@ -208,8 +216,8 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.REFCOPIES_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsRefDownload" />
-                            <label class="form-check-label small" for="dmsRefDownload">Download</label>
+                            <input bind:checked={permissions['DMS.REFCOPIES_EDIT']} class="form-check-input" type="checkbox" id="dmsRefEdit" />
+                            <label class="form-check-label small" for="dmsRefEdit">Edit</label>
                         </div>
                     </td>
                     <td>
@@ -276,7 +284,12 @@
                             <label class="form-check-label small" for="dmsArchiveDelete">Delete</label>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.ARCHIVE_EDIT']} class="form-check-input" type="checkbox" id="dmsArchiveEdit" />
+                            <label class="form-check-label small" for="dmsArchiveEdit">Edit</label>
+                        </div>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>

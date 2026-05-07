@@ -36,7 +36,7 @@
     </div>
 
     <div class="row">
-        <div class="col">
+        <div class="col px-0">
             <Footer />
         </div>
     </div>
