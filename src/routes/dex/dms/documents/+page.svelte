@@ -232,8 +232,8 @@
                         <span>{item.latest_version?.document_type?.name}</span>
                     </div>
                     <div>
-                        <!-- allows edit for drafted, updated, and declined -->
-                        {#if item.state.state_code == 'DOCSTATE1' || item.state.state_code == 'DOCSTATE3' || item.state.state_code == 'DOCSTATE7'}
+                        <!-- allows edit for approved, downloaded, and signed -->
+                        {#if item.state.state_code == 'DOCSTATE6' || item.state.state_code == 'DOCSTATE8' || item.state.state_code == 'DOCSTATE10'}
                             <span
                                 class="text-info custom-link"
                                 onclick={() => {

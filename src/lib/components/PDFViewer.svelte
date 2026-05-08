@@ -10,7 +10,7 @@
 
     onMount(async () => {
         const pdfjsLib = await import('pdfjs-dist/build/pdf.min.mjs');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
         const loadingTask = pdfjsLib.getDocument(src);
         const pdf = await loadingTask.promise;
@@ -26,7 +26,7 @@
 
             // First get a viewport at scale 1 to check width
             const testViewport = page.getViewport({ scale: 1 });
-            const chosenScale = testViewport.width > 1000 ? 0.7 : 1.5;
+            const chosenScale = testViewport.width > 800 ? 1.2 : 1.5;
 
             const viewport = page.getViewport({ scale: chosenScale });
 

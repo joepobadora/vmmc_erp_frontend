@@ -10,7 +10,7 @@
     import { goto } from '$app/navigation';
 
     let authSave = $state();
-    let authDelete = $state();
+    let authTrash = $state();
 
     let { data } = $props();
 
@@ -31,7 +31,7 @@
     let activeTab = $state('overview');
 
     let saving = $state(false);
-    let deleting = $state(false);
+    let trashing = $state(false);
 
     let errors = $state({});
 
@@ -116,30 +116,30 @@
         }
     }
 
-    async function destroy() {
+    async function trash() {
         try {
             // password auth
-            if (!(await authDelete.confirm())) return;
+            if (!(await authTrash.confirm())) return;
 
             // udpate button state
-            deleting = true;
+            trashing = true;
 
-            const result = await App.API.post(`/dex/dms/drafts/destroy/${page.params.id}`);
+            const result = await App.API.post(`/dex/dms/drafts/trash/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
                     goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Deletion success.', result.data.success_code);
+                    Alert.show('success', 'Moving to trash success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Deletion failed.', result.data.error_code);
+                    Alert.show('error', 'Moving to trash failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
         } finally {
-            deleting = false;
+            trashing = false;
         }
     }
 
@@ -248,7 +248,7 @@
 </script>
 
 <Auth bind:me={authSave} warning="You are about to update a draft document." />
-<Auth bind:me={authDelete} warning="You are about to delete a draft document." />
+<Auth bind:me={authTrash} warning="You are about to move the draft document to the trash." />
 
 <!-- controls -->
 <j.RowCol>
@@ -339,7 +339,7 @@
                 </j.Col>
             </j.Row>
             <j.RowCol>
-                <label for="password" class="form-label small">Name</label>
+                <label for="password" class="form-label small">Name<span class="ms-1 text-danger">*</span></label>
                 <input bind:value={doc.latest_version.name} type="text" class="form-control form-control-sm" id="password" placeholder="Name" />
             </j.RowCol>
             <j.RowCol>
@@ -422,7 +422,7 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Draft Document</label>
                 <div>
-                    <j.Button label="Delete Draft Document" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={deleting} onClick={destroy} />
+                    <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
                 </div>
             </j.RowCol>
 

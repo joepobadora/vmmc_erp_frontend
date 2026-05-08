@@ -1,19 +1,16 @@
 <script>
     import PdfViewer from '$lib/components/PDFViewer.svelte';
     import App from '$lib/assets/js/bootstrap';
-    import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
     import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
-    let authPost = $state();
-    let authReview = $state();
-    let authApprove = $state();
-    let authDecline = $state();
+    let authDownload = $state();
 
     let { data } = $props();
 
@@ -35,10 +32,7 @@
 
     let activeTab = $state('overview');
 
-    let posting = $state(false);
-    let reviewing = $state(false);
-    let approving = $state(false);
-    let declining = $state(false);
+    let downloading = $state(false);
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
@@ -48,114 +42,6 @@
     }
 
     const p = new App.ParamBuilder(page.url.searchParams);
-
-    async function post() {
-        try {
-            // password auth
-            if (!(await authPost.confirm())) return;
-
-            // udpate button state
-            posting = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/post/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Posting success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Posting failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            posting = false;
-        }
-    }
-
-    async function review() {
-        try {
-            // password auth
-            if (!(await authReview.confirm())) return;
-
-            // udpate button state
-            reviewing = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/review/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Reviewing success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Reviewing failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            reviewing = false;
-        }
-    }
-
-    async function approve() {
-        try {
-            // password auth
-            if (!(await authApprove.confirm())) return;
-
-            // udpate button state
-            approving = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/approve/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Approving success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Approving failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            approving = false;
-        }
-    }
-
-    async function decline() {
-        try {
-            // password auth
-            if (!(await authDecline.confirm())) return;
-
-            // udpate button state
-            declining = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/decline/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Declining success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Declining failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            declining = false;
-        }
-    }
 
     // onmount
     onMount(() => {
@@ -167,7 +53,7 @@
         loadingDocumentFile = true;
 
         try {
-            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+            const result = await App.API.post('/dex/dms/documents/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
 
             // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
@@ -179,15 +65,42 @@
         }
     }
 
+    async function downloadFile() {
+        try {
+            // password auth
+            if (!(await authDownload.confirm())) return;
+
+            // udpate button state
+            downloading = true;
+
+            const result = await App.API.post('/dex/dms/documents/download/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+
+            // Create a blob URL
+            const blobUrl = URL.createObjectURL(result.data);
+
+            // Optional: trigger download prompt immediately
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'document.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Cleanup
+            URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.log(err.message + ': UNABLE TO RETRIEVE FILE');
+        } finally {
+            downloading = false;
+        }
+    }
+
     function handleOnloaded(data) {
         pdfData = data;
     }
 </script>
 
-<Auth bind:me={authPost} warning="You are about to post a draft document." />
-<Auth bind:me={authReview} warning="You are about to review a posted document." />
-<Auth bind:me={authApprove} warning="You are about to approve a posted document." />
-<Auth bind:me={authDecline} warning="You are about to decline a document." />
+<Auth bind:me={authDownload} warning="You are about to download a copy of the attached file." />
 
 <!-- controls -->
 <j.RowCol>
@@ -195,7 +108,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dms/drafts{p.toString()}">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/documents{p.toString()}">(Document Manager) Documents</a></li>
             <li class="breadcrumb-item active">View</li>
         </ol>
     </nav>
@@ -368,37 +281,28 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <button
-                type="button"
-                class="btn btn-light border btn-sm px-3 {false == true ? 'd-none' : ''}"
-                onclick={() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                }}><i class="bi bi-download me-2"></i>Download File</button
-            >
-
-            <j.Button label="Sign" loadinglabel="Posting" icon="bi-vector-pen" />
-
-            <!-- document is in draft -->
-            {#if data.docTransitions.includes('DOCSTATE2')}
-                <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
+            <!-- user has the permission to download -->
+            {#if $permissions.includes('DMS.DOCS_DOWNLOAD')}
+                <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
             {/if}
 
-            <!-- document is in review and user is permitted to do so -->
-            {#if data.docTransitions.includes('DOCSTATE5') && data.userTransitions.includes('DOCSTATE5') && data.userAction.asReviewer.acted == false}
-                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={reviewing} onClick={decline} />
-                <j.Button label="Review" loadinglabel="Reviewing" icon="bi-check-lg" loading={reviewing} onClick={review} />
+            <!-- document is allowed for signing and user has the permission to do so -->
+            {#if data.docTransitions.includes('DOCSTATE10') && $permissions.includes('DMS.DOCS_SIGN')}
+                <j.Button
+                    label="Sign"
+                    loadinglabel="Posting"
+                    icon="bi-vector-pen"
+                    onClick={() => {
+                        goto(`/dex/dms/documents/sign/${data.document.id}${p.toString()}`);
+                    }}
+                />
             {/if}
 
-            <!-- document is in approval and user is permitted to do so -->
-            {#if data.docTransitions.includes('DOCSTATE6') && data.userTransitions.includes('DOCSTATE6') && data.userAction.asApprover.acted == false}
-                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={reviewing} onClick={decline} />
-                <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
-            {/if}
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
+                    goto(`/dex/dms/documents${p.toString()}`);
                 }}>Okay</button
             >
         </div>
