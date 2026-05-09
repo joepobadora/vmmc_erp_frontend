@@ -52,8 +52,13 @@ class SignPad {
     startDrawing(e) {
         this.isDrawing = true;
         const position = this.getPosition(e);
+
         this.lastX = position.x;
         this.lastY = position.y;
+
+        // Initialize midpoints to the start position
+        this.lastMidX = position.x;
+        this.lastMidY = position.y;
     }
 
     stopDrawing() {
@@ -66,29 +71,39 @@ class SignPad {
 
         const position = this.getPosition(e);
 
-        // Calligraphy pen settings
-        const nibWidth = 1; // Thickness of the nib
-        const nibAngle = Math.PI / 6; // 30 degrees angle
+        // 1. Calculate the midpoint between the last position and current position
+        const midX = (this.lastX + position.x) / 2;
+        const midY = (this.lastY + position.y) / 2;
 
-        // Calculate the nib's offset based on angle
+        // 2. Calligraphy Pen Settings
+        const nibWidth = 1;
+        const nibAngle = Math.PI / 6;
         const dx = nibWidth * Math.cos(nibAngle);
         const dy = nibWidth * Math.sin(nibAngle);
 
-        this.ctx.lineWidth = 1; // The actual line width can remain small for precision
-        this.ctx.strokeStyle = '#000'; // Pen color
+        this.ctx.fillStyle = '#000';
 
-        // Draw using the calligraphy nib effect
+        // 3. Draw the smoothed segment
+        // We use a quadraticCurveTo to move from the previous midpoint
+        // through the 'last' point, ending at the 'new' midpoint.
         this.ctx.beginPath();
-        this.ctx.moveTo(this.lastX - dx, this.lastY - dy);
-        this.ctx.lineTo(position.x - dx, position.y - dy);
-        this.ctx.lineTo(position.x + dx, position.y + dy);
-        this.ctx.lineTo(this.lastX + dx, this.lastY + dy);
-        this.ctx.closePath();
-        this.ctx.fill(); // Fill the nib stroke
 
-        // Update the last position
+        // Top edge of the nib
+        this.ctx.moveTo(this.lastMidX - dx, this.lastMidY - dy);
+        this.ctx.quadraticCurveTo(this.lastX - dx, this.lastY - dy, midX - dx, midY - dy);
+
+        // Bottom edge of the nib
+        this.ctx.lineTo(midX + dx, midY + dy);
+        this.ctx.quadraticCurveTo(this.lastX + dx, this.lastY + dy, this.lastMidX + dx, this.lastMidY + dy);
+
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // 4. Update tracking variables
         this.lastX = position.x;
         this.lastY = position.y;
+        this.lastMidX = midX;
+        this.lastMidY = midY;
     }
 
     getPosition(e) {
@@ -128,13 +143,13 @@ class SignPad {
     }
 
     SaveAsPNG(filename) {
-    return new Promise((resolve) => {
-        this.canvas.toBlob((blob) => {
-            const file = new File([blob], (filename + '.png'), { type: "image/png" });
-            resolve(file);
-        }, "image/png");
-    });
-}
+        return new Promise((resolve) => {
+            this.canvas.toBlob((blob) => {
+                const file = new File([blob], filename + '.png', { type: 'image/png' });
+                resolve(file);
+            }, 'image/png');
+        });
+    }
 
     Valid(thresholdPercent = 1) {
         const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);

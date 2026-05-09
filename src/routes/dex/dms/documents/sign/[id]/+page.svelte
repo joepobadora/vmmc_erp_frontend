@@ -75,22 +75,28 @@
     </nav>
 </j.RowCol>
 
-<div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
-    <j.Row>
-        <j.Col></j.Col>
-        <j.Col>
-            {#if loadingDocumentFile}
-                <j.RowCol centerx>
-                    <div class="spinner-border text-secondary"></div>
-                </j.RowCol>
-            {:else if file}
-                <div>
-                    <PdfViewer src={file} onLoaded={handleLoaded} />
-                </div>
-            {/if}
-        </j.Col>
-        <j.Col></j.Col>
-    </j.Row>
+<div class="position-relative">
+    <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
+        <j.Row>
+            <j.Col></j.Col>
+            <j.Col>
+                {#if loadingDocumentFile}
+                    <j.RowCol centerx>
+                        <div class="spinner-border text-secondary"></div>
+                    </j.RowCol>
+                {:else if file}
+                    <div>
+                        <PdfViewer src={file} onLoaded={handleLoaded} />
+                    </div>
+                {/if}
+            </j.Col>
+            <j.Col></j.Col>
+        </j.Row>
+    </div>
+    <div class="d-flex gap-2 sticky-bottom justify-content-end p-2">
+        <button type="button" class="btn btn-light border btn-sm px-3"><i class="bi bi-vector-pen me-2"></i>Toggle Sign</button>
+        <j.Button label="Save" loadinglabel="Downloading" icon="bi-check-lg" />
+    </div>
 </div>
 
 <button onclick={save}>save</button>
