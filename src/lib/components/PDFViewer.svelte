@@ -2,11 +2,11 @@
     import { onMount, tick } from 'svelte';
 
     export let src;
-    // export let scale = 1.5;
-    export let onLoaded = null; // callback from parent
+    export let onLoaded = null;
 
     let numPages = 0;
-    let canvases = [];
+    let pdfCanvases = []; // Background (PDF)
+    let overlayCanvases = []; // Foreground (SignPad)
 
     onMount(async () => {
         const pdfjsLib = await import('pdfjs-dist/build/pdf.min.mjs');
@@ -16,37 +16,48 @@
         const pdf = await loadingTask.promise;
 
         numPages = pdf.numPages;
-        await tick(); // ensure canvases are in DOM
+        await tick();
 
         let pageDimensions = [];
-        let dimension = null;
 
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
-
-            // First get a viewport at scale 1 to check width
             const testViewport = page.getViewport({ scale: 1 });
-            const chosenScale = testViewport.width > 800 ? 1.2 : 1.5;
-
+            // const chosenScale = testViewport.width > 800 ? 1.2 : 1.5;
+            const chosenScale = 1.5;
             const viewport = page.getViewport({ scale: chosenScale });
 
-            const canvas = canvases[pageNum - 1];
-            const context = canvas.getContext('2d');
-            canvas.width = Math.floor(viewport.width);
-            canvas.height = Math.floor(viewport.height);
+            // Set up background PDF layer
+            const bgCanvas = pdfCanvases[pageNum - 1];
+            const bgContext = bgCanvas.getContext('2d');
 
-            await page.render({ canvasContext: context, viewport }).promise;
+            // Set up foreground Sign layer
+            const fgCanvas = overlayCanvases[pageNum - 1];
 
-            // Save each page’s dimension
-            pageDimensions.push({ width: canvas.width, height: canvas.height });
+            const w = Math.floor(viewport.width);
+            const h = Math.floor(viewport.height);
+
+            // Both canvases MUST be the same size
+            bgCanvas.width = fgCanvas.width = w;
+            bgCanvas.height = fgCanvas.height = h;
+
+            await page.render({ canvasContext: bgContext, viewport }).promise;
+            pageDimensions.push({ width: w, height: h });
         }
 
         if (typeof onLoaded === 'function') {
-            onLoaded({ numPages, pageDimensions, dimension, canvases });
+            // WE SEND overlayCanvases BACK TO YOUR handleLoaded
+            onLoaded({ numPages, pageDimensions, canvases: overlayCanvases });
         }
     });
 </script>
 
 {#each Array(numPages) as _, i}
-    <canvas bind:this={canvases[i]} class="mb-4 shadow-sm"></canvas>
+    <div class="position-relative mb-4" style="width: fit-content; margin: auto;">
+        <!-- The PDF Layer -->
+        <canvas bind:this={pdfCanvases[i]} class="shadow-sm"></canvas>
+
+        <!-- The Signature Layer (Passed to handleLoaded) -->
+        <canvas bind:this={overlayCanvases[i]} class="position-absolute top-0 start-0" style="background: transparent; z-index: 5; touch-action: none;"></canvas>
+    </div>
 {/each}

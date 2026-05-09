@@ -3,7 +3,6 @@
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
-    import z from 'zod';
     import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/state';

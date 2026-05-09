@@ -20,6 +20,12 @@ class SignPad {
 
         // Add event listeners for mouse and touch events
         this.addEventListeners();
+
+        // Pause mechanism
+        this.Pause = this.Pause.bind(this);
+        this.Resume = this.Resume.bind(this);
+        this.isPaused = false;
+        this.TogglePause = this.TogglePause.bind(this);
     }
 
     addEventListeners() {
@@ -50,6 +56,8 @@ class SignPad {
     }
 
     startDrawing(e) {
+        if (this.isPaused) return;
+
         this.isDrawing = true;
         const position = this.getPosition(e);
 
@@ -67,7 +75,7 @@ class SignPad {
     }
 
     draw(e) {
-        if (!this.isDrawing) return;
+        if (this.isDrawing === false || this.isPaused) return;
 
         const position = this.getPosition(e);
 
@@ -131,7 +139,9 @@ class SignPad {
     }
 
     lockScroll(e) {
-        e.preventDefault(); // Prevent scrolling
+        if (!this.isPaused) {
+            e.preventDefault(); // Only lock scroll if we are in "signing mode"
+        }
     }
 
     ClearCanvas() {
@@ -165,6 +175,39 @@ class SignPad {
         const coverage = (inkedPixels / totalPixels) * 100;
 
         return coverage >= thresholdPercent;
+    }
+
+    // Explicitly stop signing and allow scrolling
+    Pause() {
+        this.isPaused = true;
+        this.updateCanvasUI();
+    }
+
+    // Explicitly enable signing and lock scrolling
+    Resume() {
+        this.isPaused = false;
+        this.updateCanvasUI();
+    }
+
+    // The toggle helper you already had, now using the explicit methods
+    TogglePause() {
+        if (this.isPaused) {
+            this.Resume();
+        } else {
+            this.Pause();
+        }
+        return this.isPaused;
+    }
+
+    // Helper to keep the UI logic in one place
+    updateCanvasUI() {
+        if (this.isPaused) {
+            this.canvas.style.cursor = 'default';
+            this.canvas.style.touchAction = 'auto';
+        } else {
+            this.canvas.style.cursor = 'crosshair';
+            this.canvas.style.touchAction = 'none';
+        }
     }
 }
 

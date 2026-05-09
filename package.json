@@ -26,6 +26,7 @@
     "bootstrap-icons": "^1.13.1",
     "crypto-js": "^4.2.0",
     "jsondiffpatch": "^0.7.3",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.5.207",
     "sass": "^1.93.0",
     "zod": "^4.3.6"
