@@ -58,6 +58,6 @@
         <canvas bind:this={pdfCanvases[i]} class="shadow-sm"></canvas>
 
         <!-- The Signature Layer (Passed to handleLoaded) -->
-        <canvas bind:this={overlayCanvases[i]} class="position-absolute top-0 start-0" style="background: transparent; z-index: 5; touch-action: none;"></canvas>
+        <canvas bind:this={overlayCanvases[i]} class="position-absolute top-0 start-0" style="background: transparent; z-index: 5;"></canvas>
     </div>
 {/each}
