@@ -1,10 +1,10 @@
 <script>
     import PdfViewer from '$lib/components/PDFViewer.svelte';
+    import TextField from '../../../../components/TextField.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
-    import { onMount } from 'svelte';
-    import { onDestroy } from 'svelte';
+    import { onMount, onDestroy, mount, unmount } from 'svelte';
     import { page } from '$app/state';
     import { PDFDocument } from 'pdf-lib';
     import Auth from '$lib/components/Auth.svelte';
@@ -24,21 +24,43 @@
     let isPaused = $state(true);
     let saving = $state(false);
 
+    // ── Add-Text state ─────────────────────────────────────────────────────
+    let addTextMode = $state(false);
+
+    /**
+     * Per-page click listeners and mounted TextField instances.
+     * pageWrappers[i]  – the position-relative div (canvas.parentElement)
+     * pageListeners[i] – the click handler attached to it
+     * tfInstances      – flat list of { destroy } from mount(), for cleanup
+     */
+    let pageWrappers = [];
+    let pageListeners = [];
+    let tfInstances = [];
+
     const p = new App.ParamBuilder(page.url.searchParams);
 
-    // onmount
     onMount(() => {
         initFile();
     });
 
-    // init pdf file
+    onDestroy(() => {
+        // Unmount all live TextFields
+        tfInstances.forEach(({ instance }) => unmount(instance));
+        tfInstances = [];
+        // Remove page click listeners
+        detachAllListeners();
+        // Destroy sign pads
+        signPads.forEach((_, i) => {
+            signPads[i] = null;
+        });
+    });
+
+    // ── File init ──────────────────────────────────────────────────────────
+
     async function initFile() {
         loadingDocumentFile = true;
-
         try {
             const result = await App.API.post('/dex/dms/documents/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
-
-            // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
             file = { data: new Uint8Array(buf) };
         } catch (err) {
@@ -48,90 +70,149 @@
         }
     }
 
-    function handleLoaded(data) {
-        pdfData = data;
+    // ── PDF loaded callback ────────────────────────────────────────────────
 
-        // Initialize SignPad for each overlay canvas
+    function handleLoaded(loadedData) {
+        pdfData = loadedData;
+
         pdfData.canvases.forEach((canvas, i) => {
+            // Grab the wrapper that PDFViewer created (position-relative div)
+            pageWrappers[i] = canvas.parentElement;
+
+            // Init SignPad on each overlay canvas (unchanged behaviour)
             signPads[i] = new App.SignPad(canvas);
             signPads[i].Pause();
         });
     }
 
-    // Cleanup must be declared at top-level
-    onDestroy(() => {
-        signPads.forEach((pad, i) => {
-            signPads[i] = null;
+    // ── Add Text toggle ────────────────────────────────────────────────────
+
+    function toggleAddTextMode() {
+        addTextMode = !addTextMode;
+
+        if (addTextMode) {
+            // Safety: exit sign mode so SignPad doesn't eat pointer events
+            if (!isPaused) {
+                isPaused = true;
+                scrollMode();
+            }
+            attachPageListeners();
+        } else {
+            detachAllListeners();
+        }
+    }
+
+    // ── Page click listeners ───────────────────────────────────────────────
+
+    function attachPageListeners() {
+        pageWrappers.forEach((wrapper, i) => {
+            if (!wrapper) return;
+            const listener = (e) => handleWrapperClick(e, i);
+            pageListeners[i] = listener;
+            wrapper.addEventListener('click', listener);
+            wrapper.style.cursor = 'crosshair';
         });
-    });
+    }
+
+    function detachAllListeners() {
+        pageWrappers.forEach((wrapper, i) => {
+            if (!wrapper || !pageListeners[i]) return;
+            wrapper.removeEventListener('click', pageListeners[i]);
+            pageListeners[i] = null;
+            wrapper.style.cursor = '';
+        });
+    }
+
+    function handleWrapperClick(e, pageIndex) {
+        // Ignore clicks that originated inside an existing TextField widget
+        if (e.target.closest('[data-textfield]')) return;
+
+        const wrapper = pageWrappers[pageIndex];
+        const canvas = pdfData.canvases[pageIndex];
+        const rect = wrapper.getBoundingClientRect();
+
+        // Scale canvas backing pixels → CSS pixels
+        // (PDFViewer sets canvas.width = viewport px, so scale is usually 1,
+        //  but we compute it properly in case of devicePixelRatio or CSS scaling)
+        const scaleX = canvas.width / canvas.offsetWidth;
+        const scaleY = canvas.height / canvas.offsetHeight;
+
+        // Click position in canvas-pixel space
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        placeTextField(pageIndex, x, y);
+
+        // Exit add-text mode after placing; remove crosshair cursor
+        addTextMode = false;
+        detachAllListeners();
+    }
+
+    // ── Mount a TextField imperatively into the page wrapper ───────────────
+
+    function placeTextField(pageIndex, x, y) {
+        const wrapper = pageWrappers[pageIndex];
+        const canvas = pdfData.canvases[pageIndex];
+
+        // Convert canvas-pixel coords → CSS-pixel coords for positioning
+        const scaleX = canvas.offsetWidth / canvas.width;
+        const scaleY = canvas.offsetHeight / canvas.height;
+        const cssX = x * scaleX;
+        const cssY = y * scaleY;
+
+        // We need a reference so the onDone callback can clean up
+        let instanceRef = null;
+
+        instanceRef = mount(TextField, {
+            target: wrapper,
+            props: {
+                x: cssX,
+                y: cssY,
+                canvas,
+                onDone: () => {
+                    unmount(instanceRef);
+                    tfInstances = tfInstances.filter((t) => t.instance !== instanceRef);
+                },
+            },
+        });
+
+        tfInstances.push({ instance: instanceRef });
+    }
+
+    // ── Existing toolbar actions (unchanged) ───────────────────────────────
 
     async function save() {
         saving = true;
-
         try {
-            // password auth
             if (!(await authSave.confirm())) return;
 
-            // IMPORTANT: Create a fresh Uint8Array from the state to avoid detached buffer issues
             const loadResult = await App.API.post('/dex/dms/documents/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
-
-            // Convert blob to ArrayBuffer → Uint8Array
             const buf = await loadResult.data.arrayBuffer();
 
-            // 1. Load the existing PDF bytes you got from initFile()
             const pdfDoc = await PDFDocument.load(new Uint8Array(buf));
             const pages = pdfDoc.getPages();
 
-            // 2. Loop through each signPad
             for (let i = 0; i < signPads.length; i++) {
-                // Get PNG as ArrayBuffer
                 const pngFile = await signPads[i].SaveAsPNG(`temp_${i}`);
                 const pngBytes = await pngFile.arrayBuffer();
 
-                // Embed the PNG into the PDF
                 const embeddedImage = await pdfDoc.embedPng(pngBytes);
-                const page = pages[i];
+                const pg = pages[i];
 
-                // Draw the signature over the entire page
-                // (Since canvas and PDF page sizes were matched in PdfViewer)
-                page.drawImage(embeddedImage, {
+                pg.drawImage(embeddedImage, {
                     x: 0,
                     y: 0,
-                    width: page.getWidth(),
-                    height: page.getHeight(),
+                    width: pg.getWidth(),
+                    height: pg.getHeight(),
                 });
             }
 
-            // 3. Serialize the PDF to bytes
             const mergedPdfBytes = await pdfDoc.save();
-
-            /*
-            // --- DEBUG MODE: View in New Tab ---
-
-            // Create a Blob from the bytes
-            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-
-            // Create a temporary URL for the blob
-            const pdfUrl = URL.createObjectURL(blob);
-
-            // Open the URL in a new browser tab
-            window.open(pdfUrl, '_blank');
-
-            console.log('PDF generated locally. Check the new tab!');
-            */
-
-            // --- BACKEND UPLOAD (Commented Out for Debugging) ---
-
             const finalFile = new File([mergedPdfBytes], 'signed_document.pdf', { type: 'application/pdf' });
             const formData = new FormData();
             formData.append('file', finalFile);
 
-            const signResult = await App.API.post(`/dex/dms/documents/sign/${data.document.id}`, formData, {
-                headers: {
-                    // Let Axios set the boundary automatically
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const signResult = await App.API.post(`/dex/dms/documents/sign/${data.document.id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
             if (signResult.data.success) {
                 setTimeout(() => {
@@ -152,38 +233,35 @@
 
     function togglePause() {
         isPaused = !isPaused;
-
         if (isPaused) {
             scrollMode();
         } else {
             signMode();
         }
+        // Exit add-text mode when entering sign mode
+        if (!isPaused && addTextMode) {
+            addTextMode = false;
+            detachAllListeners();
+        }
     }
 
     function scrollMode() {
-        for (let i = 0; i < signPads.length; i++) {
-            signs[i] = signPads[i].Pause();
-        }
+        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].Pause();
     }
 
     function signMode() {
-        for (let i = 0; i < signPads.length; i++) {
-            signs[i] = signPads[i].Resume();
-        }
+        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].Resume();
     }
 
     function clear() {
-        for (let i = 0; i < signPads.length; i++) {
-            signs[i] = signPads[i].ClearCanvas();
-        }
+        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].ClearCanvas();
     }
 </script>
 
 <Auth bind:me={authSave} warning="You are about to sign a document." />
 
-<!-- controls -->
+<!-- breadcrumbs -->
 <j.RowCol>
-    <!-- breadcrumbs -->
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
@@ -211,16 +289,27 @@
             <j.Col></j.Col>
         </j.Row>
     </div>
+
+    <!-- Toolbar -->
     <div class="d-flex gap-2 sticky-bottom justify-content-end p-2">
-        <button type="button" class="btn btn-light border btn-sm px-3" onclick={clear}><i class="bi bi-eraser me-2"></i>Clear</button>
-        <button type="button" class="btn btn-light border btn-sm px-3 {isPaused ? '' : 'active'}" onclick={togglePause}
-            ><i class="bi bi-{isPaused ? 'hand-index-thumb' : 'vector-pen'} me-2"></i>{isPaused ? 'Scroll Mode' : 'Sign Mode'}</button
+        <button type="button" class="btn btn-light border btn-sm px-3" onclick={clear}>
+            <i class="bi bi-eraser me-2"></i>Clear
+        </button>
+
+        <button type="button" class="btn btn-light border btn-sm px-3 {isPaused ? '' : 'active'}" onclick={togglePause}>
+            <i class="bi bi-{isPaused ? 'hand-index-thumb' : 'vector-pen'} me-2"></i>{isPaused ? 'Scroll Mode' : 'Sign Mode'}
+        </button>
+
+        <!-- Add Text toggle -->
+        <button
+            type="button"
+            class="btn btn-light border btn-sm px-3 {addTextMode ? 'active' : ''}"
+            onclick={toggleAddTextMode}
+            title={addTextMode ? 'Click anywhere on the document to place a text box' : 'Add text to the document'}
         >
+            <i class="bi bi-fonts me-2"></i>{addTextMode ? 'Click to Place…' : 'Add Text'}
+        </button>
+
         <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
     </div>
 </div>
-
-<!-- <p>Total pages: {pdfData?.numPages}</p>
-{#each pdfData?.pageDimensions as dim, i}
-    <p>Page size: {dim?.width} × {dim?.height}</p>
-{/each} -->
