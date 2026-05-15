@@ -13,6 +13,8 @@
 
     let { data } = $props();
 
+    console.log(data);
+
     let type = $state($draft.documentType ?? '');
     let name = $state($draft.name ?? '');
     let details = $state($draft.details ?? '');
