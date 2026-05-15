@@ -1,42 +1,45 @@
 <script>
     import { onMount } from 'svelte';
-    import { Designer } from '@pdfme/ui';
-    import { text, image, rectangle, barcodes } from '@pdfme/schemas';
+    import { Designer } from '@pdfme/ui'; // Or 'Form' if you're ready to fill it
+    import { text, image, signature } from '@pdfme/schemas'; // Import signature
 
     let container;
     let designerInstance;
 
     onMount(async () => {
-        // 1. Fetch the real-world blank form from your static folder
         const response = await fetch('/document.pdf');
         const pdfBlob = await response.blob();
-
-        // 2. Convert it to a Base64 Data URI (or ArrayBuffer) for pdfme
-        const basePdf = await new Promise((resolve) => {
+        const basePdf = await new Promise((r) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
+            reader.onloadend = () => r(reader.result);
             reader.readAsDataURL(pdfBlob);
         });
 
-        // 3. Define the template using your real form as the background
         const template = {
-            basePdf: basePdf, // Your actual form is now the background!
+            basePdf: basePdf,
             schemas: [
                 [
-                    // You can start with empty schemas or placeholder inputs
+                    {
+                        name: 'user_signature',
+                        type: 'signature', // Use the signature type
+                        position: { x: 120, y: 400 },
+                        width: 200,
+                        height: 80,
+                        strokeWidth: 0.8, // Thinner, elegant line
+                        color: '#008080', // Hex code for color
+                    },
                 ],
             ],
         };
 
-        // 4. Initialize the Designer
         designerInstance = new Designer({
             domContainer: container,
             template,
             plugins: {
                 text,
                 image,
-                rect: rectangle,
-                qrcode: barcodes.qrcode,
+                // Add the signature plugin here
+                signature,
             },
         });
     });
