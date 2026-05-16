@@ -1,20 +1,16 @@
 <script>
     import PdfViewer from '$lib/components/PDFViewer.svelte';
     import App from '$lib/assets/js/bootstrap';
-    import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
     import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
-    import DocumentStateIndicator from '../../../../components/DocumentStateIndicator.svelte';
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
-    let authPost = $state();
-    let authReview = $state();
-    let authApprove = $state();
-    let authDecline = $state();
+    let authDownload = $state();
 
     let { data } = $props();
 
@@ -36,10 +32,7 @@
 
     let activeTab = $state('overview');
 
-    let posting = $state(false);
-    let reviewing = $state(false);
-    let approving = $state(false);
-    let declining = $state(false);
+    let downloading = $state(false);
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
@@ -49,114 +42,6 @@
     }
 
     const p = new App.ParamBuilder(page.url.searchParams);
-
-    async function post() {
-        try {
-            // password auth
-            if (!(await authPost.confirm())) return;
-
-            // udpate button state
-            posting = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/post/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Posting success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Posting failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            posting = false;
-        }
-    }
-
-    async function review() {
-        try {
-            // password auth
-            if (!(await authReview.confirm())) return;
-
-            // udpate button state
-            reviewing = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/review/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Reviewing success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Reviewing failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            reviewing = false;
-        }
-    }
-
-    async function approve() {
-        try {
-            // password auth
-            if (!(await authApprove.confirm())) return;
-
-            // udpate button state
-            approving = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/approve/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Approving success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Approving failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            approving = false;
-        }
-    }
-
-    async function decline() {
-        try {
-            // password auth
-            if (!(await authDecline.confirm())) return;
-
-            // udpate button state
-            declining = true;
-
-            const result = await App.API.post(`/dex/dms/drafts/decline/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Declining success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Declining failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            declining = false;
-        }
-    }
 
     // onmount
     onMount(() => {
@@ -168,7 +53,7 @@
         loadingDocumentFile = true;
 
         try {
-            const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+            const result = await App.API.post('/dex/dms/archive/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
 
             // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
@@ -180,15 +65,42 @@
         }
     }
 
+    async function downloadFile() {
+        try {
+            // password auth
+            if (!(await authDownload.confirm())) return;
+
+            // udpate button state
+            downloading = true;
+
+            const result = await App.API.post('/dex/dms/archive/download/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+
+            // Create a blob URL
+            const blobUrl = URL.createObjectURL(result.data);
+
+            // Optional: trigger download prompt immediately
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'document.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Cleanup
+            URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.log(err.message + ': UNABLE TO RETRIEVE FILE');
+        } finally {
+            downloading = false;
+        }
+    }
+
     function handleOnloaded(data) {
         pdfData = data;
     }
 </script>
 
-<Auth bind:me={authPost} warning="You are about to post a draft document." />
-<Auth bind:me={authReview} warning="You are about to review a posted document." />
-<Auth bind:me={authApprove} warning="You are about to approve a posted document." />
-<Auth bind:me={authDecline} warning="You are about to decline a document." />
+<Auth bind:me={authDownload} warning="You are about to download a copy of the attached file." />
 
 <!-- controls -->
 <j.RowCol>
@@ -196,7 +108,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dms/drafts{p.toString()}">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/archive{p.toString()}">(Document Manager) Archive</a></li>
             <li class="breadcrumb-item active">View</li>
         </ol>
     </nav>
@@ -256,9 +168,6 @@
                     <span class="badge bg-{variant == true ? 'primary' : 'secondary'}">{variant == true ? 'Original' : 'Reference Copy'}</span>
                 </j.Col>
             </j.Row>
-            <j.RowCol>
-                <DocumentStateIndicator currentState={currentStateCode} />
-            </j.RowCol>
             <hr class="text-muted" />
             <j.Row>
                 <j.Col span="6">
@@ -278,20 +187,6 @@
                     {/each}
                 </div>
             </j.RowCol>
-            <j.Row>
-                <j.Col span="4">
-                    <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
-                    {#each reviewers as reviewer}
-                        <div class="small"><i class="bi {reviewer.acted == true ? checked : unchecked} me-2"></i>{reviewer.account.user.full_name_2}</div>
-                    {/each}
-                </j.Col>
-                <j.Col span="4">
-                    <label for="exampleFormControlTextarea1" class="form-label small">Approvers</label>
-                    {#each approvers as approver}
-                        <div class="small"><i class="bi {approver.acted == true ? checked : unchecked} me-2"></i>{approver.account.user.full_name_2}</div>
-                    {/each}
-                </j.Col>
-            </j.Row>
             {@render actionButtons()}
         </j.Card>
     </div>
@@ -329,6 +224,22 @@
                         </div>
                         <hr class="text-muted" />
                     {/each}
+                    <div class="mb-4"></div>
+                    <h5>Draft Actors</h5>
+                    <j.Row>
+                        <j.Col>
+                            <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
+                            {#each reviewers as reviewer}
+                                <div class="small"><i class="bi {reviewer.acted == true ? checked : unchecked} me-2"></i>{reviewer.account.user.full_name_2}</div>
+                            {/each}
+                        </j.Col>
+                        <j.Col>
+                            <label for="exampleFormControlTextarea1" class="form-label small">Approvers</label>
+                            {#each approvers as approver}
+                                <div class="small"><i class="bi {approver.acted == true ? checked : unchecked} me-2"></i>{approver.account.user.full_name_2}</div>
+                            {/each}
+                        </j.Col>
+                    </j.Row>
                 </j.Col>
 
                 <j.Col auto>
@@ -370,27 +281,16 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- document is in draft -->
-            {#if data.docTransitions.includes('DOCSTATE2')}
-                <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
+            <!-- user has the permission to download -->
+            {#if $permissions.includes('DMS.ARCHIVE_DOWNLOAD')}
+                <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
             {/if}
 
-            <!-- document is in review and user is permitted to do so -->
-            {#if data.docTransitions.includes('DOCSTATE5') && data.userTransitions.includes('DOCSTATE5') && data.userAction.asReviewer.acted == false}
-                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={declining} onClick={decline} />
-                <j.Button label="Review" loadinglabel="Reviewing" icon="bi-check-lg" loading={reviewing} onClick={review} />
-            {/if}
-
-            <!-- document is in approval and user is permitted to do so -->
-            {#if data.docTransitions.includes('DOCSTATE6') && data.userTransitions.includes('DOCSTATE6') && data.userAction.asApprover.acted == false}
-                <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={declining} onClick={decline} />
-                <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />
-            {/if}
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
+                    goto(`/dex/dms/archive${p.toString()}`);
                 }}>Okay</button
             >
         </div>

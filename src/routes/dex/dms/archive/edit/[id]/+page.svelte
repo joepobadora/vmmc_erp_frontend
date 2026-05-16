@@ -9,7 +9,6 @@
     import { goto } from '$app/navigation';
 
     let authSave = $state();
-    let authArchive = $state();
     let authTrash = $state();
 
     let { data } = $props();
@@ -27,7 +26,6 @@
     let activeTab = $state('overview');
 
     let saving = $state(false);
-    let archiving = $state(false);
     let trashing = $state(false);
 
     let errors = $state({});
@@ -43,13 +41,13 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post(`/dex/dms/documents/update/${page.params.id}`, {
+            const result = await App.API.post(`/dex/dms/archive/update/${page.params.id}`, {
                 tags: JSON.stringify(doc.tags),
             });
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/archive${p.toString()}`);
                     Alert.show('success', 'Saving success.', result.data.success_code);
                 }, 600);
             } else {
@@ -72,11 +70,11 @@
             // udpate button state
             trashing = true;
 
-            const result = await App.API.post(`/dex/dms/documents/trash/${page.params.id}`);
+            const result = await App.API.post(`/dex/dms/archive/trash/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/archive${p.toString()}`);
                     Alert.show('success', 'Moving to trash success.', result.data.success_code);
                 }, 600);
             } else {
@@ -88,33 +86,6 @@
             Alert.show('error', 'Bad request.', err.message);
         } finally {
             trashing = false;
-        }
-    }
-
-    async function archive() {
-        try {
-            // password auth
-            if (!(await authArchive.confirm())) return;
-
-            // udpate button state
-            archiving = true;
-
-            const result = await App.API.post(`/dex/dms/documents/archive/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
-                    Alert.show('success', 'Archiving success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Archiving failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            archiving = false;
         }
     }
 
@@ -160,9 +131,8 @@
     }
 </script>
 
-<Auth bind:me={authSave} warning="You are about to update a document." />
-<Auth bind:me={authTrash} warning="You are about to move the document to the trash." />
-<Auth bind:me={authArchive} warning="You are about to archive a document." />
+<Auth bind:me={authSave} warning="You are about to update an archived document." />
+<Auth bind:me={authTrash} warning="You are about to move the archived document to the trash." />
 
 <!-- controls -->
 <j.RowCol>
@@ -170,7 +140,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dms/documents">(Document Manager) Documents</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/archive">(Document Manager) Archive</a></li>
             <li class="breadcrumb-item active">Edit</li>
         </ol>
     </nav>
@@ -210,7 +180,7 @@
     <div class="tab-pane {activeTab === 'overview' ? 'active' : 'd-none'}">
         <j.Card>
             <j.RowCol>
-                <h5>Edit document</h5>
+                <h5>Edit archived document</h5>
                 <p class="small text-muted">
                     A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                 </p>
@@ -272,7 +242,6 @@
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
                     <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
-                    <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
                 </div>
             </j.RowCol>
 
@@ -311,7 +280,7 @@
                 type="button"
                 class="btn btn-light border btn-sm px-3 {saving == true ? 'd-none' : ''}"
                 onclick={() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/archive${p.toString()}`);
                 }}>Cancel</button
             >
             <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />

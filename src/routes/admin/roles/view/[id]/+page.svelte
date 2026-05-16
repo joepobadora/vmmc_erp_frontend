@@ -138,7 +138,9 @@
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
+                    </td>
                 </tr>
                 <tr>
                     <td>

@@ -54,6 +54,7 @@
         'DMS.ARCHIVE_VIEW': false,
         'DMS.ARCHIVE_EDIT': false,
         'DMS.ARCHIVE_DELETE': false,
+        'DMS.ARCHIVE_DOWNLOAD': false,
         'DMS.TRASH_VIEW': false,
         'DMS.TRASH_RESTORE': false,
         'DMS.TRASH_PERMADELETE': false,
@@ -344,7 +345,12 @@
                             <label class="form-check-label small" for="dmsArchiveEdit">Edit</label>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.ARCHIVE_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsArchiveDownload" />
+                            <label class="form-check-label small" for="dmsArchiveDownload">Download</label>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>

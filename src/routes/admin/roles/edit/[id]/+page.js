@@ -46,6 +46,7 @@ export async function load({ params }) {
         'DMS.ARCHIVE_VIEW': false,
         'DMS.ARCHIVE_EDIT': false,
         'DMS.ARCHIVE_DELETE': false,
+        'DMS.ARCHIVE_DOWNLOAD': false,
         'DMS.TRASH_VIEW': false,
         'DMS.TRASH_RESTORE': false,
         'DMS.TRASH_PERMADELETE': false,

@@ -290,7 +290,12 @@
                             <label class="form-check-label small" for="dmsArchiveEdit">Edit</label>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.ARCHIVE_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsArchiveDownload" />
+                            <label class="form-check-label small" for="dmsArchiveDownload">Download</label>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>
