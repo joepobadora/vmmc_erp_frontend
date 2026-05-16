@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     let authSave = $state();
     let authTrash = $state();
@@ -422,7 +423,9 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Draft Document</label>
                 <div>
-                    <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {#if $permissions.includes('DMS.DRAFTS_DELETE')}
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {/if}
                 </div>
             </j.RowCol>
 

@@ -7,9 +7,11 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     let authSave = $state();
     let authTrash = $state();
+    let authUnarchive = $state();
 
     let { data } = $props();
 
@@ -27,6 +29,7 @@
 
     let saving = $state(false);
     let trashing = $state(false);
+    let unarchiving = $state(false);
 
     let errors = $state({});
 
@@ -89,6 +92,33 @@
         }
     }
 
+    async function unarchive() {
+        try {
+            // password auth
+            if (!(await authUnarchive.confirm())) return;
+
+            // udpate button state
+            unarchiving = true;
+
+            const result = await App.API.post(`/dex/dms/archive/unarchive/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dms/archive${p.toString()}`);
+                    Alert.show('success', 'Unarchiving success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Unarchiving failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            unarchiving = false;
+        }
+    }
+
     function selectTab(tab) {
         activeTab = tab;
     }
@@ -133,6 +163,7 @@
 
 <Auth bind:me={authSave} warning="You are about to update an archived document." />
 <Auth bind:me={authTrash} warning="You are about to move the archived document to the trash." />
+<Auth bind:me={authUnarchive} warning="You are about to unarchive a document." />
 
 <!-- controls -->
 <j.RowCol>
@@ -241,7 +272,12 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
-                    <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {#if $permissions.includes('DMS.ARCHIVE_DELETE')}
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {/if}
+                    {#if $permissions.includes('DMS.ARCHIVE_UNARCHIVE')}
+                        <j.Button label="Unarchive" loadinglabel="Unarchiving" icon="bi-arrow-right" loading={unarchiving} onClick={unarchive} />
+                    {/if}
                 </div>
             </j.RowCol>
 

@@ -55,6 +55,7 @@
         'DMS.ARCHIVE_EDIT': false,
         'DMS.ARCHIVE_DELETE': false,
         'DMS.ARCHIVE_DOWNLOAD': false,
+        'DMS.ARCHIVE_UNARCHIVE': false,
         'DMS.TRASH_VIEW': false,
         'DMS.TRASH_RESTORE': false,
         'DMS.TRASH_PERMADELETE': false,
@@ -331,6 +332,10 @@
                         <div class="form-check">
                             <input bind:checked={permissions['DMS.ARCHIVE_VIEW']} class="form-check-input" type="checkbox" id="dmsArchiveView" />
                             <label class="form-check-label small" for="dmsArchiveView">View</label>
+                        </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.ARCHIVE_UNARCHIVE']} class="form-check-input" type="checkbox" id="dmsArchiveUnarchive" />
+                            <label class="form-check-label small" for="dmsArchiveUnarchive">Unarchive</label>
                         </div>
                     </td>
                     <td>

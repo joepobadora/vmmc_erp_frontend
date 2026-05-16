@@ -277,6 +277,10 @@
                             <input bind:checked={permissions['DMS.ARCHIVE_VIEW']} class="form-check-input" type="checkbox" id="dmsArchiveView" />
                             <label class="form-check-label small" for="dmsArchiveView">View</label>
                         </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.ARCHIVE_UNARCHIVE']} class="form-check-input" type="checkbox" id="dmsArchiveUnarchive" />
+                            <label class="form-check-label small" for="dmsArchiveUnarchive">Unarchive</label>
+                        </div>
                     </td>
                     <td>
                         <div class="form-check">

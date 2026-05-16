@@ -7,6 +7,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     let authSave = $state();
     let authArchive = $state();
@@ -271,8 +272,12 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
-                    <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
-                    <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
+                    {#if $permissions.includes('DMS.DOCS_DELETE')}
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {/if}
+                    {#if $permissions.includes('DMS.DOCS_ARCHIVE')}
+                        <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
+                    {/if}
                 </div>
             </j.RowCol>
 

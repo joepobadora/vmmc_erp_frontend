@@ -131,6 +131,7 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_UNARCHIVE') == true ? checked : unchecked} me-2"></i>Unarchive</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>

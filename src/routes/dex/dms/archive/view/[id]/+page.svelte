@@ -7,6 +7,7 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { permissions } from '$lib/stores/access';
+    import { Alert } from '$lib/stores/alert';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
