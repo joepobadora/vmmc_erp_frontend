@@ -5,6 +5,7 @@
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import { permissions } from '$lib/stores/access';
 
     const statusMap = {
         // Cluster 1: Drafting / Editing / Posting
@@ -235,12 +236,15 @@
                     <div>
                         <!-- allows edit for drafted, updated, and declined -->
                         {#if item.state.state_code == 'DOCSTATE1' || item.state.state_code == 'DOCSTATE3' || item.state.state_code == 'DOCSTATE7'}
-                            <span
-                                class="text-info custom-link"
-                                onclick={() => {
-                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                                }}>Edit</span
-                            >
+                            <!-- check if user is permitted to edit -->
+                            {#if $permissions.includes('DMS.DRAFTS_EDIT')}
+                                <span
+                                    class="text-info custom-link"
+                                    onclick={() => {
+                                        goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                    }}>Edit</span
+                                >
+                            {/if}
                         {/if}
                     </div>
                 </div>

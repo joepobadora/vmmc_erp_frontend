@@ -5,6 +5,7 @@
     import { Alert } from '$lib/stores/alert';
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
+    import { permissions } from '$lib/stores/access';
 
     const variantMap = {
         true: { label: 'ORIGINAL', color: '#2C3947' }, // dark slate blue
@@ -206,12 +207,14 @@
                         <span>{item.latest_version?.document_type?.name}</span>
                     </div>
                     <div>
-                        <span
-                            class="text-info custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                            }}>Edit</span
-                        >
+                        {#if $permissions.includes('DMS.ARCHIVE_EDIT')}
+                            <span
+                                class="text-info custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                }}>Edit</span
+                            >
+                        {/if}
                     </div>
                 </div>
                 <div class="col">

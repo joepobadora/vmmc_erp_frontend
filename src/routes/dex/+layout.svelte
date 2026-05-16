@@ -4,7 +4,8 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import { onMount } from 'svelte';
     import Sidebar from './components/Sidebar.svelte';
-    import Footer from '../../lib/components/Footer.svelte';
+    import Footer from '$lib/components/Footer.svelte';
+    import { modules } from '$lib/stores/access';
 
     let auth = null;
 
@@ -14,6 +15,10 @@
         if (!auth) {
             goto('/login');
         }
+
+        if (!$modules.includes('DEX0')) {
+            goto('/403');
+        }
     });
 </script>
 
@@ -22,25 +27,27 @@
 </svelte:head>
 
 {#if auth == true}
-    <!-- navbar -->
-    <div class="row mb-5">
-        <div class="col px-0">
-            <Navbar title="VMMC ERP - DEx" titleRoute="/dex" showHome="true" />
+    {#if $modules.includes('DEX0')}
+        <!-- navbar -->
+        <div class="row mb-5">
+            <div class="col px-0">
+                <Navbar title="VMMC ERP - DEx" titleRoute="/dex" showHome="true" />
+            </div>
         </div>
-    </div>
 
-    <!-- main -->
-    <div class="container mb-auto">
+        <!-- main -->
+        <div class="container mb-auto">
+            <div class="row">
+                <div class="col-sm-2"><Sidebar /></div>
+                <div class="col-sm-10"><slot /></div>
+            </div>
+        </div>
+
+        <!-- footer -->
         <div class="row">
-            <div class="col-sm-2"><Sidebar /></div>
-            <div class="col-sm-10"><slot /></div>
+            <div class="col px-0">
+                <Footer />
+            </div>
         </div>
-    </div>
-
-    <!-- footer -->
-    <div class="row">
-        <div class="col px-0">
-            <Footer />
-        </div>
-    </div>
+    {/if}
 {/if}
