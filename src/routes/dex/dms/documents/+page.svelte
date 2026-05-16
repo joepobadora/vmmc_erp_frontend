@@ -144,7 +144,7 @@
             <button class="btn btn-primary btn-sm px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-plus-lg me-2"></i>Create</button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item small" href="/dex/dms/drafts/create/file-upload"><i class="bi bi-paperclip me-2"></i>Upload a file</a></li>
-                <li><a class="dropdown-item small" href="/dex/dms/drafts/create/record"><i class="bi bi-database me-2"></i>Create a record</a></li>
+                <li><a class="dropdown-item small" href="/dex/dms/drafts/create/template"><i class="bi bi-file-earmark-text me-2"></i>Use a template</a></li>
             </ul>
         </div>
     </j.Col>

@@ -43,6 +43,22 @@
     </j.Row>
     <j.Row>
         <j.Col span="6">
+            <a href="/dex/dms/drafts/create/template{p.toString()}" class="text-decoration-none module-link">
+                <j.Card borderonly p="0">
+                    <j.Row mb="0" centery>
+                        <j.Col>
+                            <h5 class="text-primary">Template</h5>
+                        </j.Col>
+                        <j.Col auto>
+                            <i class="bi bi-chevron-compact-right"></i>
+                        </j.Col>
+                    </j.Row>
+                </j.Card>
+            </a>
+        </j.Col>
+    </j.Row>
+    <!-- <j.Row>
+        <j.Col span="6">
             <a href="/dex/dms/drafts/create/record{p.toString()}" class="text-decoration-none module-link">
                 <j.Card borderonly p="0">
                     <j.Row mb="0" centery>
@@ -56,7 +72,7 @@
                 </j.Card>
             </a>
         </j.Col>
-    </j.Row>
+    </j.Row> -->
 </j.Card>
 
 <style>

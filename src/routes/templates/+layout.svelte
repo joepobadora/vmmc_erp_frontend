@@ -29,7 +29,9 @@
     </div>
 
     <!-- main -->
-    <slot />
+    <div class="container mb-auto">
+        <slot />
+    </div>
 
     <!-- footer -->
     <div class="row">
