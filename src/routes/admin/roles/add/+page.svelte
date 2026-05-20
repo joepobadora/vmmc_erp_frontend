@@ -57,6 +57,7 @@
         'DMS.ARCHIVE_DOWNLOAD': false,
         'DMS.ARCHIVE_UNARCHIVE': false,
         'DMS.TRASH_VIEW': false,
+        'DMS.TRASH_EDIT': false,
         'DMS.TRASH_RESTORE': false,
         'DMS.TRASH_PERMADELETE': false,
 
@@ -369,6 +370,12 @@
                     </td>
                     <td>
                         <div class="form-check">
+                            <input bind:checked={permissions['DMS.TRASH_EDIT']} class="form-check-input" type="checkbox" id="dmsTrashEdit" />
+                            <label class="form-check-label small" for="dmsTrashEdit">Edit</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
                             <input bind:checked={permissions['DMS.TRASH_RESTORE']} class="form-check-input" type="checkbox" id="dmsTrashRestore" />
                             <label class="form-check-label small" for="dmsTrashRestore">Restore</label>
                         </div>
@@ -379,7 +386,6 @@
                             <label class="form-check-label small" for="dmsTrashPermaDelete">Permanently Delete</label>
                         </div>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>

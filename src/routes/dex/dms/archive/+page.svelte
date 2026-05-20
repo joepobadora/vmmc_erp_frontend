@@ -8,8 +8,8 @@
     import { permissions } from '$lib/stores/access';
 
     const variantMap = {
-        true: { label: 'ORIGINAL', color: '#2C3947' }, // dark slate blue
-        false: { label: 'COPY', color: '#E8EDF2' }, // light gray
+        true: { label: 'ORIGINAL', color: '#008080' }, // dark slate blue
+        false: { label: 'COPY', color: '#E8EDF2' }, // light blue
     };
 
     let { data } = $props();
@@ -194,7 +194,7 @@
                     <div>
                         <span class="text-muted me-2">Name:</span>
                         <strong
-                            class="custom-link"
+                            class="custom-link text-muted"
                             onclick={() => {
                                 goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}

@@ -151,12 +151,14 @@
                         <div class="small"><i class="bi {permissions.includes('DMS.TRASH_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                     </td>
                     <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.TRASH_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
+                    </td>
+                    <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.TRASH_RESTORE') == true ? checked : unchecked} me-2"></i>Restore</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.TRASH_PERMADELETE') == true ? checked : unchecked} me-2"></i>Permanently Delete</div>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>
