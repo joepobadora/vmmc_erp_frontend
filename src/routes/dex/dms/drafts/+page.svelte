@@ -141,13 +141,15 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        <div class="dropdown">
-            <button class="btn btn-primary btn-sm px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-plus-lg me-2"></i>Create</button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item small" href="/dex/dms/drafts/create/file-upload"><i class="bi bi-paperclip me-2"></i>Upload a file</a></li>
-                <li><a class="dropdown-item small" href="/dex/dms/drafts/create/template"><i class="bi bi-file-earmark-text me-2"></i>Use a template</a></li>
-            </ul>
-        </div>
+        {#if $permissions.includes('DMS.DRAFTS_CREATE')}
+            <div class="dropdown">
+                <button class="btn btn-primary btn-sm px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-plus-lg me-2"></i>Create</button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item small" href="/dex/dms/drafts/create/file-upload"><i class="bi bi-paperclip me-2"></i>Upload a file</a></li>
+                    <li><a class="dropdown-item small" href="/dex/dms/drafts/create/template"><i class="bi bi-file-earmark-text me-2"></i>Use a template</a></li>
+                </ul>
+            </div>
+        {/if}
     </j.Col>
 </j.Row>
 
