@@ -4,6 +4,7 @@ import Format from './utils/formatter';
 import SignPad from './utils/signaturepad';
 import ParamBuilder from './utils/parambuilder';
 import Color from './utils/color';
+import Async from './utils/async';
 
 const App = {
     API,
@@ -12,6 +13,7 @@ const App = {
     SignPad,
     ParamBuilder,
     Color,
+    Async,
 };
 
 export default App;

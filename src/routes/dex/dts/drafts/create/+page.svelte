@@ -7,8 +7,25 @@
     import z from 'zod';
     import { page } from '$app/state';
     import Auth from '$lib/components/Auth.svelte';
+    import { de } from 'zod/v4/locales';
+
+    let auth = $state();
 
     let { data } = $props();
+
+    let docNo = $state('');
+    let name = $state('');
+    let details = $state('');
+    let supportingDoc = $state(null);
+    let supportingDocs = $state([]);
+
+    let documentList = $state(data.docList ?? []);
+
+    let saving = $state(false);
+
+    let errors = $state({});
+
+    const p = new App.ParamBuilder(page.url.searchParams);
 
     let routeListMap = {
         ROUTING1: {
@@ -31,9 +48,95 @@
     let selectedRoute = $state('ROUTING3');
     let routeDesc = $state(routeListMap[selectedRoute].description);
 
+    const schema = z.object({
+        docNo: z
+            .string()
+            .nonempty('Required.')
+            .refine((val) => documentList.map((d) => d.document_no).includes(val), {
+                message: 'Invalid document selected.',
+            }),
+    });
+
+    const supportingDocSchema = z.object({
+        supportingDoc: z.refine((val) => documentList.map((d) => d.id).includes(val), {
+            message: 'Invalid document selected.',
+        }),
+    });
+
     function chooseRoute(routeKey) {
         selectedRoute = routeKey;
         routeDesc = routeListMap[routeKey].description;
+    }
+
+    async function save() {
+        const validate = schema.safeParse({
+            docNo,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
+
+        console.log(docNo);
+    }
+
+    // debounce and react to document no change
+    $effect(() => {
+        docNo;
+
+        return App.Async.debounce(populateDocumentDetails, 500);
+    });
+
+    async function populateDocumentDetails() {
+        try {
+            const result = await App.API.post('/dex/dts/drafts/create/document-details', {
+                doc_no: docNo,
+            });
+
+            if (result.data.success) {
+                name = result.data.data.latest_version.name;
+                details = result.data.data.latest_version.details;
+            } else {
+                name = '';
+                details = '';
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        }
+    }
+
+    function handleSupportingDocSelect() {
+        const opt = [...document.querySelectorAll('#documentList option')].find((o) => o.value === supportingDoc);
+
+        if (opt) {
+            supportingDoc = Number(opt.dataset.id);
+        }
+
+        const obj = documentList.find((a) => a.id === supportingDoc);
+
+        const validate = supportingDocSchema.safeParse({
+            supportingDoc,
+        });
+
+        if (!validate.success) {
+            errors = validate.error.flatten().fieldErrors;
+            return;
+        } else {
+            errors = {};
+        }
+
+        if (!supportingDocs.includes(obj)) {
+            supportingDocs = [...supportingDocs, obj];
+        }
+
+        supportingDoc = null;
+    }
+
+    function handleSupportingDocRemove(supportingDoc) {
+        supportingDocs = supportingDocs.filter((t) => t !== supportingDoc);
     }
 </script>
 
@@ -83,40 +186,64 @@
     <j.Row>
         <j.Col span="6">
             <label class="form-label small">Document No<span class="ms-1 text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" placeholder="DOC-XXXX-XXXX" />
+            <input
+                bind:value={docNo}
+                oninput={(e) => (docNo = e.target.value.toUpperCase())}
+                type="text"
+                class="form-control form-control-sm {errors.docNo ? 'is-invalid' : ''}"
+                placeholder="DOC-XXXX-XXXX"
+            />
+            <p class="text-danger small mb-auto {errors.docNo ? '' : 'd-none'}">{errors.docNo?.[0]}</p>
         </j.Col>
     </j.Row>
 
     <j.Row>
         <j.Col>
-            <label class="form-label small">Title<span class="ms-1 text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" placeholder="Title" />
+            <label class="form-label small">Name</label>
+            <input bind:value={name} type="text" class="form-control form-control-sm" placeholder="Name" readonly />
         </j.Col>
     </j.Row>
 
     <j.Row>
         <j.Col>
-            <label class="form-label small">Description</label>
-            <textarea class="form-control form-control-sm" rows="4" placeholder="Details"></textarea>
+            <label class="form-label small">Details</label>
+            <textarea bind:value={details} class="form-control form-control-sm" rows="4" placeholder="Details" readonly></textarea>
         </j.Col>
     </j.Row>
 
     <j.Row>
         <j.Col span="6">
-            <label for="office" class="form-label small">Supporting Document No<span class="ms-1 text-danger">*</span></label>
+            <label for="office" class="form-label small">Supporting Document No</label>
             <div class="input-group input-group-sm">
-                <input list="accountList" type="text" class="form-control form-control-sm" id="office" placeholder="DOC-XXXX-XXXX" />
-                <button class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
+                <input
+                    bind:value={supportingDoc}
+                    list="documentList"
+                    type="text"
+                    class="form-control form-control-sm {errors.supportingDoc || errors.supportingDoc ? 'is-invalid' : ''}"
+                    id="office"
+                    placeholder="Type and choose..."
+                />
+                <button onclick={handleSupportingDocSelect} class="btn btn-light border" type="button" id="button-addon2"><i class="bi bi-plus"></i></button>
             </div>
-            <div class="d-flex flex-row flex-wrap gap-2 my-3"></div>
+            <p class="text-danger small mb-auto {errors.supportingDoc ? '' : 'd-none'}">{errors.supportingDoc?.[0]}</p>
+            <div class="d-flex flex-row flex-wrap gap-2 my-3">
+                {#each supportingDocs as doc}
+                    <j.Tag name={doc.document_no} onRemove={() => handleSupportingDocRemove(doc)} border />
+                {/each}
+            </div>
         </j.Col>
+        <datalist id="documentList">
+            {#each documentList as doc}
+                <option data-id={doc.id} value={doc.document_no}></option>
+            {/each}
+        </datalist>
     </j.Row>
 
     <j.RowCol endx>
         <div class="d-flex gap-2">
             <button type="button" class="btn btn-light border btn-sm px-3" onclick={() => goto('/dex/dts/transactions')}>Cancel</button>
-            <j.Button label="Save as draft" loadinglabel="Saving" />
-            <j.Button label="Post" loadinglabel="Saving" icon="bi-check-lg" />
+            <j.Button label="Save as draft" loadinglabel="Saving as draft" onClick={save} />
+            <j.Button label="Post" loadinglabel="Posting" icon="bi-check-lg" />
         </div>
     </j.RowCol>
 </j.Card>

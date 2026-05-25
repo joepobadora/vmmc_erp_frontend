@@ -9,6 +9,7 @@ export async function load() {
         if (result.data.success) {
             return {
                 routeList: data.routing_method,
+                docList: data.valid_documents,
             };
         } else {
             return {
