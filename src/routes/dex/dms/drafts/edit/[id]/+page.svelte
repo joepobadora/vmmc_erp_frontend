@@ -67,8 +67,8 @@
         const validate = schema.safeParse({
             type: doc.latest_version.document_type.name,
             name: doc.latest_version.name,
-            reviewers: doc.latest_version.workflow.reviewers,
-            approvers: doc.latest_version.workflow.approvers,
+            reviewers: doc.workflow.reviewers,
+            approvers: doc.workflow.approvers,
             changelog,
         });
 
@@ -95,8 +95,8 @@
                 name: doc.latest_version.name,
                 details: doc.latest_version.details,
                 tags: JSON.stringify(doc.tags),
-                reviewers: JSON.stringify(doc.latest_version.workflow.reviewers),
-                approvers: JSON.stringify(doc.latest_version.workflow.approvers),
+                reviewers: JSON.stringify(doc.workflow.reviewers),
+                approvers: JSON.stringify(doc.workflow.approvers),
                 change_log: changelog,
             });
 
@@ -205,15 +205,15 @@
             errors = {};
         }
 
-        if (!doc.latest_version.workflow.reviewers.includes(obj)) {
-            doc.latest_version.workflow.reviewers = [...doc.latest_version.workflow.reviewers, obj];
+        if (!doc.workflow.reviewers.includes(obj)) {
+            doc.workflow.reviewers = [...doc.workflow.reviewers, obj];
         }
 
         reviewer = null;
     }
 
     function handleReviewerRemove(reviewer) {
-        doc.latest_version.workflow.reviewers = doc.latest_version.workflow.reviewers.filter((r) => r !== reviewer);
+        doc.workflow.reviewers = doc.workflow.reviewers.filter((r) => r !== reviewer);
     }
 
     function handleApproverSelect() {
@@ -236,15 +236,15 @@
             errors = {};
         }
 
-        if (!doc.latest_version.workflow.approvers.includes(obj)) {
-            doc.latest_version.workflow.approvers = [...doc.latest_version.workflow.approvers, obj];
+        if (!doc.workflow.approvers.includes(obj)) {
+            doc.workflow.approvers = [...doc.workflow.approvers, obj];
         }
 
         approver = null;
     }
 
     function handleApproverRemove(approver) {
-        doc.latest_version.workflow.approvers = doc.latest_version.workflow.approvers.filter((a) => a !== approver);
+        doc.workflow.approvers = doc.workflow.approvers.filter((a) => a !== approver);
     }
 </script>
 
@@ -377,7 +377,7 @@
                     <p class="text-danger small mb-auto {errors.reviewer ? '' : 'd-none'}">{errors.reviewer?.[0]}</p>
                     <p class="text-danger small mb-auto {errors.reviewers ? '' : 'd-none'}">{errors.reviewers?.[0]}</p>
                     <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                        {#each doc.latest_version.workflow.reviewers as reviewer}
+                        {#each doc.workflow.reviewers as reviewer}
                             <j.Tag name={reviewer.user.full_name_2} onRemove={() => handleReviewerRemove(reviewer)} border />
                         {/each}
                     </div>
@@ -398,7 +398,7 @@
                     <p class="text-danger small mb-auto {errors.approver ? '' : 'd-none'}">{errors.approver?.[0]}</p>
                     <p class="text-danger small mb-auto {errors.approvers ? '' : 'd-none'}">{errors.approvers?.[0]}</p>
                     <div class="d-flex flex-row flex-wrap gap-2 my-3">
-                        {#each doc.latest_version.workflow.approvers as approver}
+                        {#each doc.workflow.approvers as approver}
                             <j.Tag name={approver.user.full_name_2} onRemove={() => handleApproverRemove(approver)} border />
                         {/each}
                     </div>

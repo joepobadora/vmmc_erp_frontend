@@ -217,7 +217,15 @@
     <j.Row>
         <j.Col span="6">
             <label for="office" class="form-label small">Office<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={account.office} list="officeList" type="text" class="form-control form-control-sm {errors.office ? 'is-invalid' : ''}" id="office" placeholder="Office" />
+            <input
+                bind:value={account.office}
+                oninput={(e) => (office = e.target.value.toUpperCase())}
+                list="officeList"
+                type="text"
+                class="form-control form-control-sm {errors.office ? 'is-invalid' : ''}"
+                id="office"
+                placeholder="Office"
+            />
             <p class="text-danger small mb-auto {errors.office ? '' : 'd-none'}">{errors.office?.[0]}</p>
             <datalist id="officeList">
                 {#each officeList as office}

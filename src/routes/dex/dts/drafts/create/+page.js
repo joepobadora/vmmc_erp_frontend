@@ -10,6 +10,7 @@ export async function load() {
             return {
                 routeList: data.routing_method,
                 docList: data.valid_documents,
+                officeList: data.office,
             };
         } else {
             return {

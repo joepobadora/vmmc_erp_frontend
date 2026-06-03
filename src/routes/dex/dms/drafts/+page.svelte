@@ -232,8 +232,8 @@
                         </strong>
                     </div>
                     <div>
-                        <span class="text-muted me-2">Type:</span>
-                        <span>{item.latest_version?.document_type?.name}</span>
+                        <span class="text-muted me-2">Doc. No.:</span>
+                        <span>{item.document_no}</span>
                     </div>
                     <div>
                         <!-- allows edit for drafted, updated, and declined -->
