@@ -21,7 +21,6 @@
                 { href: '/dex/dts/incoming', icon: 'bi-box-arrow-in-down', label: 'Incoming' },
                 { href: '/dex/dts/inbox', icon: 'bi-inbox', label: 'Inbox' },
                 { href: '/dex/dts/outgoing', icon: 'bi-send', label: 'Outgoing' },
-                { href: '/dex/dts/drafts', icon: 'bi-file-earmark-text', label: 'Drafts' },
                 { href: '/dex/dts/broadcast-inbox', icon: 'bi-megaphone', label: 'Broadcast Inbox' },
                 { href: '/dex/dts/archive', icon: 'bi-archive', label: 'Archive' },
                 { href: '/dex/dts/trash', icon: 'bi-trash', label: 'Trash' },

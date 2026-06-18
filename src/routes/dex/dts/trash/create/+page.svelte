@@ -365,14 +365,14 @@
     <j.Row>
         <j.Col>
             <label class="form-label small">Name</label>
-            <input bind:value={name} type="text" class="form-control form-control-sm" placeholder="Name" readonly />
+            <input bind:value={name} type="text" class="form-control form-control-sm" placeholder="Name" disabled />
         </j.Col>
     </j.Row>
 
     <j.Row>
         <j.Col>
             <label class="form-label small">Details</label>
-            <textarea bind:value={details} class="form-control form-control-sm" rows="4" placeholder="Details" readonly></textarea>
+            <textarea bind:value={details} class="form-control form-control-sm" rows="4" placeholder="Details" disabled></textarea>
         </j.Col>
     </j.Row>
 
