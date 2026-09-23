@@ -3,7 +3,7 @@
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { goto } from '$app/navigation';
+    import { goto, pushState } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
 
@@ -40,7 +40,7 @@
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     const p = new App.ParamBuilder(page.url.searchParams);
-    window.history.replaceState({}, document.title, window.location.pathname); // ensure no lingering outdated params
+    pushState(window.location.pathname); // ensure no lingering outdated params
 
     let tablePage = $state(p.get('page') || 1);
 

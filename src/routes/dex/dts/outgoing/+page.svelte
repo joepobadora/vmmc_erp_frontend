@@ -3,29 +3,30 @@
     import Table from '$lib/components/Table.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { goto } from '$app/navigation';
+    import { goto, pushState } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
 
     const statusMap = {
         // Cluster 1: Drafting / Editing / Posting
-        DOCSTATE1: { label: 'DRAFTED', color: '#E8EDF2' }, // blue
-        DOCSTATE3: { label: 'UPDATED', color: '#E8EDF2' }, // blue
-        DOCSTATE2: { label: 'POSTED', color: '#547A95' }, // blue
+        ACTION1: { label: 'DRAFTED', color: '#E8EDF2' }, // blue
+        ACTION2: { label: 'POSTED', color: '#E8EDF2' }, // blue
+        ACTION3: { label: 'BROADCASTED', color: '#547A95' }, // blue
 
         // Cluster 2: Review / Decision
-        DOCSTATE5: { label: 'REVIEWED', color: '#2C3947' }, // amber
-        DOCSTATE6: { label: 'APPROVED', color: '#E8EDF2' }, // amber
-        DOCSTATE7: { label: 'DECLINED', color: '#D96868' }, // amber
+        ACTION4: { label: 'RELEASED', color: '#2C3947' }, // amber
+        ACTION5: { label: 'FORWARDED', color: '#E8EDF2' }, // amber
+        ACTION6: { label: 'RECEIVED', color: '#D96868' }, // amber
 
         // Cluster 3: Finalization / Routing
-        DOCSTATE10: { label: 'SIGNED', color: '#547A95' }, // green
-        DOCSTATE11: { label: 'ROUTED', color: '#547A95' }, // green
+        ACTION7: { label: 'ACKNOWLEDGED', color: '#547A95' }, // green
+        ACTION8: { label: 'TERMINATED', color: '#547A95' }, // green
+        ACTION9: { label: 'RETRIEVED', color: '#547A95' }, // green
 
         // Cluster 4: Closure / End States
-        DOCSTATE8: { label: 'DOWNLOADED', color: '#547A95' }, // gray
-        DOCSTATE9: { label: 'ARCHIVED', color: '#547A95' }, // gray
-        DOCSTATE4: { label: 'DELETED', color: '#D96868' }, // gray
+        ACTION10: { label: 'ARCHIVED', color: '#547A95' }, // gray
+        ACTION11: { label: 'DELETED', color: '#547A95' }, // gray
+        ACTION12: { label: 'RECALLED', color: '#D96868' }, // gray
     };
 
     let { data } = $props();
@@ -33,14 +34,14 @@
     let tagList = $state(data.tagList ?? []);
 
     let loadingData = $state('false');
-    let drafts = $state([]);
+    let outgoing = $state([]);
     let tag = $state(null);
 
     let today = new Date();
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     const p = new App.ParamBuilder(page.url.searchParams);
-    window.history.replaceState({}, document.title, window.location.pathname); // ensure no lingering outdated params
+    pushState(window.location.pathname); // ensure no lingering outdated params
 
     let tablePage = $state(p.get('page') || 1);
 
@@ -90,14 +91,14 @@
         loadingData = true;
 
         try {
-            const result = await App.API.post('/dex/dms/drafts', {
+            const result = await App.API.post('/dex/dts/outgoing', {
                 filter: filter,
             });
 
             const data = result.data.data;
 
             if (result.data.success) {
-                drafts = data;
+                outgoing = data;
             } else {
                 Alert.show('error', 'Request failed.', result.data.error_code);
             }
@@ -117,16 +118,6 @@
             status: null,
             tags: [],
         };
-    }
-
-    function handleTagSelect() {
-        if (!filter.tags.includes(tag)) {
-            filter.tags = [...filter.tags, tag];
-        }
-        tag = null;
-    }
-    function handleTagRemove(tag) {
-        filter.tags = filter.tags.filter((t) => t !== tag);
     }
 </script>
 
@@ -192,7 +183,7 @@
             <div class="spinner-border text-primary" role="status"></div>
         </div>
     {:else}
-        <Table data={drafts} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
+        <Table data={outgoing} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
             <div slot="row" let:item class="row border-bottom custom-row small">
                 <div class="col">
                     <div>
@@ -203,26 +194,12 @@
                                 goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
                             }}
                         >
-                            {item.latest_version?.name}
+                            {item.document?.latest_version?.name}
                         </strong>
                     </div>
                     <div>
-                        <span class="text-muted me-2">Type:</span>
-                        <span>{item.latest_version?.document_type?.name}</span>
-                    </div>
-                    <div>
-                        <!-- allows edit for drafted, updated, and declined -->
-                        {#if item.state.state_code == 'DOCSTATE1' || item.state.state_code == 'DOCSTATE3' || item.state.state_code == 'DOCSTATE7'}
-                            <!-- check if user is permitted to edit -->
-                            {#if $permissions.includes('DMS.DRAFTS_EDIT')}
-                                <span
-                                    class="text-info custom-link"
-                                    onclick={() => {
-                                        goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
-                                    }}>Edit</span
-                                >
-                            {/if}
-                        {/if}
+                        <span class="text-muted me-2">Doc. No.:</span>
+                        <span>{item.transaction_no}</span>
                     </div>
                 </div>
                 <div class="col">
@@ -231,16 +208,6 @@
                     </div>
                     <div class="d-flex flex-row flex-wrap gap-2">
                         <j.Tag name={statusMap[item.state.state_code].label} color={statusMap[item.state.state_code].color} />
-                    </div>
-                </div>
-                <div class="col">
-                    <div>
-                        <span class="text-muted me-2">Tags:</span>
-                    </div>
-                    <div class="d-flex flex-row flex-wrap gap-2">
-                        {#each item.tags as tag}
-                            <j.Tag name={tag.name} color={tag.color} />
-                        {/each}
                     </div>
                 </div>
                 <div class="col-auto ms-auto">

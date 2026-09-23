@@ -61,6 +61,7 @@ export async function load({ params }) {
         'DTS.INBOX_FORWARD': false,
         'DTS.INBOX_TERMINATE': false,
         'DTS.OUTGOING_VIEW': false,
+        'DTS.OUTGOING_CREATE': false,
         'DTS.OUTGOING_RECALL': false,
         'DTS.DRAFTS_VIEW': false,
         'DTS.DRAFTS_CREATE': false,

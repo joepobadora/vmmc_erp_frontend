@@ -118,35 +118,43 @@
             errors = {};
         }
 
-        // saving transaction
-        try {
-            // password auth
-            if (!(await auth.confirm())) return;
+        console.log({
+            routing_method: selectedRoute,
+            doc_no: docNo,
+            supporting_docs: supportingDocs,
+            direct_office: directOffice,
+            broadcast_offices: broadcastOffices,
+        });
 
-            // udpate button state
-            saving = true;
+        // // saving transaction
+        // try {
+        //     // password auth
+        //     if (!(await auth.confirm())) return;
 
-            const result = await App.API.post('/dex/dts/outgoing/store', {
-                routing_method: selectedRoute,
-                doc_no: docNo,
-                supporting_docs: JSON.stringify(supportingDocs),
-            });
+        //     // udpate button state
+        //     saving = true;
 
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dts/outgoing${p.toString()}`);
-                    Alert.show('success', 'Saving success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Saving failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            saving = false;
-        }
+        //     const result = await App.API.post('/dex/dts/outgoing/store', {
+        //         routing_method: selectedRoute,
+        //         doc_no: docNo,
+        //         supporting_docs: JSON.stringify(supportingDocs),
+        //     });
+
+        //     if (result.data.success) {
+        //         setTimeout(() => {
+        //             goto(`/dex/dts/outgoing${p.toString()}`);
+        //             Alert.show('success', 'Saving success.', result.data.success_code);
+        //         }, 600);
+        //     } else {
+        //         setTimeout(() => {
+        //             Alert.show('error', 'Saving failed.', result.data.error_code);
+        //         }, 600);
+        //     }
+        // } catch (err) {
+        //     Alert.show('error', 'Bad request.', err.message);
+        // } finally {
+        //     saving = false;
+        // }
     }
 
     //#region Broadcast Multi Select

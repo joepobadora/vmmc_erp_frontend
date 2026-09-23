@@ -69,6 +69,7 @@
         'DTS.INBOX_FORWARD': false,
         'DTS.INBOX_TERMINATE': false,
         'DTS.OUTGOING_VIEW': false,
+        'DTS.OUTGOING_CREATE': false,
         'DTS.OUTGOING_RECALL': false,
         'DTS.DRAFTS_VIEW': false,
         'DTS.DRAFTS_CREATE': false,
@@ -452,14 +453,19 @@
                     </td>
                     <td>
                         <div class="form-check">
+                            <input bind:checked={permissions['DTS.OUTGOING_CREATE']} class="form-check-input" type="checkbox" id="dtsOutgoingCreate" />
+                            <label class="form-check-label small" for="dtsOutgoingCreate">Create</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
                             <input bind:checked={permissions['DTS.OUTGOING_RECALL']} class="form-check-input" type="checkbox" id="dtsOutgoingRecall" />
                             <label class="form-check-label small" for="dtsOutgoingRecall">Recall</label>
                         </div>
                     </td>
                     <td></td>
-                    <td></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-file-earmark-text me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></p>
                     </td>
@@ -491,7 +497,7 @@
                             <label class="form-check-label small" for="dtsDraftsDelete">Delete</label>
                         </div>
                     </td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-megaphone me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></p>

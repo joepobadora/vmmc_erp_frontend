@@ -200,12 +200,14 @@
                         <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                     </td>
                     <td>
+                        <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
+                    </td>
+                    <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_RECALL') == true ? checked : unchecked} me-2"></i>Recall</div>
                     </td>
                     <td></td>
-                    <td></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-file-earmark-text me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></p>
                     </td>
@@ -222,7 +224,7 @@
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
                     </td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-megaphone me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></p>
