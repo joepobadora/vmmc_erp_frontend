@@ -126,35 +126,37 @@
             broadcast_offices: broadcastOffices,
         });
 
-        // // saving transaction
-        // try {
-        //     // password auth
-        //     if (!(await auth.confirm())) return;
+        // saving transaction
+        try {
+            // password auth
+            if (!(await auth.confirm())) return;
 
-        //     // udpate button state
-        //     saving = true;
+            // udpate button state
+            saving = true;
 
-        //     const result = await App.API.post('/dex/dts/outgoing/store', {
-        //         routing_method: selectedRoute,
-        //         doc_no: docNo,
-        //         supporting_docs: JSON.stringify(supportingDocs),
-        //     });
+            const result = await App.API.post('/dex/dts/outgoing/store', {
+                routing_method: selectedRoute,
+                doc_no: docNo,
+                supporting_docs: JSON.stringify(supportingDocs),
+                direct_office: directOffice,
+                broadcast_offices: JSON.stringify(broadcastOffices),
+            });
 
-        //     if (result.data.success) {
-        //         setTimeout(() => {
-        //             goto(`/dex/dts/outgoing${p.toString()}`);
-        //             Alert.show('success', 'Saving success.', result.data.success_code);
-        //         }, 600);
-        //     } else {
-        //         setTimeout(() => {
-        //             Alert.show('error', 'Saving failed.', result.data.error_code);
-        //         }, 600);
-        //     }
-        // } catch (err) {
-        //     Alert.show('error', 'Bad request.', err.message);
-        // } finally {
-        //     saving = false;
-        // }
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dts/outgoing${p.toString()}`);
+                    Alert.show('success', 'Saving success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Saving failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            saving = false;
+        }
     }
 
     //#region Broadcast Multi Select

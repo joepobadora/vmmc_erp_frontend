@@ -31,11 +31,8 @@
 
     let { data } = $props();
 
-    let tagList = $state(data.tagList ?? []);
-
     let loadingData = $state('false');
     let outgoing = $state([]);
-    let tag = $state(null);
 
     let today = new Date();
     let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -51,24 +48,11 @@
         search: p.get('search') || null,
         adv_search: p.get('adv_search') === 'true' || false,
         status: p.get('status') || null,
-        tags: hydrateTags(p.get('tags'), tagList),
     });
-
-    function hydrateTags(idsString, tagList) {
-        if (!idsString) return [];
-        const ids = idsString.split(',').map(Number);
-        return tagList.filter((tag) => ids.includes(tag.id));
-    }
 
     // react to changes and update params
     $effect(() => {
-        p.set('page', tablePage)
-            .set('start_date', filter.start_date)
-            .set('end_date', filter.end_date)
-            .set('search', filter.search)
-            .set('adv_search', filter.adv_search)
-            .set('status', filter.status)
-            .set('tags', filter.tags.map((tag) => tag.id).join(','));
+        p.set('page', tablePage).set('start_date', filter.start_date).set('end_date', filter.end_date).set('search', filter.search).set('adv_search', filter.adv_search).set('status', filter.status);
     });
 
     // debounce and react to filter
@@ -78,7 +62,6 @@
         filter.search;
         filter.adv_search;
         filter.status;
-        filter.tags;
 
         const timer = setTimeout(() => {
             refreshTable();
@@ -116,7 +99,6 @@
             search: null,
             adv_search: false,
             status: null,
-            tags: [],
         };
     }
 </script>
