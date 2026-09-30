@@ -14,7 +14,7 @@
         <!-- The background line -->
         <div class="track-bg"></div>
 
-        {#each trails as item, i}
+        {#each trails as trail, i}
             <div class="timeline-item">
                 <div class="marker-container">
                     <!-- Circle logic: active for the latest, done for historical -->
@@ -28,16 +28,20 @@
                 <div class="content small">
                     <div class="header-row mb-1">
                         <span class="title fw-semibold" class:active={i === currentIndex}>
-                            {item.state.enumeration}
+                            {trail.state.enumeration}
                         </span>
                         <span class="date text-danger ms-4">
-                            {App.Format.date(item.created_at).toDatetime()}
+                            {App.Format.date(trail.created_at).toDatetime()}
                         </span>
                     </div>
 
                     <div class="details">
                         <div class="office-text text-muted">
-                            Office: <span>{item.office.short_name}</span>
+                            {#if trail.state.office_id == 0}
+                                Office: <span>On Pool</span>
+                            {:else}
+                                Office: <span>{trail.office?.short_name}</span>
+                            {/if}
                         </div>
                     </div>
                 </div>

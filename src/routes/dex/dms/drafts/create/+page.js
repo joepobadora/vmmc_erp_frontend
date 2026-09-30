@@ -7,6 +7,8 @@ export async function load() {
         const data = result.data.data;
 
         if (result.data.success) {
+            console.log(data);
+
             return {
                 typeList: data.type,
                 tagList: data.tag,

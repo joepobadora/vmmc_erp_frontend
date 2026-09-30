@@ -14,8 +14,6 @@
 
     let { data } = $props();
 
-    console.log(data.transaction.document.latest_version);
-
     let file = $state(null);
     let loadingDocumentFile = $state(false);
     let pdfData = $state(null);
@@ -167,6 +165,8 @@
                 <label for="exampleFormControlTextarea1" class="form-label small">Details</label>
                 <textarea bind:value={details} class="form-control form-control-sm" id="exampleFormControlTextarea1" rows="5" disabled></textarea>
             </j.RowCol>
+
+            {@render actionButtons()}
         </j.Card>
     </div>
 
@@ -181,6 +181,8 @@
                     </j.RowCol>
                 </j.Col>
             </j.Row>
+
+            {@render actionButtons()}
         </j.Card>
     </div>
 
@@ -203,5 +205,26 @@
                 <j.Col></j.Col>
             </j.Row>
         </div>
+
+        {@render actionButtons()}
     </div>
 </div>
+
+{#snippet actionButtons()}
+    <j.RowCol endx>
+        <div class="d-flex gap-2">
+            <!-- document is in released or forwarded -->
+            {#if data.TranTransitions.includes('ACTION4') || data.TranTransitions.includes('ACTION5')}
+                <j.Button label="Recall" loadinglabel="Recalling" icon="bi-arrow-right" loading={recalling} onClick={recall} />
+            {/if}
+
+            <button
+                type="button"
+                class="btn btn-primary btn-sm px-3"
+                onclick={() => {
+                    goto(`/dex/dms/drafts${p.toString()}`);
+                }}>Okay</button
+            >
+        </div>
+    </j.RowCol>
+{/snippet}

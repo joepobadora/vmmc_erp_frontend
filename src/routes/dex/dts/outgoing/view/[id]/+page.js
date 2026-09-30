@@ -10,8 +10,17 @@ export async function load({ params }) {
             };
         }
 
+        const TranTransitionsResult = await App.API.get(`/dex/dts/allowed-tran-transitions/${params.id}`);
+        const TranTransitionsData = TranTransitionsResult.data.data;
+        if (!TranTransitionsResult.data.success) {
+            return {
+                error: TranTransitionsResult.data.error_code,
+            };
+        }
+
         return {
             transaction: transactionData,
+            TranTransitions: TranTransitionsData,
         };
     } catch (err) {
         return {
