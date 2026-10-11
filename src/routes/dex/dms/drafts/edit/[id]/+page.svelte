@@ -6,6 +6,7 @@
     import z from 'zod';
     import Auth from '$lib/components/Auth.svelte';
     import { onMount } from 'svelte';
+    import { draftEdit } from '$lib/stores/dms';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { permissions } from '$lib/stores/access';
@@ -16,6 +17,7 @@
     let { data } = $props();
 
     let file = $state(null);
+    let fileBlob = $state(null);
     let loadingDocumentFile = $state(false);
     let pdfData = $state(null);
 
@@ -79,6 +81,18 @@
             errors = {};
         }
 
+        const formData = new FormData();
+        formData.append('file', $draftEdit.source == 'DOCSRC1' ? $draftEdit.file : fileBlob, $draftEdit.source == 'DOCSRC1' ? undefined : doc.latest_version.file.original_file_path);
+        formData.append('source', $draftEdit.source == 'DOCSRC1' ? $draftEdit.source : doc.latest_version.source_code);
+        formData.append('state', doc.state);
+        formData.append('type', doc.latest_version.document_type.name);
+        formData.append('name', doc.latest_version.name);
+        formData.append('details', doc.latest_version.details);
+        formData.append('tags', JSON.stringify(doc.tags));
+        formData.append('reviewers', JSON.stringify(doc.workflow.reviewers));
+        formData.append('approvers', JSON.stringify(doc.workflow.approvers));
+        formData.append('change_log', changelog);
+
         // saving account
         try {
             // password auth
@@ -87,17 +101,11 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post(`/dex/dms/drafts/update/${page.params.id}`, {
-                source: doc.latest_version.source_code,
-                file: doc.latest_version.file,
-                state: doc.state,
-                type: doc.latest_version.document_type.name,
-                name: doc.latest_version.name,
-                details: doc.latest_version.details,
-                tags: JSON.stringify(doc.tags),
-                reviewers: JSON.stringify(doc.workflow.reviewers),
-                approvers: JSON.stringify(doc.workflow.approvers),
-                change_log: changelog,
+            const result = await App.API.post(`/dex/dms/drafts/update/${page.params.id}`, formData, {
+                headers: {
+                    // Let Axios set the boundary automatically
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             if (result.data.success) {
@@ -115,6 +123,10 @@
         } finally {
             saving = false;
         }
+    }
+
+    function changeAttachment() {
+        goto('/dex/dms/drafts/edit/' + page.params.id + '/file-upload');
     }
 
     async function trash() {
@@ -160,9 +172,18 @@
         try {
             const result = await App.API.post('/dex/dms/drafts/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
 
+            const blob = result.data;
+            fileBlob = blob;
+
             // Convert blob to ArrayBuffer → Uint8Array
-            const buf = await result.data.arrayBuffer();
-            file = { data: new Uint8Array(buf) };
+            const buf = await blob.arrayBuffer();
+            file = {
+                data: new Uint8Array(buf),
+                name: data.document.latest_version.file.original_file_path ?? 'document.pdf',
+                size: blob.size,
+                type: blob.type || 'application/pdf',
+                ext: 'PDF',
+            };
         } catch (err) {
             console.log(err.message + ': UNABLE TO RETRIEVE FILE');
         } finally {
@@ -301,6 +322,42 @@
                 <p class="small text-muted">
                     A user account grants an individual access to the ERP system, enabling them to perform authorized tasks and access modules based on their assigned role and permissions.
                 </p>
+            </j.RowCol>
+            <hr class="text-muted" />
+            <h5>File</h5>
+            <j.Row>
+                <j.Col>
+                    <label for="name" class="form-label small">Name</label>
+                    {#if $draftEdit.source == 'DOCSRC1'}
+                        <input value={$draftEdit.file.name} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {:else if file != null}
+                        <input value={file.name} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {/if}
+                </j.Col>
+            </j.Row>
+            <j.Row>
+                <j.Col span="6">
+                    <label for="name" class="form-label small">Size</label>
+                    {#if $draftEdit.source == 'DOCSRC1'}
+                        <input value={App.Format.number($draftEdit.file.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {:else if file != null}
+                        <input value={App.Format.number(file.size).toFileSize()} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {/if}
+                </j.Col>
+                <j.Col span="6">
+                    <label for="name" class="form-label small">Type</label>
+                    {#if $draftEdit.source == 'DOCSRC1'}
+                        <input value={$draftEdit.file.ext} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {:else if file != null}
+                        <input value={file.ext} type="text" class="form-control form-control-sm" id="name" disabled />
+                    {/if}
+                </j.Col>
+            </j.Row>
+            <j.RowCol>
+                <label for="password" class="form-label small">Attachment</label>
+                <div>
+                    <j.Button label="Change File" loadinglabel="Resetting" icon="bi-arrow-repeat" onClick={changeAttachment} />
+                </div>
             </j.RowCol>
             <hr class="text-muted" />
             <h5>Document</h5>

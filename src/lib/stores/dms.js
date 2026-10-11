@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const draftTemplate = {
+const fileTemplate = {
     source: null,
     file: null,
     documentType: '',
@@ -12,6 +12,7 @@ const draftTemplate = {
     signatories: [],
 };
 
-const draft = writable(draftTemplate);
+const draft = writable(fileTemplate);
+const draftEdit = writable(fileTemplate);
 
-export { draft };
+export { draft, draftEdit };
