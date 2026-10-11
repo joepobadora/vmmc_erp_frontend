@@ -8,25 +8,26 @@
     import { permissions } from '$lib/stores/access';
 
     const statusMap = {
-        // Cluster 1: Drafting / Editing / Posting
-        ACTION1: { label: 'DRAFTED', color: '#E8EDF2' }, // blue
-        ACTION2: { label: 'POSTED', color: '#E8EDF2' }, // blue
-        ACTION3: { label: 'BROADCASTED', color: '#547A95' }, // blue
+        // Cluster 1: Drafting / Editing / Posting (Neutral / Light Blues & Grays)
+        ACTION1: { label: 'DRAFTED', color: '#E2E8F0' }, // Slate Gray
+        ACTION2: { label: 'POSTED', color: '#E0F2FE' }, // Light Sky Blue
+        ACTION3: { label: 'BROADCASTED', color: '#BAE6FD' }, // Sky Blue
 
-        // Cluster 2: Review / Decision
-        ACTION4: { label: 'RELEASED', color: '#2C3947' }, // amber
-        ACTION5: { label: 'FORWARDED', color: '#E8EDF2' }, // amber
-        ACTION6: { label: 'RECEIVED', color: '#D96868' }, // amber
+        // Cluster 2: Review / Decision (Ambers & Soft Indigos)
+        ACTION4: { label: 'RELEASED', color: '#FEF3C7' }, // Soft Amber
+        ACTION5: { label: 'FORWARDED', color: '#E0E7FF' }, // Soft Indigo
+        ACTION6: { label: 'RECEIVED', color: '#D1FAE5' }, // Soft Green (Incoming arrival)
 
-        // Cluster 3: Finalization / Routing
-        ACTION7: { label: 'ACKNOWLEDGED', color: '#547A95' }, // green
-        ACTION8: { label: 'TERMINATED', color: '#547A95' }, // green
-        ACTION9: { label: 'RETRIEVED', color: '#547A95' }, // green
+        // Cluster 3: Finalization / Routing (Success & Completion Greens/Purples)
+        ACTION7: { label: 'ACKNOWLEDGED', color: '#A7F3D0' }, // Vibrant Soft Green
+        ACTION8: { label: 'TERMINATED', color: '#FEE2E2' }, // Soft Red (Halted/Stopped)
+        ACTION9: { label: 'RETRIEVED', color: '#DDD6FE' }, // Soft Purple
 
-        // Cluster 4: Closure / End States
-        ACTION10: { label: 'ARCHIVED', color: '#547A95' }, // gray
-        ACTION11: { label: 'DELETED', color: '#547A95' }, // gray
-        ACTION12: { label: 'RECALLED', color: '#D96868' }, // gray
+        // Cluster 4: Closure / End States (Neutrals, Oranges & Danger Reds)
+        ACTION10: { label: 'ARCHIVED', color: '#F3F4F6' }, // Neutral Gray
+        ACTION11: { label: 'DELETED', color: '#FCA5A5' }, // Danger Red
+        ACTION12: { label: 'RECALLED', color: '#FED7AA' }, // Soft Orange
+        ACTION13: { label: 'REJECTED', color: '#F87171' }, // Strong Red
     };
 
     let { data } = $props();
@@ -114,7 +115,7 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        {#if $permissions.includes('DTS.DRAFTS_CREATE')}
+        {#if $permissions.includes('DTS.OUTGOING_CREATE')}
             <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/create${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Create</a>
         {/if}
     </j.Col>

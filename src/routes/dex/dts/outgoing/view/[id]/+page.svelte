@@ -43,16 +43,16 @@
             // udpate button state
             recalling = true;
 
-            const result = await App.API.post(`/dex/dms/drafts/post/${page.params.id}`);
+            const result = await App.API.post(`/dex/dts/outgoing/recall/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
-                    Alert.show('success', 'Posting success.', result.data.success_code);
+                    goto(`/dex/dts/outgoing${p.toString()}`);
+                    Alert.show('success', 'Recalling success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Posting failed.', result.data.error_code);
+                    Alert.show('error', 'Recalling failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
@@ -97,7 +97,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dts/outgoing{p.toString()}">(Document Manager) Drafts</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dts/outgoing{p.toString()}">(Tracker) Outgoing</a></li>
             <li class="breadcrumb-item active">View</li>
         </ol>
     </nav>
@@ -214,7 +214,7 @@
     <j.RowCol endx>
         <div class="d-flex gap-2">
             <!-- document is in released or forwarded -->
-            {#if data.TranTransitions.includes('ACTION4') || data.TranTransitions.includes('ACTION5')}
+            {#if data.tranTransitions.includes('ACTION12')}
                 <j.Button label="Recall" loadinglabel="Recalling" icon="bi-arrow-right" loading={recalling} onClick={recall} />
             {/if}
 
@@ -222,7 +222,7 @@
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dms/drafts${p.toString()}`);
+                    goto(`/dex/dts/outgoing${p.toString()}`);
                 }}>Okay</button
             >
         </div>

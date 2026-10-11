@@ -95,7 +95,7 @@
 
             // 4. Convert the generated buffer into a standard File object
             const pdfBlob = new Blob([pdfUint8Array.buffer], { type: 'application/pdf' });
-            const syntheticUploadFile = new File([pdfBlob], 'reference_slip_upload.pdf', {
+            const syntheticUploadFile = new File([pdfBlob], 'reference_slip_template.pdf', {
                 type: 'application/pdf',
                 lastModified: Date.now(),
             });

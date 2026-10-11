@@ -18,7 +18,7 @@ export async function load({ params }) {
         DEX6: false, // dts incoming
         DEX7: false, // dts inbox
         DEX8: false, // dts outgoing
-        DEX9: false, // dts drafts
+        // DEX9: false, // dts drafts
         DEX10: false, // dts broadcast
         DEX11: false, // dts archive
         DEX12: false, // dts trash

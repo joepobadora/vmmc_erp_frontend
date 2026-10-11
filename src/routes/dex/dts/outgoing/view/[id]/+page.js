@@ -10,17 +10,17 @@ export async function load({ params }) {
             };
         }
 
-        const TranTransitionsResult = await App.API.get(`/dex/dts/allowed-tran-transitions/${params.id}`);
-        const TranTransitionsData = TranTransitionsResult.data.data;
-        if (!TranTransitionsResult.data.success) {
+        const tranTransitionsResult = await App.API.get(`/dex/dts/allowed-tran-transitions/${params.id}`);
+        const tranTransitionsData = tranTransitionsResult.data.data;
+        if (!tranTransitionsResult.data.success) {
             return {
-                error: TranTransitionsResult.data.error_code,
+                error: tranTransitionsResult.data.error_code,
             };
         }
 
         return {
             transaction: transactionData,
-            TranTransitions: TranTransitionsData,
+            tranTransitions: tranTransitionsData,
         };
     } catch (err) {
         return {

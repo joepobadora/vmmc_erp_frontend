@@ -2,13 +2,13 @@ import App from '$lib/assets/js/bootstrap';
 
 export async function load() {
     try {
-        const result = await App.API.get('/dex/dms/drafts/dropdown');
+        const result = await App.API.get('/dex/dts/broadcast-inbox/dropdown');
 
         const data = result.data.data;
 
         if (result.data.success) {
             return {
-                tagList: data,
+                officeList: data,
             };
         } else {
             return {

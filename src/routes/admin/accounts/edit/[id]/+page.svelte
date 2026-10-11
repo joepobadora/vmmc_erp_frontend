@@ -314,9 +314,13 @@
                             <label class="form-check-label small" for="dmsArchive">Archive</label>
                         </div>
                         <div class="form-check">
+                            <input bind:checked={modules.DEX10} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsBroadcastInbox" />
+                            <label class="form-check-label small" for="dtsBroadcastInbox">Broadcast Inbox <span class="fst-italic">(Tracker)</span></label>
+                        </div>
+                        <!-- <div class="form-check">
                             <input bind:checked={modules.DEX9} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsDrafts" />
                             <label class="form-check-label small" for="dtsDrafts">Drafts <span class="fst-italic">(Tracker)</span></label>
-                        </div>
+                        </div> -->
                     </td>
                     <td>
                         <div class="form-check">
@@ -328,8 +332,8 @@
                             <label class="form-check-label small" for="dtsIncoming">Incoming <span class="fst-italic">(Tracker)</span></label>
                         </div>
                         <div class="form-check">
-                            <input bind:checked={modules.DEX10} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsBroadcastInbox" />
-                            <label class="form-check-label small" for="dtsBroadcastInbox">Broadcast Inbox <span class="fst-italic">(Tracker)</span></label>
+                            <input bind:checked={modules.DEX11} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsArchive" />
+                            <label class="form-check-label small" for="dtsArchive">Archive <span class="fst-italic">(Tracker)</span></label>
                         </div>
                     </td>
                     <td>
@@ -342,8 +346,8 @@
                             <label class="form-check-label small" for="dtsInbox">Inbox <span class="fst-italic">(Tracker)</span></label>
                         </div>
                         <div class="form-check">
-                            <input bind:checked={modules.DEX11} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsArchive" />
-                            <label class="form-check-label small" for="dtsArchive">Archive <span class="fst-italic">(Tracker)</span></label>
+                            <input bind:checked={modules.DEX12} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsTrash" />
+                            <label class="form-check-label small" for="dtsTrash">Trash <span class="fst-italic">(Tracker)</span></label>
                         </div>
                     </td>
                     <td>
@@ -354,10 +358,6 @@
                         <div class="form-check">
                             <input bind:checked={modules.DEX8} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsOutgoing" />
                             <label class="form-check-label small" for="dtsOutgoing">Outgoing <span class="fst-italic">(Tracker)</span></label>
-                        </div>
-                        <div class="form-check">
-                            <input bind:checked={modules.DEX12} disabled={!modules.DEX0} class="form-check-input" type="checkbox" id="dtsTrash" />
-                            <label class="form-check-label small" for="dtsTrash">Trash <span class="fst-italic">(Tracker)</span></label>
                         </div>
                     </td>
                 </tr>
