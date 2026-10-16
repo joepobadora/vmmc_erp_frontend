@@ -4,6 +4,7 @@
     import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
     import Auth from '$lib/components/Auth.svelte';
+    import DirectForwardPrompt from '../../../../components/DirectForwardPrompt.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
@@ -15,6 +16,9 @@
     let authRelease = $state();
     let authTerminate = $state();
     let authArchive = $state();
+    let authCopy = $state();
+
+    let directForwardPrompt = $state(null);
 
     let { data } = $props();
 
@@ -36,6 +40,7 @@
     let releasing = $state(false);
     let terminating = $state(false);
     let archiving = $state(false);
+    let copying = $state(false);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -71,29 +76,10 @@
     }
 
     async function forward() {
-        try {
-            // password auth
-            if (!(await authForward.confirm())) return;
-
-            // udpate button state
-            forwarding = true;
-
-            const result = await App.API.post(`/dex/dts/inbox/forward/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dts/inbox${p.toString()}`);
-                    Alert.show('success', 'Forwarding success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Forwarding failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            forwarding = false;
+        if (await directForwardPrompt.confirm()) {
+            setTimeout(() => {
+                goto(`/dex/dts/inbox${p.toString()}`);
+            }, 600);
         }
     }
 
@@ -178,6 +164,33 @@
         }
     }
 
+    async function copy() {
+        try {
+            // password auth
+            if (!(await authCopy.confirm())) return;
+
+            // udpate button state
+            copying = true;
+
+            const result = await App.API.post(`/dex/dts/inbox/copy/${page.params.id}`);
+
+            if (result.data.success) {
+                setTimeout(() => {
+                    goto(`/dex/dts/inbox${p.toString()}`);
+                    Alert.show('success', 'Copying success.', result.data.success_code);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    Alert.show('error', 'Copying failed.', result.data.error_code);
+                }, 600);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            copying = false;
+        }
+    }
+
     // onmount
     onMount(() => {
         initFile();
@@ -210,6 +223,9 @@
 <Auth bind:me={authRelease} warning="You are about to release a transaction." />
 <Auth bind:me={authTerminate} warning="You are about to terminate a transaction." />
 <Auth bind:me={authArchive} warning="You are about to archive a transaction." />
+<Auth bind:me={authCopy} warning="You are about to save a copy of the document." />
+
+<DirectForwardPrompt bind:me={directForwardPrompt} tranId={data.transaction.id} tranNo={data.transaction.transaction_no} />
 
 <!-- controls -->
 <j.RowCol>
@@ -335,6 +351,11 @@
         <div class="d-flex gap-2">
             <!-- document is received -->
             {#if data.tranTransitions.includes('ACTION8')}
+                <j.Button label="Save a Copy" loadinglabel="Copying" variant="light" icon="bi-download" loading={copying} onClick={copy} />
+            {/if}
+
+            <!-- document is received -->
+            {#if data.tranTransitions.includes('ACTION8')}
                 <j.Button label="Terminate" loadinglabel="Terminating" icon="bi-check2" loading={terminating} onClick={terminate} />
             {/if}
 
@@ -362,7 +383,7 @@
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dts/incoming${p.toString()}`);
+                    goto(`/dex/dts/inbox${p.toString()}`);
                 }}>Okay</button
             >
         </div>

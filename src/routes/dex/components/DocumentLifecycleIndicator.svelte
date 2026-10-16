@@ -41,7 +41,11 @@
                             <span class="version">Version: <b>{item.version.version_no}</b></span>
                         </div>
                         <div class="office-text text-muted">
-                            Office: <span>{item.office.short_name}</span>
+                            {#if item.office_id == 0}
+                                Office: <span>On Pool</span>
+                            {:else}
+                                Office: <span>{item.office?.short_name}</span>
+                            {/if}
                         </div>
                     </div>
                 </div>

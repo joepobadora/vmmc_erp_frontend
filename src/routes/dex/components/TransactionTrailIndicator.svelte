@@ -37,7 +37,7 @@
 
                     <div class="details">
                         <div class="office-text text-muted">
-                            {#if trail.state.office_id == 0}
+                            {#if trail.office_id == 0}
                                 Office: <span>On Pool</span>
                             {:else}
                                 Office: <span>{trail.office?.short_name}</span>

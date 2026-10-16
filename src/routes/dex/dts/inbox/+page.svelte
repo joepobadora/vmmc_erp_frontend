@@ -121,11 +121,20 @@
 
             if (result.data.success) {
                 if (data == null) {
-                    Alert.show('warning', 'Transaction retrieval failed.', 'The transaction is invalid or not available for receiving');
+                    Alert.show('warning', 'Transaction retrieval failed.', 'The transaction is invalid.');
                     return;
                 }
 
-                await receivePrompt.confirm();
+                const eligibleTransactions = [
+                    'ACTION4', // Released
+                ];
+
+                if (eligibleTransactions.filter((x) => x == data.state.state_code).length == 0) {
+                    Alert.show('warning', 'Transaction retrieval failed.', 'The transaction not available for receiving');
+                    return;
+                }
+
+                if (await receivePrompt.confirm()) refreshTable();
             } else {
                 Alert.show('error', 'Request failed.', result.data.error_code);
             }

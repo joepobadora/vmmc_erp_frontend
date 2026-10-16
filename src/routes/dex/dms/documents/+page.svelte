@@ -17,6 +17,7 @@
         DOCSTATE5: { label: 'REVIEWED', color: '#2C3947' }, // amber
         DOCSTATE6: { label: 'APPROVED', color: '#E8EDF2' }, // amber
         DOCSTATE7: { label: 'DECLINED', color: '#D96868' }, // amber
+        DOCSTATE12: { label: 'RETRIEVED', color: '#E8EDF2' }, // amber
 
         // Cluster 3: Finalization / Routing
         DOCSTATE10: { label: 'SIGNED', color: '#547A95' }, // green
