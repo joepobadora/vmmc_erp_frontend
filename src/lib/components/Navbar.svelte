@@ -20,7 +20,7 @@
             const data = result.data.data;
 
             if (result.data.success) {
-                firstName = data['user']['first_name'];
+                firstName = data.user.first_name;
             } else {
                 console.log(result.data.error_code);
             }

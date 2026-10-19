@@ -5,6 +5,7 @@ import SignPad from './utils/signaturepad';
 import ParamBuilder from './utils/parambuilder';
 import Color from './utils/color';
 import Async from './utils/async';
+import WebSocket from './utils/echo';
 
 const App = {
     API,
@@ -14,6 +15,7 @@ const App = {
     ParamBuilder,
     Color,
     Async,
+    WebSocket,
 };
 
 export default App;

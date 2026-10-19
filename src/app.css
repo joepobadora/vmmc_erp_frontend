@@ -75,3 +75,7 @@ body {
     /* muted rose text */
     /* border: 1px solid #8a3c5a; */
 }
+
+.unread-row {
+    background-color: #f6f8fa !important;
+}
