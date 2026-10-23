@@ -10,7 +10,7 @@
     });
 </script>
 
-// DMS Drafts
+<!-- DMS Drafts -->
 {#if $modules.includes('DEX3')}
     <slot />
 {/if}

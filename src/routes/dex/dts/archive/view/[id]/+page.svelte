@@ -244,12 +244,12 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to delete a transaction
+            <!-- check if user has permission to delete a transaction -->
             {#if $permissions.includes('DTS.ARCHIVE_DELETE')}
                 <j.Button label="Move to Trash" loadinglabel="Trashing" variant="danger" icon="bi-x-lg" loading={trashing} onClick={trash} />
             {/if}
 
-            // check if user has permission to unarchive a transaction
+            <!-- check if user has permission to unarchive a transaction -->
             {#if $permissions.includes('DTS.ARCHIVE_UNARCHIVE')}
                 <j.Button label="Unarchive" loadinglabel="Unarchiving" variant="light" icon="bi-download" loading={unarchiving} onClick={unarchive} />
             {/if}

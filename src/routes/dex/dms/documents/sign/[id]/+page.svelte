@@ -1,6 +1,7 @@
 <script>
     import PdfViewer from '$lib/components/PDFViewer.svelte';
     import TextField from '../../../../components/TextField.svelte';
+    import SignatureField from '../../../../components/SignatureField.svelte';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
     import j from '$lib/components/helper';
@@ -11,7 +12,6 @@
     import { goto } from '$app/navigation';
 
     let authSave = $state();
-
     let { data } = $props();
 
     let file = $state(null);
@@ -24,38 +24,57 @@
     let isPaused = $state(true);
     let saving = $state(false);
 
-    // ── Add-Text state ─────────────────────────────────────────────────────
+    // ── Interaction modes ──────────────────────────────────────────────────
     let addTextMode = $state(false);
+    let addSavedSignMode = $state(false);
+
+    // Pre-saved signature state
+    let savedSignatureBlob = $state(null);
 
     /**
-     * Per-page click listeners and mounted TextField instances.
-     * pageWrappers[i]  – the position-relative div (canvas.parentElement)
-     * pageListeners[i] – the click handler attached to it
-     * tfInstances      – flat list of { destroy } from mount(), for cleanup
+     * Per-page click listeners and mounted imperatively-created component instances.
+     * Stores instances of { instance } returned by mount() for global unmount cleanup.
      */
     let pageWrappers = [];
     let pageListeners = [];
-    let tfInstances = [];
+    let activeComponentInstances = [];
 
     const p = new App.ParamBuilder(page.url.searchParams);
 
     onMount(() => {
         initFile();
+        preloadSavedSignature();
     });
 
     onDestroy(() => {
-        // Unmount all live TextFields
-        tfInstances.forEach(({ instance }) => unmount(instance));
-        tfInstances = [];
+        // Unmount all live TextFields and SignatureFields
+        activeComponentInstances.forEach(({ instance }) => unmount(instance));
+        activeComponentInstances = [];
+
         // Remove page click listeners
         detachAllListeners();
-        // Destroy sign pads
+
+        // Nullify sign pads
         signPads.forEach((_, i) => {
             signPads[i] = null;
         });
     });
 
-    // ── File init ──────────────────────────────────────────────────────────
+    // ── Preload user's saved signature PNG from server ────────────────────
+
+    async function preloadSavedSignature() {
+        try {
+            const res = await App.API.get('/settings/signature', { responseType: 'blob' });
+            if (res.data && res.data.size > 0) {
+                savedSignatureBlob = res.data;
+            }
+        } catch (err) {
+            // User may not have a pre-saved signature uploaded
+            savedSignatureBlob = null;
+        }
+    }
+
+    // ── File initialization ───────────────────────────────────────────────
 
     async function initFile() {
         loadingDocumentFile = true;
@@ -76,22 +95,41 @@
         pdfData = loadedData;
 
         pdfData.canvases.forEach((canvas, i) => {
-            // Grab the wrapper that PDFViewer created (position-relative div)
             pageWrappers[i] = canvas.parentElement;
 
-            // Init SignPad on each overlay canvas (unchanged behaviour)
             signPads[i] = new App.SignPad(canvas);
             signPads[i].Pause();
+            canvas.style.pointerEvents = 'none';
         });
     }
 
-    // ── Add Text toggle ────────────────────────────────────────────────────
+    // ── Interaction Mode toggles ──────────────────────────────────────────
 
     function toggleAddTextMode() {
         addTextMode = !addTextMode;
+        addSavedSignMode = false;
 
         if (addTextMode) {
-            // Safety: exit sign mode so SignPad doesn't eat pointer events
+            if (!isPaused) {
+                isPaused = true;
+                scrollMode();
+            }
+            attachPageListeners();
+        } else {
+            detachAllListeners();
+        }
+    }
+
+    function toggleAddSavedSignMode() {
+        if (!savedSignatureBlob) {
+            Alert.show('warning', 'No saved signature found', 'Please upload a signature PNG in your settings first.');
+            return;
+        }
+
+        addSavedSignMode = !addSavedSignMode;
+        addTextMode = false;
+
+        if (addSavedSignMode) {
             if (!isPaused) {
                 isPaused = true;
                 scrollMode();
@@ -111,6 +149,10 @@
             pageListeners[i] = listener;
             wrapper.addEventListener('click', listener);
             wrapper.style.cursor = 'crosshair';
+
+            if (pdfData?.canvases[i]) {
+                pdfData.canvases[i].style.pointerEvents = 'none';
+            }
         });
     }
 
@@ -124,43 +166,41 @@
     }
 
     function handleWrapperClick(e, pageIndex) {
-        // Ignore clicks that originated inside an existing TextField widget
-        if (e.target.closest('[data-textfield]')) return;
+        // Prevent placing if clicking directly inside an active widget
+        if (e.target.closest('[data-textfield]') || e.target.closest('[data-signaturefield]')) return;
 
         const wrapper = pageWrappers[pageIndex];
         const canvas = pdfData.canvases[pageIndex];
         const rect = wrapper.getBoundingClientRect();
 
-        // Scale canvas backing pixels → CSS pixels
-        // (PDFViewer sets canvas.width = viewport px, so scale is usually 1,
-        //  but we compute it properly in case of devicePixelRatio or CSS scaling)
         const scaleX = canvas.width / canvas.offsetWidth;
         const scaleY = canvas.height / canvas.offsetHeight;
 
-        // Click position in canvas-pixel space
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
 
-        placeTextField(pageIndex, x, y);
+        if (addTextMode) {
+            placeTextField(pageIndex, x, y);
+            addTextMode = false;
+        } else if (addSavedSignMode) {
+            placeSignatureField(pageIndex, x, y);
+            addSavedSignMode = false;
+        }
 
-        // Exit add-text mode after placing; remove crosshair cursor
-        addTextMode = false;
         detachAllListeners();
     }
 
-    // ── Mount a TextField imperatively into the page wrapper ───────────────
+    // ── Mount TextField widget imperatively ───────────────────────────────
 
     function placeTextField(pageIndex, x, y) {
         const wrapper = pageWrappers[pageIndex];
         const canvas = pdfData.canvases[pageIndex];
 
-        // Convert canvas-pixel coords → CSS-pixel coords for positioning
         const scaleX = canvas.offsetWidth / canvas.width;
         const scaleY = canvas.offsetHeight / canvas.height;
         const cssX = x * scaleX;
         const cssY = y * scaleY;
 
-        // We need a reference so the onDone callback can clean up
         let instanceRef = null;
 
         instanceRef = mount(TextField, {
@@ -171,28 +211,62 @@
                 canvas,
                 onDone: () => {
                     unmount(instanceRef);
-                    tfInstances = tfInstances.filter((t) => t.instance !== instanceRef);
+                    activeComponentInstances = activeComponentInstances.filter((t) => t.instance !== instanceRef);
                 },
             },
         });
 
-        tfInstances.push({ instance: instanceRef });
+        activeComponentInstances.push({ instance: instanceRef });
     }
 
-    // ── Existing toolbar actions (unchanged) ───────────────────────────────
+    // ── Mount SignatureField widget imperatively ──────────────────────────
+
+    function placeSignatureField(pageIndex, x, y) {
+        const wrapper = pageWrappers[pageIndex];
+        const canvas = pdfData.canvases[pageIndex];
+
+        const scaleX = canvas.offsetWidth / canvas.width;
+        const scaleY = canvas.offsetHeight / canvas.height;
+        const cssX = x * scaleX;
+        const cssY = y * scaleY;
+
+        let instanceRef = null;
+
+        instanceRef = mount(SignatureField, {
+            target: wrapper,
+            props: {
+                x: cssX,
+                y: cssY,
+                canvas,
+                blob: savedSignatureBlob,
+                onDone: () => {
+                    unmount(instanceRef);
+                    activeComponentInstances = activeComponentInstances.filter((t) => t.instance !== instanceRef);
+                },
+            },
+        });
+
+        activeComponentInstances.push({ instance: instanceRef });
+    }
+
+    // ── Save action ────────────────────────────────────────────────────────
 
     async function save() {
         saving = true;
         try {
             if (!(await authSave.confirm())) return;
 
+            // Fetch clean base document
             const loadResult = await App.API.post('/dex/dms/documents/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
             const buf = await loadResult.data.arrayBuffer();
 
             const pdfDoc = await PDFDocument.load(new Uint8Array(buf));
             const pages = pdfDoc.getPages();
 
+            // Embed all signatures & text burned onto the page canvases
             for (let i = 0; i < signPads.length; i++) {
+                if (!signPads[i] || !pages[i]) continue;
+
                 const pngFile = await signPads[i].SaveAsPNG(`temp_${i}`);
                 const pngBytes = await pngFile.arrayBuffer();
 
@@ -238,29 +312,42 @@
         } else {
             signMode();
         }
-        // Exit add-text mode when entering sign mode
-        if (!isPaused && addTextMode) {
+
+        if (!isPaused && (addTextMode || addSavedSignMode)) {
             addTextMode = false;
+            addSavedSignMode = false;
             detachAllListeners();
         }
     }
 
     function scrollMode() {
-        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].Pause();
+        for (let i = 0; i < signPads.length; i++) {
+            if (signPads[i]) {
+                signs[i] = signPads[i].Pause();
+                if (pdfData?.canvases[i]) pdfData.canvases[i].style.pointerEvents = 'none';
+            }
+        }
     }
 
     function signMode() {
-        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].Resume();
+        for (let i = 0; i < signPads.length; i++) {
+            if (signPads[i]) {
+                signs[i] = signPads[i].Resume();
+                if (pdfData?.canvases[i]) pdfData.canvases[i].style.pointerEvents = 'auto';
+            }
+        }
     }
 
     function clear() {
-        for (let i = 0; i < signPads.length; i++) signs[i] = signPads[i].ClearCanvas();
+        for (let i = 0; i < signPads.length; i++) {
+            if (signPads[i]) signs[i] = signPads[i].ClearCanvas();
+        }
     }
 </script>
 
 <Auth bind:me={authSave} warning="You are about to sign a document." />
 
-<!-- breadcrumbs -->
+<!-- Breadcrumbs -->
 <j.RowCol>
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
@@ -291,7 +378,7 @@
     </div>
 
     <!-- Toolbar -->
-    <div class="d-flex gap-2 sticky-bottom justify-content-end p-2">
+    <div class="d-flex gap-2 sticky-bottom justify-content-end p-2 bg-white border-top shadow-sm">
         <button type="button" class="btn btn-light border btn-sm px-3" onclick={clear}>
             <i class="bi bi-eraser me-2"></i>Clear
         </button>
@@ -300,7 +387,18 @@
             <i class="bi bi-{isPaused ? 'hand-index-thumb' : 'vector-pen'} me-2"></i>{isPaused ? 'Scroll Mode' : 'Sign Mode'}
         </button>
 
-        <!-- Add Text toggle -->
+        <!-- Place Pre-saved Signature button -->
+        <button
+            type="button"
+            class="btn btn-light border btn-sm px-3 {addSavedSignMode ? 'active' : ''}"
+            onclick={toggleAddSavedSignMode}
+            disabled={!savedSignatureBlob}
+            title={savedSignatureBlob ? 'Click to place your saved signature on the document' : 'No saved signature found'}
+        >
+            <i class="bi bi-file-image me-2"></i>{addSavedSignMode ? 'Click Page to Attach…' : 'Attach Saved Signature'}
+        </button>
+
+        <!-- Add Text button -->
         <button
             type="button"
             class="btn btn-light border btn-sm px-3 {addTextMode ? 'active' : ''}"

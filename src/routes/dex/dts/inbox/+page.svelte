@@ -139,7 +139,7 @@
                     </ol>
                 </nav>
             </div>
-            // check if user has permission to receive a transaction
+            <!-- check if user has permission to receive a transaction -->
             {#if $permissions.includes('DTS.INBOX_RECEIVE')}
                 <div class="col-auto col-md-6">
                     <div class="input-group input-group-sm">

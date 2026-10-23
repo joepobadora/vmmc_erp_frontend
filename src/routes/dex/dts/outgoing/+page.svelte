@@ -93,7 +93,7 @@
         </nav>
     </j.Col>
     <j.Col auto>
-        // check if user has permission to create
+        <!-- check if user has permission to create -->
         {#if $permissions.includes('DTS.OUTGOING_CREATE')}
             <a class="btn btn-primary btn-sm px-3" href={page.url.pathname + `/create${p.toString()}`}><i class="bi bi-plus-lg me-2"></i>Create</a>
         {/if}

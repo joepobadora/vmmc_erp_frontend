@@ -243,9 +243,7 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
-                    <!-- {#if $permissions.includes('DMS.DOCS_DELETE')}
-                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
-                    {/if} -->
+                    <!-- check if user has permission to archive a document -->
                     {#if $permissions.includes('DMS.DOCS_ARCHIVE')}
                         <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
                     {/if}

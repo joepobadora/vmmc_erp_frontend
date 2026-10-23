@@ -244,12 +244,12 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to reject a transaction
+            <!-- check if user has permission to reject a transaction -->
             {#if $permissions.includes('DTS.INCOMING_REJECT')}
                 <j.Button label="Reject" loadinglabel="Reject" icon="bi-x-lg" variant="danger" loading={rejecting} onClick={reject} />
             {/if}
 
-            // check if user has permission to receive a transaction
+            <!-- check if user has permission to receive a transaction -->
             {#if $permissions.includes('DTS.INCOMING_RECEIVE')}
                 <j.Button label="Receive" loadinglabel="Receiving" icon="bi-arrow-down" loading={receiving} onClick={receive} />
             {/if}

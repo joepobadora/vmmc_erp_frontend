@@ -281,12 +281,12 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if the user has permission to download a document
+            <!-- check if the user has permission to download a document -->
             {#if $permissions.includes('DMS.DOCS_DOWNLOAD')}
                 <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
             {/if}
 
-            // check if the user has permission to sign
+            <!-- check if the user has permission to sign -->
             {#if $permissions.includes('DMS.DOCS_SIGN')}
                 <j.Button
                     label="Sign"

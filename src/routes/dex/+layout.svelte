@@ -28,7 +28,7 @@
 </svelte:head>
 
 {#if auth == true}
-    // DEx
+    <!-- DEx -->
     {#if $modules.includes('DEX0')}
         <!-- navbar -->
         <div class="row mb-5">

@@ -202,7 +202,7 @@
                     <div>
                         <span class="text-muted me-2">Name:</span>
 
-                        // check if user has permission to view a document
+                        <!-- check if user has permission to view a document -->
                         {#if $permissions.includes('DMS.DOCS_VIEW')}
                             <strong
                                 class="custom-link"

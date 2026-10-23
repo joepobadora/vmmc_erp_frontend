@@ -244,12 +244,12 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to retrieve a document from a transaction and the transaction has a document
+            <!-- check if user has permission to retrieve a document from a transaction and the transaction has a document -->
             {#if $permissions.includes('DTS.BROADCAST_RETRIEVE') && data.transaction.state.has_document}
                 <j.Button label="Retrieve" loadinglabel="Retrieving" variant="light" icon="bi-download" loading={retrieving} onClick={retrieve} />
             {/if}
 
-            // check if user has permission to archive a transaction
+            <!-- check if user has permission to archive a transaction -->
             {#if $permissions.includes('DTS.BROADCAST_ARCHIVE')}
                 <j.Button label="Archive" loadinglabel="Archiving" variant="light" icon="bi-archive" loading={archiving} onClick={archive} />
             {/if}

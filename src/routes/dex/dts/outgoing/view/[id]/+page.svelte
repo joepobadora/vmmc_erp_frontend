@@ -214,7 +214,7 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to recall and the transaction is allowed to be recalled
+            <!-- check if user has permission to recall and the transaction is allowed to be recalled -->
             {#if $permissions.includes('DTS.OUTGOING_RECALL') && data.tranTransitions.includes('ACTION8')}
                 <j.Button label="Recall" loadinglabel="Recalling" icon="bi-arrow-right" loading={recalling} onClick={recall} />
             {/if}

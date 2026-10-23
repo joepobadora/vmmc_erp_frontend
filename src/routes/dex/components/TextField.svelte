@@ -87,30 +87,7 @@
 
         /**
          * WYSIWYG coordinate approach:
-         *
-         * Instead of trusting posX/posY (which are CSS coords relative to the
-         * wrapper), we measure the actual screen positions of both the textarea
-         * and the canvas using getBoundingClientRect(), then compute the offset
-         * between them. This works correctly regardless of scroll, zoom, or
-         * any CSS transforms applied by the parent.
-         *
-         * canvasRect  – where the canvas element is on screen
-         * textRect    – where the textarea element is on screen
-         *
-         * The textarea's top-left relative to the canvas top-left, in screen px:
-         *   screenOffsetX = textRect.left - canvasRect.left
-         *   screenOffsetY = textRect.top  - canvasRect.top
-         *
-         * Scale that into canvas backing pixels:
-         *   scaleX = canvas.width  / canvasRect.width
-         *   scaleY = canvas.height / canvasRect.height
-         *
-         * Draw position in canvas pixels:
-         *   drawX = screenOffsetX * scaleX
-         *   drawY = screenOffsetY * scaleY
-         *
-         * Font size: the user sees `fontSize` CSS px on screen. The canvas
-         * backing pixel equivalent is fontSize * scaleY.
+         * Calculates bounding client rect offsets between canvas and textarea.
          */
         const canvasRect = canvas.getBoundingClientRect();
         const textRect = textareaEl.getBoundingClientRect();
@@ -180,13 +157,17 @@
         <div class="vr mx-1"></div>
 
         <!-- Commit -->
-        <button type="button" class="btn btn-sm btn-primary" title="Burn text to document" onclick={commit}><i class="bi bi-check"></i></button>
+        <button type="button" class="btn btn-sm btn-primary" title="Burn text to document" onclick={commit}>
+            <i class="bi bi-check"></i>
+        </button>
 
         <!-- Remove -->
-        <button type="button" class="btn btn-sm btn-danger" title="Remove" onclick={remove}><i class="bi bi-x"></i></button>
+        <button type="button" class="btn btn-sm btn-danger" title="Remove" onclick={remove}>
+            <i class="bi bi-x"></i>
+        </button>
     </div>
 
-    <!-- Textarea -->
+    <!-- Frosted Blur Textarea -->
     <textarea
         bind:this={textareaEl}
         bind:value={text}
@@ -197,7 +178,8 @@
         style="
             font-size:{fontSize}px;
             font-family:'Comic Sans MS';
-            background:transparent;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(2px);
             resize:none;
             overflow:hidden;
             min-height:2em;

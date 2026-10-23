@@ -350,32 +350,32 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to save a copy of the document from a transaction
+            <!-- check if user has permission to save a copy of the document from a transaction -->
             {#if $permissions.includes('DTS.INBOX_COPY')}
                 <j.Button label="Save a Copy" loadinglabel="Copying" variant="light" icon="bi-download" loading={copying} onClick={copy} />
             {/if}
 
-            // check if user has permisison to terminate a transaction and the transaction is not terminated
+            <!-- check if user has permisison to terminate a transaction and the transaction is not terminated -->
             {#if $permissions.includes('DTS.INBOX_TERMINATE') && !data.tranTransitions.includes('ACTION5')}
                 <j.Button label="Terminate" loadinglabel="Terminating" icon="bi-check2" loading={terminating} onClick={terminate} />
             {/if}
 
-            // check if user has permission to retrieve a document and the transaction is terminated and the transaction has a document
+            <!-- check if user has permission to retrieve a document and the transaction is terminated and the transaction has a document -->
             {#if $permissions.includes('DTS.INBOX_RETRIEVE') && data.tranTransitions.includes('ACTION5') && data.transaction.state.has_document}
                 <j.Button label="Retrieve" loadinglabel="Retrieving" variant="light" icon="bi-download" loading={retrieving} onClick={retrieve} />
             {/if}
 
-            // check if user has permission to archive a transaction and the transaction is terminated
+            <!-- check if user has permission to archive a transaction and the transaction is terminated -->
             {#if $permissions.includes('DTS.INBOX_ARCHIVE') && data.tranTransitions.includes('ACTION5')}
                 <j.Button label="Archive" loadinglabel="Archiving" variant="light" icon="bi-archive" loading={archiving} onClick={archive} />
             {/if}
 
-            // check if user has permission to release a transaction and the transaction is not terminated
+            <!-- check if user has permission to release a transaction and the transaction is not terminated -->
             {#if $permissions.includes('DTS.INBOX_RELEASE') && !data.tranTransitions.includes('ACTION5')}
                 <j.Button label="Release" loadinglabel="Releasing" icon="bi-cloud-upload" loading={releasing} onClick={release} />
             {/if}
 
-            // check if user has permission to forward a transaction and the transaction is not terminated
+            <!-- check if user has permission to forward a transaction and the transaction is not terminated -->
             {#if $permissions.includes('DTS.INBOX_FORWARD') && !data.tranTransitions.includes('ACTION5')}
                 <j.Button label="Forward" loadinglabel="Forwarding" icon="bi-arrow-right-circle" loading={forwarding} onClick={forward} />
             {/if}

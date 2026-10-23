@@ -371,18 +371,18 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to post and the document is allowed to be posted
+            <!-- check if user has permission to post and the document is allowed to be posted -->
             {#if $permissions.includes('DMS.DRAFTS_POST') && data.docTransitions.includes('DOCSTATE2')}
                 <j.Button label="Post" loadinglabel="Posting" icon="bi-arrow-right" loading={posting} onClick={post} />
             {/if}
 
-            // check if user has permission to review and the document is allowed to be reviewed or declined and user is permitted to do so
+            <!-- check if user has permission to review and the document is allowed to be reviewed or declined and user is permitted to do so -->
             {#if $permissions.includes('DMS.DRAFTS_REVIEW') && data.docTransitions.includes('DOCSTATE5') && data.userTransitions.includes('DOCSTATE5') && data.userAction.asReviewer.acted == false}
                 <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={declining} onClick={decline} />
                 <j.Button label="Review" loadinglabel="Reviewing" icon="bi-check-lg" loading={reviewing} onClick={review} />
             {/if}
 
-            // check if user has permission to approve and the document is allowed to be approved or declined and user is permitted to do so
+            <!-- check if user has permission to approve and the document is allowed to be approved or declined and user is permitted to do so -->
             {#if $permissions.includes('DMS.DRAFTS_APPROVE') && data.docTransitions.includes('DOCSTATE6') && data.userTransitions.includes('DOCSTATE6') && data.userAction.asApprover.acted == false}
                 <j.Button label="Decline" loadinglabel="Declining" variant="danger" icon="bi-x-lg" loading={declining} onClick={decline} />
                 <j.Button label="Approve" loadinglabel="Approving" icon="bi-arrow-right" loading={approving} onClick={approve} />

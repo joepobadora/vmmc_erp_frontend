@@ -244,12 +244,12 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            // check if user has permission to restore a transaction
+            <!-- check if user has permission to restore a transaction -->
             {#if $permissions.includes('DTS.TRASH_RESTORE')}
                 <j.Button label="Restore" loadinglabel="Restoring" variant="light" icon="bi-download" loading={restoring} onClick={restore} />
             {/if}
 
-            // check if user has permission to permanently delete a transaction
+            <!-- check if user has permission to permanently delete a transaction -->
             {#if $permissions.includes('DTS.TRASH_PERMADELETE')}
                 <j.Button label="Permanently Delete" loadinglabel="Permanently Deleting" variant="danger" icon="bi-x-lg" loading={destroying} onClick={destroy} />
             {/if}

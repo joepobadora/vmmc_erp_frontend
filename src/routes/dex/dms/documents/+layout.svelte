@@ -11,7 +11,7 @@
     });
 </script>
 
-// DMS Documents
+<!-- DMS Documents -->
 {#if $modules.includes('DEX1')}
     <slot />
 {/if}
