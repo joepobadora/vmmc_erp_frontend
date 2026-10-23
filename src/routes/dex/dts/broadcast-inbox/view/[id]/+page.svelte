@@ -7,6 +7,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     import TransactionTrailIndicator from '../../../../components/TransactionTrailIndicator.svelte';
 
@@ -127,7 +128,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item small"><a href="/dex/dts/inbox{p.toString()}">(Tracker) Broadcast Inbox</a></li>
+            <li class="breadcrumb-item small"><a href="/dex/dts/broadcast-inbox{p.toString()}">(Tracker) Broadcast Inbox</a></li>
             <li class="breadcrumb-item small active">View</li>
         </ol>
     </nav>
@@ -243,13 +244,13 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- document is broadcasted -->
-            {#if data.tranTransitions.includes('ACTION9')}
+            // check if user has permission to retrieve a document from a transaction and the transaction has a document
+            {#if $permissions.includes('DTS.BROADCAST_RETRIEVE') && data.transaction.state.has_document}
                 <j.Button label="Retrieve" loadinglabel="Retrieving" variant="light" icon="bi-download" loading={retrieving} onClick={retrieve} />
             {/if}
 
-            <!-- document is broadcasted -->
-            {#if data.tranTransitions.includes('ACTION10')}
+            // check if user has permission to archive a transaction
+            {#if $permissions.includes('DTS.BROADCAST_ARCHIVE')}
                 <j.Button label="Archive" loadinglabel="Archiving" variant="light" icon="bi-archive" loading={archiving} onClick={archive} />
             {/if}
 

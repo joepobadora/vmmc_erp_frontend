@@ -6,11 +6,7 @@
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
-
-    const variantMap = {
-        true: { label: 'ORIGINAL', color: '#008080' }, // dark slate blue
-        false: { label: 'COPY', color: '#E8EDF2' }, // light blue
-    };
+    import { docVariantMap } from '$lib/stores/docVariantMap';
 
     let { data } = $props();
 
@@ -193,14 +189,20 @@
                 <div class="col">
                     <div>
                         <span class="text-muted me-2">Name:</span>
-                        <strong
-                            class="custom-link text-muted"
-                            onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                            }}
-                        >
-                            {item.latest_version?.name}
-                        </strong>
+                        {#if $permissions.includes('DMS.ARCHIVE_VIEW')}
+                            <strong
+                                class="custom-link text-muted"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                {item.latest_version?.name}
+                            </strong>
+                        {:else}
+                            <strong>
+                                {item.latest_version?.name}
+                            </strong>
+                        {/if}
                     </div>
                     <div>
                         <span class="text-muted me-2">Doc. No.:</span>
@@ -222,7 +224,7 @@
                         <span class="text-muted me-2">Variant:</span>
                     </div>
                     <div class="d-flex flex-row flex-wrap gap-2">
-                        <j.Tag name={variantMap[Boolean(item.state.is_original)].label} color={variantMap[Boolean(item.state.is_original)].color} />
+                        <j.Tag name={docVariantMap[Boolean(item.state.is_original)].label} color={docVariantMap[Boolean(item.state.is_original)].color} />
                     </div>
                 </div>
                 <div class="col">

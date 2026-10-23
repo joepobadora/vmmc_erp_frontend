@@ -7,11 +7,12 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     import TransactionTrailIndicator from '../../../../components/TransactionTrailIndicator.svelte';
 
-    let authRetrieve = $state();
-    let authDelete = $state();
+    let authUnarchive = $state();
+    let authTrash = $state();
 
     let { data } = $props();
 
@@ -28,8 +29,8 @@
 
     let activeTab = $state('overview');
 
-    let retrieving = $state(false);
-    let deleting = $state(false);
+    let unarchiving = $state(false);
+    let trashing = $state(false);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -37,57 +38,57 @@
 
     const p = new App.ParamBuilder(page.url.searchParams);
 
-    async function retrieve() {
+    async function unarchive() {
         try {
             // password auth
-            if (!(await authRetrieve.confirm())) return;
+            if (!(await authUnarchive.confirm())) return;
 
             // udpate button state
-            retrieving = true;
+            unarchiving = true;
 
-            const result = await App.API.post(`/dex/dts/archive/retrieve/${page.params.id}`);
+            const result = await App.API.post(`/dex/dts/archive/unarchive/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
                     goto(`/dex/dts/archive${p.toString()}`);
-                    Alert.show('success', 'Retrieving success.', result.data.success_code);
+                    Alert.show('success', 'Unarchiving success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Retrieving failed.', result.data.error_code);
+                    Alert.show('error', 'Unarchiving failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
         } finally {
-            retrieving = false;
+            unarchiving = false;
         }
     }
 
-    async function deleteT() {
+    async function trash() {
         try {
             // password auth
-            if (!(await authDelete.confirm())) return;
+            if (!(await authTrash.confirm())) return;
 
             // udpate button state
-            deleting = true;
+            trashing = true;
 
-            const result = await App.API.post(`/dex/dts/archive/delete/${page.params.id}`);
+            const result = await App.API.post(`/dex/dts/archive/trash/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
                     goto(`/dex/dts/archive${p.toString()}`);
-                    Alert.show('success', 'Deleting success.', result.data.success_code);
+                    Alert.show('success', 'Trashing success.', result.data.success_code);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    Alert.show('error', 'Deleting failed.', result.data.error_code);
+                    Alert.show('error', 'Trashing failed.', result.data.error_code);
                 }, 600);
             }
         } catch (err) {
             Alert.show('error', 'Bad request.', err.message);
         } finally {
-            deleting = false;
+            trashing = false;
         }
     }
 
@@ -118,8 +119,8 @@
     }
 </script>
 
-<Auth bind:me={authRetrieve} warning="You are about to retrieve a document." />
-<Auth bind:me={authDelete} warning="You are about to delete a transaction." />
+<Auth bind:me={authUnarchive} warning="You are about to unachive a transaction." />
+<Auth bind:me={authTrash} warning="You are about to move a transaction to the trash." />
 
 <!-- controls -->
 <j.RowCol>
@@ -127,7 +128,7 @@
     <nav style="--bs-breadcrumb-divider: '>';">
         <ol class="breadcrumb">
             <li class="breadcrumb-item small"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item small"><a href="/dex/dts/inbox{p.toString()}">(Tracker) Archive</a></li>
+            <li class="breadcrumb-item small"><a href="/dex/dts/archive{p.toString()}">(Tracker) Archive</a></li>
             <li class="breadcrumb-item small active">View</li>
         </ol>
     </nav>
@@ -243,14 +244,14 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- document is archived -->
-            {#if data.tranTransitions.includes('ACTION11')}
-                <j.Button label="Delete" loadinglabel="Deleting" variant="danger" icon="bi-x-lg" loading={deleting} onClick={deleteT} />
+            // check if user has permission to delete a transaction
+            {#if $permissions.includes('DTS.ARCHIVE_DELETE')}
+                <j.Button label="Move to Trash" loadinglabel="Trashing" variant="danger" icon="bi-x-lg" loading={trashing} onClick={trash} />
             {/if}
 
-            <!-- document is archived -->
-            {#if data.tranTransitions.includes('ACTION9')}
-                <j.Button label="Retrieve" loadinglabel="Retrieving" variant="light" icon="bi-download" loading={retrieving} onClick={retrieve} />
+            // check if user has permission to unarchive a transaction
+            {#if $permissions.includes('DTS.ARCHIVE_UNARCHIVE')}
+                <j.Button label="Unarchive" loadinglabel="Unarchiving" variant="light" icon="bi-download" loading={unarchiving} onClick={unarchive} />
             {/if}
 
             <button

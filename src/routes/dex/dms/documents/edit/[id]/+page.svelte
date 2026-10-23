@@ -11,7 +11,6 @@
 
     let authSave = $state();
     let authArchive = $state();
-    let authTrash = $state();
 
     let { data } = $props();
 
@@ -62,33 +61,6 @@
             Alert.show('error', 'Bad request.', err.message);
         } finally {
             saving = false;
-        }
-    }
-
-    async function trash() {
-        try {
-            // password auth
-            if (!(await authTrash.confirm())) return;
-
-            // udpate button state
-            trashing = true;
-
-            const result = await App.API.post(`/dex/dms/documents/trash/${page.params.id}`);
-
-            if (result.data.success) {
-                setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
-                    Alert.show('success', 'Moving to trash success.', result.data.success_code);
-                }, 600);
-            } else {
-                setTimeout(() => {
-                    Alert.show('error', 'Moving to trash failed.', result.data.error_code);
-                }, 600);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        } finally {
-            trashing = false;
         }
     }
 
@@ -162,7 +134,6 @@
 </script>
 
 <Auth bind:me={authSave} warning="You are about to update a document." />
-<Auth bind:me={authTrash} warning="You are about to move the document to the trash." />
 <Auth bind:me={authArchive} warning="You are about to archive a document." />
 
 <!-- controls -->
@@ -272,9 +243,9 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
-                    {#if $permissions.includes('DMS.DOCS_DELETE')}
+                    <!-- {#if $permissions.includes('DMS.DOCS_DELETE')}
                         <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
-                    {/if}
+                    {/if} -->
                     {#if $permissions.includes('DMS.DOCS_ARCHIVE')}
                         <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
                     {/if}

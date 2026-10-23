@@ -2,7 +2,7 @@ import App from '$lib/assets/js/bootstrap';
 
 export async function load({ params }) {
     try {
-        const transactionResult = await App.API.get(`/dex/dts/broadcast-inbox/${params.id}`);
+        const transactionResult = await App.API.get(`/dex/dts/archive/${params.id}`);
         const transactionData = transactionResult.data.data;
         if (!transactionResult.data.success) {
             return {

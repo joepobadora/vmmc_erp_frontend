@@ -273,7 +273,7 @@
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
                     {#if $permissions.includes('DMS.ARCHIVE_DELETE')}
-                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Trashing" icon="bi-x-lg" loading={trashing} onClick={trash} />
                     {/if}
                     {#if $permissions.includes('DMS.ARCHIVE_UNARCHIVE')}
                         <j.Button label="Unarchive" loadinglabel="Unarchiving" icon="bi-arrow-right" loading={unarchiving} onClick={unarchive} />

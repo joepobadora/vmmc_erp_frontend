@@ -7,6 +7,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     import TransactionTrailIndicator from '../../../../components/TransactionTrailIndicator.svelte';
 
@@ -213,8 +214,8 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- document is in released or forwarded -->
-            {#if data.tranTransitions.includes('ACTION12')}
+            // check if user has permission to recall and the transaction is allowed to be recalled
+            {#if $permissions.includes('DTS.OUTGOING_RECALL') && data.tranTransitions.includes('ACTION8')}
                 <j.Button label="Recall" loadinglabel="Recalling" icon="bi-arrow-right" loading={recalling} onClick={recall} />
             {/if}
 

@@ -2,7 +2,7 @@ import App from '$lib/assets/js/bootstrap';
 
 export async function load() {
     try {
-        const result = await App.API.get('/dex/dts/broadcast-inbox/dropdown');
+        const result = await App.API.get('/dex/dts/archive/dropdown');
 
         const data = result.data.data;
 

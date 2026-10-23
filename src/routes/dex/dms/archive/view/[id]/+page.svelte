@@ -11,8 +11,6 @@
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
-    let authDownload = $state();
-
     let { data } = $props();
 
     let file = $state(null);
@@ -66,42 +64,10 @@
         }
     }
 
-    async function downloadFile() {
-        try {
-            // password auth
-            if (!(await authDownload.confirm())) return;
-
-            // udpate button state
-            downloading = true;
-
-            const result = await App.API.post('/dex/dms/archive/download/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
-
-            // Create a blob URL
-            const blobUrl = URL.createObjectURL(result.data);
-
-            // Optional: trigger download prompt immediately
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = 'document.pdf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Cleanup
-            URL.revokeObjectURL(blobUrl);
-        } catch (err) {
-            console.log(err.message + ': UNABLE TO RETRIEVE FILE');
-        } finally {
-            downloading = false;
-        }
-    }
-
     function handleOnloaded(data) {
         pdfData = data;
     }
 </script>
-
-<Auth bind:me={authDownload} warning="You are about to download a copy of the attached file." />
 
 <!-- controls -->
 <j.RowCol>
@@ -282,11 +248,6 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- user has the permission to download -->
-            {#if $permissions.includes('DMS.ARCHIVE_DOWNLOAD')}
-                <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
-            {/if}
-
             <button
                 type="button"
                 class="btn btn-primary btn-sm px-3"

@@ -6,27 +6,7 @@
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
-
-    const statusMap = {
-        // Cluster 1: Drafting / Editing / Posting
-        DOCSTATE1: { label: 'DRAFTED', color: '#E8EDF2' }, // blue
-        DOCSTATE3: { label: 'UPDATED', color: '#E8EDF2' }, // blue
-        DOCSTATE2: { label: 'POSTED', color: '#547A95' }, // blue
-
-        // Cluster 2: Review / Decision
-        DOCSTATE5: { label: 'REVIEWED', color: '#2C3947' }, // amber
-        DOCSTATE6: { label: 'APPROVED', color: '#E8EDF2' }, // amber
-        DOCSTATE7: { label: 'DECLINED', color: '#D96868' }, // amber
-
-        // Cluster 3: Finalization / Routing
-        DOCSTATE10: { label: 'SIGNED', color: '#547A95' }, // green
-        DOCSTATE11: { label: 'ROUTED', color: '#547A95' }, // green
-
-        // Cluster 4: Closure / End States
-        DOCSTATE8: { label: 'DOWNLOADED', color: '#547A95' }, // gray
-        DOCSTATE9: { label: 'ARCHIVED', color: '#547A95' }, // gray
-        DOCSTATE4: { label: 'DELETED', color: '#D96868' }, // gray
-    };
+    import { docStatusMap } from '$lib/stores/statusMap';
 
     let { data } = $props();
 
@@ -222,14 +202,20 @@
                 <div class="col">
                     <div>
                         <span class="text-muted me-2">Name:</span>
-                        <strong
-                            class="custom-link"
-                            onclick={() => {
-                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                            }}
-                        >
-                            {item.latest_version?.name}
-                        </strong>
+                        {#if $permissions.includes('DMS.DRAFTS_VIEW')}
+                            <strong
+                                class="custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                }}
+                            >
+                                {item.latest_version?.name}
+                            </strong>
+                        {:else}
+                            <strong>
+                                {item.latest_version?.name}
+                            </strong>
+                        {/if}
                     </div>
                     <div>
                         <span class="text-muted me-2">Doc. No.:</span>
@@ -255,7 +241,7 @@
                         <span class="text-muted me-2">Status:</span>
                     </div>
                     <div class="d-flex flex-row flex-wrap gap-2">
-                        <j.Tag name={statusMap[item.state.state_code].label} color={statusMap[item.state.state_code].color} />
+                        <j.Tag name={docStatusMap[item.state.state_code].label} color={docStatusMap[item.state.state_code].color} />
                     </div>
                 </div>
                 <div class="col">

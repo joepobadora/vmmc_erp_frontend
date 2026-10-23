@@ -4,12 +4,12 @@
     import { permissions } from '$lib/stores/access';
 
     onMount(async () => {
-        if (!$permissions.includes('DMS.DOCS_EDIT')) {
+        if (!$permissions.includes('DMS.REFCOPIES_EDIT')) {
             goto('/403');
         }
     });
 </script>
 
-{#if $permissions.includes('DMS.DOCS_EDIT')}
+{#if $permissions.includes('DMS.REFCOPIES_EDIT')}
     <slot />
 {/if}

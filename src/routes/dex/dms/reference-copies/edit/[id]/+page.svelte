@@ -44,13 +44,13 @@
             // udpate button state
             saving = true;
 
-            const result = await App.API.post(`/dex/dms/documents/update/${page.params.id}`, {
+            const result = await App.API.post(`/dex/dms/reference-copies/update/${page.params.id}`, {
                 tags: JSON.stringify(doc.tags),
             });
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/reference-copies${p.toString()}`);
                     Alert.show('success', 'Saving success.', result.data.success_code);
                 }, 600);
             } else {
@@ -73,11 +73,11 @@
             // udpate button state
             trashing = true;
 
-            const result = await App.API.post(`/dex/dms/documents/trash/${page.params.id}`);
+            const result = await App.API.post(`/dex/dms/reference-copies/trash/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/reference-copies${p.toString()}`);
                     Alert.show('success', 'Moving to trash success.', result.data.success_code);
                 }, 600);
             } else {
@@ -100,11 +100,11 @@
             // udpate button state
             archiving = true;
 
-            const result = await App.API.post(`/dex/dms/documents/archive/${page.params.id}`);
+            const result = await App.API.post(`/dex/dms/reference-copies/archive/${page.params.id}`);
 
             if (result.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    goto(`/dex/dms/reference-copies${p.toString()}`);
                     Alert.show('success', 'Archiving success.', result.data.success_code);
                 }, 600);
             } else {
@@ -133,7 +133,7 @@
         loadingDocumentFile = true;
 
         try {
-            const result = await App.API.post('/dex/dms/documents/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
+            const result = await App.API.post('/dex/dms/reference-copies/view/file', { id: data.document.latest_version.file.id }, { responseType: 'blob' });
 
             // Convert blob to ArrayBuffer → Uint8Array
             const buf = await result.data.arrayBuffer();
@@ -171,7 +171,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" class="small">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dex">DEx</a></li>
-            <li class="breadcrumb-item"><a href="/dex/dms/documents">(Document Manager) Documents</a></li>
+            <li class="breadcrumb-item"><a href="/dex/dms/reference-copies">(Document Manager) Reference Copies</a></li>
             <li class="breadcrumb-item active">Edit</li>
         </ol>
     </nav>
@@ -272,10 +272,10 @@
             <j.RowCol>
                 <label for="password" class="form-label small">Document</label>
                 <div class="d-flex gap-2">
-                    {#if $permissions.includes('DMS.DOCS_DELETE')}
-                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                    {#if $permissions.includes('DMS.REFCOPIES_DELETE')}
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Trashing" icon="bi-x-lg" loading={trashing} onClick={trash} />
                     {/if}
-                    {#if $permissions.includes('DMS.DOCS_ARCHIVE')}
+                    {#if $permissions.includes('DMS.REFCOPIES_ARCHIVE')}
                         <j.Button label="Archive document" variant="primary" loadinglabel="Archiving" icon="bi-archive" loading={archiving} onClick={archive} />
                     {/if}
                 </div>

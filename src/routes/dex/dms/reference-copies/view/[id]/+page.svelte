@@ -264,7 +264,7 @@
     <j.RowCol endx>
         <div class="d-flex gap-2">
             <!-- user has the permission to download -->
-            {#if $permissions.includes('DMS.DOCS_DOWNLOAD')}
+            {#if $permissions.includes('DMS.REFCOPIES_DOWNLOAD')}
                 <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
             {/if}
 

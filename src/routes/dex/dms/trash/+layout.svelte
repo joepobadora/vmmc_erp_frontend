@@ -10,6 +10,7 @@
     });
 </script>
 
+// DMS Trash
 {#if $modules.includes('DEX5')}
     <slot />
 {/if}

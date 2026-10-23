@@ -7,29 +7,7 @@
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
     import ReceivingPrompt from '../../components/ReceivingPrompt.svelte';
-
-    const statusMap = {
-        // Cluster 1: Drafting / Editing / Posting (Neutral / Light Blues & Grays)
-        ACTION1: { label: 'DRAFTED', color: '#E2E8F0' }, // Slate Gray
-        ACTION2: { label: 'POSTED', color: '#E0F2FE' }, // Light Sky Blue
-        ACTION3: { label: 'BROADCASTED', color: '#BAE6FD' }, // Sky Blue
-
-        // Cluster 2: Review / Decision (Ambers & Soft Indigos)
-        ACTION4: { label: 'RELEASED', color: '#FEF3C7' }, // Soft Amber
-        ACTION5: { label: 'FORWARDED', color: '#E0E7FF' }, // Soft Indigo
-        ACTION6: { label: 'RECEIVED', color: '#D1FAE5' }, // Soft Green (Incoming arrival)
-
-        // Cluster 3: Finalization / Routing (Success & Completion Greens/Purples)
-        ACTION7: { label: 'ACKNOWLEDGED', color: '#A7F3D0' }, // Vibrant Soft Green
-        ACTION8: { label: 'TERMINATED', color: '#FEE2E2' }, // Soft Red (Halted/Stopped)
-        ACTION9: { label: 'RETRIEVED', color: '#DDD6FE' }, // Soft Purple
-
-        // Cluster 4: Closure / End States (Neutrals, Oranges & Danger Reds)
-        ACTION10: { label: 'ARCHIVED', color: '#F3F4F6' }, // Neutral Gray
-        ACTION11: { label: 'DELETED', color: '#FCA5A5' }, // Danger Red
-        ACTION12: { label: 'RECALLED', color: '#FED7AA' }, // Soft Orange
-        ACTION13: { label: 'REJECTED', color: '#F87171' }, // Strong Red
-    };
+    import { tranStatusMap } from '$lib/stores/statusMap';
 
     let { data } = $props();
 
@@ -161,12 +139,15 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto col-md-6">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" placeholder="Enter transaction no." bind:value={tranNo} />
-                    <button class="btn btn-primary px-3" onclick={receive}><i class="bi bi-arrow-down me-2"></i>Receive</button>
+            // check if user has permission to receive a transaction
+            {#if $permissions.includes('DTS.INBOX_RECEIVE')}
+                <div class="col-auto col-md-6">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" placeholder="Enter transaction no." bind:value={tranNo} />
+                        <button class="btn btn-primary px-3" onclick={receive}><i class="bi bi-arrow-down me-2"></i>Receive</button>
+                    </div>
                 </div>
-            </div>
+            {/if}
         </div>
 
         <div class="row mb-4">
@@ -220,7 +201,7 @@
 
             <!-- reset button -->
             <div class="col-auto d-flex align-items-end">
-                <button type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
+                <button onclick={resetFilter} type="button" class="btn btn-outline-primary btn-sm px-3" id="docmngtMyDocumentsResetButton">Reset</button>
             </div>
         </div>
 
@@ -237,14 +218,20 @@
                             <div class="col">
                                 <div>
                                     <span class="text-muted me-2">Name:</span>
-                                    <strong
-                                        class="custom-link"
-                                        onclick={() => {
-                                            goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
-                                        }}
-                                    >
-                                        {item.document?.latest_version?.name}
-                                    </strong>
+                                    {#if $permissions.includes('DTS.INBOX_VIEW')}
+                                        <strong
+                                            class="custom-link"
+                                            onclick={() => {
+                                                goto(page.url.pathname + `/view/${item.id}${p.toString()}`);
+                                            }}
+                                        >
+                                            {item.document?.latest_version?.name}
+                                        </strong>
+                                    {:else}
+                                        <strong>
+                                            {item.document?.latest_version?.name}
+                                        </strong>
+                                    {/if}
                                 </div>
                                 <div>
                                     <span class="text-muted me-2">Doc. No.:</span>
@@ -256,7 +243,7 @@
                                     <span class="text-muted me-2">Status:</span>
                                 </div>
                                 <div class="d-flex flex-row flex-wrap gap-2">
-                                    <j.Tag name={statusMap[item.state.state_code].label} color={statusMap[item.state.state_code].color} />
+                                    <j.Tag name={tranStatusMap[item.state.state_code].label} color={tranStatusMap[item.state.state_code].color} />
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">

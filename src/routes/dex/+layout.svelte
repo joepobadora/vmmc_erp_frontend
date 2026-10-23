@@ -16,6 +16,7 @@
             goto('/login');
         }
 
+        // DEx
         if (!$modules.includes('DEX0')) {
             goto('/403');
         }
@@ -27,6 +28,7 @@
 </svelte:head>
 
 {#if auth == true}
+    // DEx
     {#if $modules.includes('DEX0')}
         <!-- navbar -->
         <div class="row mb-5">

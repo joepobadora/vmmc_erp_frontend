@@ -4,12 +4,12 @@
     import { modules } from '$lib/stores/access';
 
     onMount(async () => {
-        if (!$modules.includes('DEX10')) {
+        if (!$modules.includes('DEX9')) {
             goto('/403');
         }
     });
 </script>
 
-{#if $modules.includes('DEX10')}
+{#if $modules.includes('DEX9')}
     <slot />
 {/if}

@@ -481,7 +481,7 @@
                 <label for="password" class="form-label small">Draft Document</label>
                 <div>
                     {#if $permissions.includes('DMS.DRAFTS_DELETE')}
-                        <j.Button label="Move to trash" variant="danger" loadinglabel="Deleting" icon="bi-x-lg" loading={trashing} onClick={trash} />
+                        <j.Button label="Move to trash" variant="danger" loadinglabel="Trashing" icon="bi-x-lg" loading={trashing} onClick={trash} />
                     {/if}
                 </div>
             </j.RowCol>

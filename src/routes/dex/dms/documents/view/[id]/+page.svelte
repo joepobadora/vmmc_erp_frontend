@@ -281,16 +281,16 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- user has the permission to download -->
+            // check if the user has permission to download a document
             {#if $permissions.includes('DMS.DOCS_DOWNLOAD')}
                 <j.Button label="Download" variant="light" loadinglabel="Downloading" icon="bi-download" loading={downloading} onClick={downloadFile} />
             {/if}
 
-            <!-- document is allowed for signing and user has the permission to do so -->
-            {#if data.docTransitions.includes('DOCSTATE10') && $permissions.includes('DMS.DOCS_SIGN')}
+            // check if the user has permission to sign
+            {#if $permissions.includes('DMS.DOCS_SIGN')}
                 <j.Button
                     label="Sign"
-                    loadinglabel="Posting"
+                    loadinglabel="Signing"
                     icon="bi-vector-pen"
                     onClick={() => {
                         goto(`/dex/dms/documents/sign/${data.document.id}${p.toString()}`);

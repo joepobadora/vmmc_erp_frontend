@@ -10,6 +10,7 @@
     });
 </script>
 
+// DMS Archive
 {#if $modules.includes('DEX4')}
     <slot />
 {/if}

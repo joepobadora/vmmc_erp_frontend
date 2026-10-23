@@ -11,8 +11,6 @@
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
-    let authDownload = $state();
-
     let { data } = $props();
 
     let file = $state(null);
@@ -32,8 +30,6 @@
     let lifecycles = $state(data.document.lifecycles);
 
     let activeTab = $state('overview');
-
-    let downloading = $state(false);
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
@@ -70,8 +66,6 @@
         pdfData = data;
     }
 </script>
-
-<Auth bind:me={authDownload} warning="You are about to download a copy of the attached file." />
 
 <!-- controls -->
 <j.RowCol>

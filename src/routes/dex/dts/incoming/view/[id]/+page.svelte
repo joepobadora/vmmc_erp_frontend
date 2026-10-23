@@ -7,6 +7,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { permissions } from '$lib/stores/access';
 
     import TransactionTrailIndicator from '../../../../components/TransactionTrailIndicator.svelte';
 
@@ -243,13 +244,13 @@
 {#snippet actionButtons()}
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <!-- document is in forwarded -->
-            {#if data.tranTransitions.includes('ACTION13')}
+            // check if user has permission to reject a transaction
+            {#if $permissions.includes('DTS.INCOMING_REJECT')}
                 <j.Button label="Reject" loadinglabel="Reject" icon="bi-x-lg" variant="danger" loading={rejecting} onClick={reject} />
             {/if}
 
-            <!-- document is in forwarded -->
-            {#if data.tranTransitions.includes('ACTION6')}
+            // check if user has permission to receive a transaction
+            {#if $permissions.includes('DTS.INCOMING_RECEIVE')}
                 <j.Button label="Receive" loadinglabel="Receiving" icon="bi-arrow-down" loading={receiving} onClick={receive} />
             {/if}
 

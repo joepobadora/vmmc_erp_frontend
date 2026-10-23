@@ -4,12 +4,12 @@
     import { permissions } from '$lib/stores/access';
 
     onMount(async () => {
-        if (!$permissions.includes('DTS.BROADCAST_VIEW')) {
+        if (!$permissions.includes('DTS.ARCHIVE_VIEW')) {
             goto('/403');
         }
     });
 </script>
 
-{#if $permissions.includes('DTS.BROADCAST_VIEW')}
+{#if $permissions.includes('DTS.ARCHIVE_VIEW')}
     <slot />
 {/if}
