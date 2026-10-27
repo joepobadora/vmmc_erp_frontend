@@ -40,8 +40,6 @@
 
     let lockedByOthers = Boolean(data.document.state.locker_id && data.document.state.locker_id != $user.account_id);
 
-    console.log(data.document.state.locker_id == $user.account_id);
-
     function selectTab(tab) {
         activeTab = tab;
     }
@@ -203,7 +201,7 @@
                 <j.Col>
                     <h5>Versions</h5>
                     <j.Row>
-                        <j.Col span="2">
+                        <j.Col span="1">
                             <span class="text-muted small">No</span>
                         </j.Col>
                         <j.Col>
@@ -212,11 +210,14 @@
                         <j.Col>
                             <span class="text-muted small">Timestamp</span>
                         </j.Col>
+                        <j.Col>
+                            <span class="text-muted small">Action</span>
+                        </j.Col>
                     </j.Row>
                     {#each versions as version, i}
                         <div class="text-muted small">
-                            <j.Row>
-                                <j.Col span="2">
+                            <j.Row mb="0">
+                                <j.Col span="1">
                                     <span class="{i === 0 ? 'text-primary' : ''} fw-semibold">{version.version_no}</span>
                                 </j.Col>
                                 <j.Col>
@@ -224,6 +225,17 @@
                                 </j.Col>
                                 <j.Col>
                                     <span class={i === 0 ? 'text-primary' : ''}>{App.Format.date(version.created_at).toDatetime()}</span>
+                                </j.Col>
+                                <j.Col>
+                                    {#if data.document.latest_version.version_no != version.version_no}
+                                        <span
+                                            class="text-info custom-link"
+                                            onclick={() => {
+                                                goto(page.url.pathname + `/version/${version.version_no}${p.toString()}`);
+                                            }}
+                                            >View this version<i class="bi bi-box-arrow-up-right ms-2"></i>
+                                        </span>
+                                    {/if}
                                 </j.Col>
                             </j.Row>
                         </div>
