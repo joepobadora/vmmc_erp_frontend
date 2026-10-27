@@ -7,6 +7,7 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { permissions } from '$lib/stores/access';
+    import { user } from '$lib/stores/access';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
@@ -36,6 +37,8 @@
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
+
+    let isLockedByOther = Boolean(data.document.state.locker_id && data.document.state.locker_id != $user.account_id);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -295,6 +298,8 @@
                     onClick={() => {
                         goto(`/dex/dms/documents/sign/${data.document.id}${p.toString()}`);
                     }}
+                    disabled={isLockedByOther}
+                    title={isLockedByOther ? 'Document is currently locked by another user' : 'Sign document'}
                 />
             {/if}
 

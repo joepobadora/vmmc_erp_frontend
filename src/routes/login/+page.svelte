@@ -5,7 +5,6 @@
     import App from '$lib/assets/js/bootstrap';
     import z from 'zod';
     import j from '$lib/components/helper';
-    import { docStatusMap } from '$lib/stores/statusMap';
 
     let username = $state('');
     let password = $state('');

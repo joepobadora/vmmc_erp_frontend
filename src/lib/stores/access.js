@@ -95,8 +95,12 @@ const permissionsTemplate = {
     'DTS.ARCHIVE_RETRIEVE': false,
 };
 
+const account = writable({});
+
+const user = writable({});
+
 const modules = writable([]);
 
 const permissions = writable([]);
 
-export { modules, permissions };
+export { account, user, modules, permissions };

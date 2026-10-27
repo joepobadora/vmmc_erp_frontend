@@ -4,6 +4,7 @@
     import { onMount } from 'svelte';
     import App from '$lib/assets/js/bootstrap';
     import { modules } from '$lib/stores/access';
+    import { account, user } from '$lib/stores/access';
 
     const apps = [
         {

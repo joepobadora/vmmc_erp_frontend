@@ -10,6 +10,7 @@
     import { PDFDocument } from 'pdf-lib';
     import Auth from '$lib/components/Auth.svelte';
     import { goto } from '$app/navigation';
+    import { user } from '$lib/stores/access';
 
     let authSave = $state();
     let { data } = $props();
@@ -23,6 +24,11 @@
 
     let isPaused = $state(true);
     let saving = $state(false);
+
+    // Add dynamic states:
+    let isLockedByMe = $state(false);
+    let isLockedByOther = $state(false);
+    let checkingLock = $state(true);
 
     // ── Interaction modes ──────────────────────────────────────────────────
     let addTextMode = $state(false);
@@ -41,9 +47,16 @@
 
     const p = new App.ParamBuilder(page.url.searchParams);
 
-    onMount(() => {
-        initFile();
-        preloadSavedSignature();
+    onMount(async () => {
+        // Check if I already hold the lock from page load data
+        if (data.document.state.locker_id == $user.account_id) {
+            isLockedByMe = true;
+            checkingLock = false;
+            initFile();
+            preloadSavedSignature();
+        } else {
+            await lock();
+        }
     });
 
     onDestroy(() => {
@@ -58,7 +71,46 @@
         signPads.forEach((_, i) => {
             signPads[i] = null;
         });
+
+        // unlock document
+        if (isLockedByMe) {
+            unlock();
+        }
     });
+
+    // document locking
+
+    async function lock() {
+        checkingLock = true;
+        try {
+            const res = await App.API.post(`/dex/dms/checkout/${data.document.id}`);
+
+            if (res.data.success) {
+                isLockedByMe = true;
+                isLockedByOther = false;
+                initFile();
+                preloadSavedSignature();
+            } else {
+                isLockedByOther = true;
+                isLockedByMe = false;
+            }
+        } catch (err) {
+            console.error('Failed to lock on mount:', err);
+            isLockedByOther = true;
+            isLockedByMe = false;
+        } finally {
+            checkingLock = false;
+        }
+    }
+
+    async function unlock() {
+        try {
+            // Using navigator.sendBeacon or a standard async call on exit
+            await App.API.post(`/dex/dms/checkin/${data.document.id}`);
+        } catch (err) {
+            console.error('Failed to release lock on exit:', err);
+        }
+    }
 
     // ── Preload user's saved signature PNG from server ────────────────────
 
@@ -358,56 +410,77 @@
     </nav>
 </j.RowCol>
 
-<div class="position-relative">
-    <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
-        <j.Row>
-            <j.Col></j.Col>
-            <j.Col>
-                {#if loadingDocumentFile}
-                    <j.RowCol centerx>
-                        <div class="spinner-border text-secondary"></div>
-                    </j.RowCol>
-                {:else if file}
-                    <div>
-                        <PdfViewer src={file} onLoaded={handleLoaded} />
-                    </div>
-                {/if}
-            </j.Col>
-            <j.Col></j.Col>
-        </j.Row>
+{#if checkingLock}
+    <div class="d-flex justify-content-center align-items-center p-5">
+        <div class="spinner-border text-secondary" role="status"></div>
+        <span class="ms-2 text-secondary">Checking document lock...</span>
     </div>
-
-    <!-- Toolbar -->
-    <div class="d-flex gap-2 sticky-bottom justify-content-end p-2 bg-white border-top shadow-sm">
-        <button type="button" class="btn btn-light border btn-sm px-3" onclick={clear}>
-            <i class="bi bi-eraser me-2"></i>Clear
-        </button>
-
-        <button type="button" class="btn btn-light border btn-sm px-3 {isPaused ? '' : 'active'}" onclick={togglePause}>
-            <i class="bi bi-{isPaused ? 'hand-index-thumb' : 'vector-pen'} me-2"></i>{isPaused ? 'Scroll Mode' : 'Sign Mode'}
-        </button>
-
-        <!-- Place Pre-saved Signature button -->
-        <button
-            type="button"
-            class="btn btn-light border btn-sm px-3 {addSavedSignMode ? 'active' : ''}"
-            onclick={toggleAddSavedSignMode}
-            disabled={!savedSignatureBlob}
-            title={savedSignatureBlob ? 'Click to place your saved signature on the document' : 'No saved signature found'}
-        >
-            <i class="bi bi-file-image me-2"></i>{addSavedSignMode ? 'Click Page to Attach…' : 'Attach Saved Signature'}
-        </button>
-
-        <!-- Add Text button -->
-        <button
-            type="button"
-            class="btn btn-light border btn-sm px-3 {addTextMode ? 'active' : ''}"
-            onclick={toggleAddTextMode}
-            title={addTextMode ? 'Click anywhere on the document to place a text box' : 'Add text to the document'}
-        >
-            <i class="bi bi-fonts me-2"></i>{addTextMode ? 'Click to Place…' : 'Add Text'}
-        </button>
-
-        <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+{:else if isLockedByOther}
+    <div class="row mb-0 justify-content-center m-10">
+        <div class="col-12 col-md-8 text-center">
+            <div class="vh-50">
+                <div class="h-75 d-flex flex-column justify-content-center align-items-center">
+                    <h2><i class="bi bi-file-earmark-lock2 me-2"></i>Document Locked</h2>
+                    <p class="text-muted small">This document is currently checked out and being signed or edited by another user. Please try again later.</p>
+                    <!-- <button class="btn btn-primary btn-sm px-3 mt-3" onclick={() => window.history.back()}>
+                        <i class="bi bi-chevron-left me-2"></i>Go back
+                    </button> -->
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+{:else if isLockedByMe}
+    <div class="position-relative">
+        <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
+            <j.Row>
+                <j.Col></j.Col>
+                <j.Col>
+                    {#if loadingDocumentFile}
+                        <j.RowCol centerx>
+                            <div class="spinner-border text-secondary"></div>
+                        </j.RowCol>
+                    {:else if file}
+                        <div>
+                            <PdfViewer src={file} onLoaded={handleLoaded} />
+                        </div>
+                    {/if}
+                </j.Col>
+                <j.Col></j.Col>
+            </j.Row>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="d-flex gap-2 sticky-bottom justify-content-end p-2 bg-white border-top shadow-sm">
+            <button type="button" class="btn btn-light border btn-sm px-3" onclick={clear}>
+                <i class="bi bi-eraser me-2"></i>Clear
+            </button>
+
+            <button type="button" class="btn btn-light border btn-sm px-3 {isPaused ? '' : 'active'}" onclick={togglePause}>
+                <i class="bi bi-{isPaused ? 'hand-index-thumb' : 'vector-pen'} me-2"></i>{isPaused ? 'Scroll Mode' : 'Sign Mode'}
+            </button>
+
+            <!-- Place Pre-saved Signature button -->
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3 {addSavedSignMode ? 'active' : ''}"
+                onclick={toggleAddSavedSignMode}
+                disabled={!savedSignatureBlob}
+                title={savedSignatureBlob ? 'Click to place your saved signature on the document' : 'No saved signature found'}
+            >
+                <i class="bi bi-file-image me-2"></i>{addSavedSignMode ? 'Click Page to Attach…' : 'Attach Saved Signature'}
+            </button>
+
+            <!-- Add Text button -->
+            <button
+                type="button"
+                class="btn btn-light border btn-sm px-3 {addTextMode ? 'active' : ''}"
+                onclick={toggleAddTextMode}
+                title={addTextMode ? 'Click anywhere on the document to place a text box' : 'Add text to the document'}
+            >
+                <i class="bi bi-fonts me-2"></i>{addTextMode ? 'Click to Place…' : 'Add Text'}
+            </button>
+
+            <j.Button label="Save" loadinglabel="Saving" icon="bi-check-lg" loading={saving} onClick={save} />
+        </div>
+    </div>
+{/if}

@@ -4,30 +4,13 @@
     import { onMount } from 'svelte';
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
+    import { user } from '$lib/stores/access';
 
     let closeModalButton;
 
     let { title, titleRoute, showHome, hideSettings } = $props();
 
-    let firstName = $state('');
-
     let loggingOut = $state(false);
-
-    onMount(async () => {
-        try {
-            const result = await App.API.get('/me');
-
-            const data = result.data.data;
-
-            if (result.data.success) {
-                firstName = data.user.first_name;
-            } else {
-                console.log(result.data.error_code);
-            }
-        } catch (err) {
-            Alert.show('error', 'Bad request.', err.message);
-        }
-    });
 
     async function Logout() {
         try {
@@ -71,7 +54,7 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-label="menu dropdown">
                     <li class="px-4 py-2">
                         <p class="small text-secondary mb-1">Signed in as:</p>
-                        <h6>{firstName}</h6>
+                        <h6>{$user.first_name}</h6>
                     </li>
                     {#if showHome}
                         <li>
