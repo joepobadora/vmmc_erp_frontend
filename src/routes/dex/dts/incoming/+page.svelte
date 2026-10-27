@@ -203,7 +203,7 @@
                                     <span class="text-muted me-2">Status:</span>
                                 </div>
                                 <div class="d-flex flex-row flex-wrap gap-2">
-                                    <j.Tag name={statusMap[item.state.state_code].label} color={statusMap[item.state.state_code].color} />
+                                    <j.Tag name={tranStatusMap[item.state.state_code].label} color={tranStatusMap[item.state.state_code].color} />
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">

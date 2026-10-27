@@ -118,14 +118,6 @@
             errors = {};
         }
 
-        console.log({
-            routing_method: selectedRoute,
-            doc_no: docNo,
-            supporting_docs: supportingDocs,
-            direct_office: directOffice,
-            broadcast_offices: broadcastOffices,
-        });
-
         // saving transaction
         try {
             // password auth
