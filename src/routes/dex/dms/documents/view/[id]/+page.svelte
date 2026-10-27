@@ -38,7 +38,9 @@
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
 
-    let isLockedByOther = Boolean(data.document.state.locker_id && data.document.state.locker_id != $user.account_id);
+    let lockedByOthers = Boolean(data.document.state.locker_id && data.document.state.locker_id != $user.account_id);
+
+    console.log(data.document.state.locker_id == $user.account_id);
 
     function selectTab(tab) {
         activeTab = tab;
@@ -298,8 +300,8 @@
                     onClick={() => {
                         goto(`/dex/dms/documents/sign/${data.document.id}${p.toString()}`);
                     }}
-                    disabled={isLockedByOther}
-                    title={isLockedByOther ? 'Document is currently locked by another user' : 'Sign document'}
+                    disabled={lockedByOthers}
+                    title={lockedByOthers ? 'Document is currently locked by another user' : 'Sign document'}
                 />
             {/if}
 

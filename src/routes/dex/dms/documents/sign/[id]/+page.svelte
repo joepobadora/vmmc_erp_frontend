@@ -26,8 +26,7 @@
     let saving = $state(false);
 
     // Add dynamic states:
-    let isLockedByMe = $state(false);
-    let isLockedByOther = $state(false);
+    let lockedByMe = $state(false);
     let checkingLock = $state(true);
 
     // ── Interaction modes ──────────────────────────────────────────────────
@@ -50,7 +49,7 @@
     onMount(async () => {
         // Check if I already hold the lock from page load data
         if (data.document.state.locker_id == $user.account_id) {
-            isLockedByMe = true;
+            lockedByMe = true;
             checkingLock = false;
             initFile();
             preloadSavedSignature();
@@ -73,7 +72,7 @@
         });
 
         // unlock document
-        if (isLockedByMe) {
+        if (lockedByMe) {
             unlock();
         }
     });
@@ -86,18 +85,15 @@
             const res = await App.API.post(`/dex/dms/checkout/${data.document.id}`);
 
             if (res.data.success) {
-                isLockedByMe = true;
-                isLockedByOther = false;
+                lockedByMe = true;
                 initFile();
                 preloadSavedSignature();
             } else {
-                isLockedByOther = true;
-                isLockedByMe = false;
+                lockedByMe = false;
             }
         } catch (err) {
             console.error('Failed to lock on mount:', err);
-            isLockedByOther = true;
-            isLockedByMe = false;
+            lockedByMe = false;
         } finally {
             checkingLock = false;
         }
@@ -415,7 +411,7 @@
         <div class="spinner-border text-secondary" role="status"></div>
         <span class="ms-2 text-secondary">Checking document lock...</span>
     </div>
-{:else if isLockedByOther}
+{:else if !lockedByMe}
     <div class="row mb-0 justify-content-center m-10">
         <div class="col-12 col-md-8 text-center">
             <div class="vh-50">
@@ -429,7 +425,7 @@
             </div>
         </div>
     </div>
-{:else if isLockedByMe}
+{:else}
     <div class="position-relative">
         <div class="bg-secondary-subtle overflow-auto pt-4 mb-3" style="max-height: 1500px;">
             <j.Row>
