@@ -60,9 +60,6 @@
         // 4. Listen for real-time payload updates
         channel.listen('.dts.incoming', (payload) => {
             badges['/dex/dts/incoming'] = payload.count;
-
-            console.clear();
-            console.log(payload);
         });
 
         // 5. Cleanup on unmount (must pass the full private channel name)

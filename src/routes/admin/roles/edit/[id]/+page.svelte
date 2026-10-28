@@ -163,18 +163,8 @@
                             <label class="form-check-label small" for="dmsDocumentsView">View</label>
                         </div>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.DOCS_SIGN']} class="form-check-input" type="checkbox" id="dmsDocumentsSign" />
-                            <label class="form-check-label small" for="dmsDocumentsSign">Sign</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DMS.DOCS_DELETE']} class="form-check-input" type="checkbox" id="dmsDocumentsDelete" />
-                            <label class="form-check-label small" for="dmsDocumentsDelete">Delete</label>
-                        </div>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DMS.DOCS_ROUTE']} class="form-check-input" type="checkbox" id="dmsDocumentsRoute" />
-                            <label class="form-check-label small" for="dmsDocumentsRoute">Route</label>
+                            <input bind:checked={permissions['DMS.DOCS_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsDocumentsDownload" />
+                            <label class="form-check-label small" for="dmsDocumentsDownload">Download</label>
                         </div>
                     </td>
                     <td>
@@ -183,14 +173,20 @@
                             <label class="form-check-label small" for="dmsDocumentsEdit">Edit</label>
                         </div>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.DOCS_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsDocumentsDownload" />
-                            <label class="form-check-label small" for="dmsDocumentsDownload">Download</label>
+                            <input bind:checked={permissions['DMS.DOCS_ROUTE']} class="form-check-input" type="checkbox" id="dmsDocumentsRoute" />
+                            <label class="form-check-label small" for="dmsDocumentsRoute">Route</label>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
                             <input bind:checked={permissions['DMS.DOCS_ARCHIVE']} class="form-check-input" type="checkbox" id="dmsDocumentsArchive" />
                             <label class="form-check-label small" for="dmsDocumentsArchive">Archive</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DMS.DOCS_SIGN']} class="form-check-input" type="checkbox" id="dmsDocumentsSign" />
+                            <label class="form-check-label small" for="dmsDocumentsSign">Sign</label>
                         </div>
                     </td>
                 </tr>
@@ -210,14 +206,14 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.REFCOPIES_DELETE']} class="form-check-input" type="checkbox" id="dmsRefDelete" />
-                            <label class="form-check-label small" for="dmsRefDelete">Delete</label>
+                            <input bind:checked={permissions['DMS.REFCOPIES_EDIT']} class="form-check-input" type="checkbox" id="dmsRefEdit" />
+                            <label class="form-check-label small" for="dmsRefEdit">Edit</label>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.REFCOPIES_EDIT']} class="form-check-input" type="checkbox" id="dmsRefEdit" />
-                            <label class="form-check-label small" for="dmsRefEdit">Edit</label>
+                            <input bind:checked={permissions['DMS.REFCOPIES_DELETE']} class="form-check-input" type="checkbox" id="dmsRefDelete" />
+                            <label class="form-check-label small" for="dmsRefDelete">Delete</label>
                         </div>
                     </td>
                     <td>
@@ -233,8 +229,8 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.DRAFTS_VIEW']} class="form-check-input" type="checkbox" id="dmsDraftsView" />
-                            <label class="form-check-label small" for="dmsDraftsView">View</label>
+                            <input bind:checked={permissions['DMS.DRAFTS_CREATE']} class="form-check-input" type="checkbox" id="dmsDraftsCreate" />
+                            <label class="form-check-label small" for="dmsDraftsCreate">Create</label>
                         </div>
                         <div class="form-check">
                             <input bind:checked={permissions['DMS.DRAFTS_POST']} class="form-check-input" type="checkbox" id="dmsDraftsPost" />
@@ -243,8 +239,8 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.DRAFTS_CREATE']} class="form-check-input" type="checkbox" id="dmsDraftsCreate" />
-                            <label class="form-check-label small" for="dmsDraftsCreate">Create</label>
+                            <input bind:checked={permissions['DMS.DRAFTS_VIEW']} class="form-check-input" type="checkbox" id="dmsDraftsView" />
+                            <label class="form-check-label small" for="dmsDraftsView">View</label>
                         </div>
                         <div class="form-check">
                             <input bind:checked={permissions['DMS.DRAFTS_REVIEW']} class="form-check-input" type="checkbox" id="dmsDraftsReview" />
@@ -277,9 +273,11 @@
                             <input bind:checked={permissions['DMS.ARCHIVE_VIEW']} class="form-check-input" type="checkbox" id="dmsArchiveView" />
                             <label class="form-check-label small" for="dmsArchiveView">View</label>
                         </div>
+                    </td>
+                    <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.ARCHIVE_UNARCHIVE']} class="form-check-input" type="checkbox" id="dmsArchiveUnarchive" />
-                            <label class="form-check-label small" for="dmsArchiveUnarchive">Unarchive</label>
+                            <input bind:checked={permissions['DMS.ARCHIVE_EDIT']} class="form-check-input" type="checkbox" id="dmsArchiveEdit" />
+                            <label class="form-check-label small" for="dmsArchiveEdit">Edit</label>
                         </div>
                     </td>
                     <td>
@@ -290,14 +288,8 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DMS.ARCHIVE_EDIT']} class="form-check-input" type="checkbox" id="dmsArchiveEdit" />
-                            <label class="form-check-label small" for="dmsArchiveEdit">Edit</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DMS.ARCHIVE_DOWNLOAD']} class="form-check-input" type="checkbox" id="dmsArchiveDownload" />
-                            <label class="form-check-label small" for="dmsArchiveDownload">Download</label>
+                            <input bind:checked={permissions['DMS.ARCHIVE_UNARCHIVE']} class="form-check-input" type="checkbox" id="dmsArchiveUnarchive" />
+                            <label class="form-check-label small" for="dmsArchiveUnarchive">Unarchive</label>
                         </div>
                     </td>
                 </tr>
@@ -342,14 +334,14 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.INCOMING_REJECT']} class="form-check-input" type="checkbox" id="dtsIncomingReject" />
-                            <label class="form-check-label small" for="dtsIncomingReject">Reject</label>
+                            <input bind:checked={permissions['DTS.INCOMING_RECEIVE']} class="form-check-input" type="checkbox" id="dtsIncomingReceive" />
+                            <label class="form-check-label small" for="dtsIncomingReceive">Receive</label>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.INCOMING_ACKNOWLEDGE']} class="form-check-input" type="checkbox" id="dtsIncomingAck" />
-                            <label class="form-check-label small" for="dtsIncomingAck">Acknowledge</label>
+                            <input bind:checked={permissions['DTS.INCOMING_REJECT']} class="form-check-input" type="checkbox" id="dtsIncomingReject" />
+                            <label class="form-check-label small" for="dtsIncomingReject">Reject</label>
                         </div>
                     </td>
                     <td></td>
@@ -363,8 +355,16 @@
                             <input bind:checked={permissions['DTS.INBOX_VIEW']} class="form-check-input" type="checkbox" id="dtsInboxView" />
                             <label class="form-check-label small" for="dtsInboxView">View</label>
                         </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DTS.INBOX_TERMINATE']} class="form-check-input" type="checkbox" id="dtsInboxTerminate" />
+                            <label class="form-check-label small" for="dtsInboxTerminate">Terminate</label>
+                        </div>
                     </td>
                     <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DTS.INBOX_RECEIVE']} class="form-check-input" type="checkbox" id="dtsInboxReceive" />
+                            <label class="form-check-label small" for="dtsInboxReceive">Receive</label>
+                        </div>
                         <div class="form-check">
                             <input bind:checked={permissions['DTS.INBOX_RETRIEVE']} class="form-check-input" type="checkbox" id="dtsInboxRetrieve" />
                             <label class="form-check-label small" for="dtsInboxRetrieve">Retrieve</label>
@@ -372,14 +372,22 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.INBOX_FORWARD']} class="form-check-input" type="checkbox" id="dtsInboxForward" />
-                            <label class="form-check-label small" for="dtsInboxForward">Forward</label>
+                            <input bind:checked={permissions['DTS.INBOX_RELEASE']} class="form-check-input" type="checkbox" id="dtsInboxRelease" />
+                            <label class="form-check-label small" for="dtsInboxRelease">Release</label>
+                        </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DTS.INBOX_COPY']} class="form-check-input" type="checkbox" id="dtsInboxCopy" />
+                            <label class="form-check-label small" for="dtsInboxCopy">Copy</label>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.INBOX_TERMINATE']} class="form-check-input" type="checkbox" id="dtsInboxTerminate" />
-                            <label class="form-check-label small" for="dtsInboxTerminate">Terminate</label>
+                            <input bind:checked={permissions['DTS.INBOX_FORWARD']} class="form-check-input" type="checkbox" id="dtsInboxForward" />
+                            <label class="form-check-label small" for="dtsInboxForward">Forward</label>
+                        </div>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DTS.INBOX_ARCHIVE']} class="form-check-input" type="checkbox" id="dtsInboxArchive" />
+                            <label class="form-check-label small" for="dtsInboxArchive">Archive</label>
                         </div>
                     </td>
                 </tr>
@@ -389,14 +397,14 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.OUTGOING_VIEW']} class="form-check-input" type="checkbox" id="dtsOutgoingView" />
-                            <label class="form-check-label small" for="dtsOutgoingView">View</label>
+                            <input bind:checked={permissions['DTS.OUTGOING_CREATE']} class="form-check-input" type="checkbox" id="dtsOutgoingCreate" />
+                            <label class="form-check-label small" for="dtsOutgoingCreate">Create</label>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.OUTGOING_CREATE']} class="form-check-input" type="checkbox" id="dtsOutgoingCreate" />
-                            <label class="form-check-label small" for="dtsOutgoingCreate">Create</label>
+                            <input bind:checked={permissions['DTS.OUTGOING_VIEW']} class="form-check-input" type="checkbox" id="dtsOutgoingView" />
+                            <label class="form-check-label small" for="dtsOutgoingView">View</label>
                         </div>
                     </td>
                     <td>
@@ -407,39 +415,6 @@
                     </td>
                     <td></td>
                 </tr>
-                <!-- <tr>
-                    <td>
-                        <p class="small" for="dmsDocuments"><i class="bi bi-file-earmark-text me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></p>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DTS.DRAFTS_VIEW']} class="form-check-input" type="checkbox" id="dtsDraftsView" />
-                            <label class="form-check-label small" for="dtsDraftsView">View</label>
-                        </div>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DTS.DRAFTS_POST']} class="form-check-input" type="checkbox" id="dtsDraftsPost" />
-                            <label class="form-check-label small" for="dtsDraftsPost">Post</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DTS.DRAFTS_CREATE']} class="form-check-input" type="checkbox" id="dtsDraftsCreate" />
-                            <label class="form-check-label small" for="dtsDraftsCreate">Create</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DTS.DRAFTS_EDIT']} class="form-check-input" type="checkbox" id="dtsDraftsEdit" />
-                            <label class="form-check-label small" for="dtsDraftsEdit">Edit</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input bind:checked={permissions['DTS.DRAFTS_DELETE']} class="form-check-input" type="checkbox" id="dtsDraftsDelete" />
-                            <label class="form-check-label small" for="dtsDraftsDelete">Delete</label>
-                        </div>
-                    </td>
-                </tr> -->
                 <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-megaphone me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></p>
@@ -456,7 +431,12 @@
                             <label class="form-check-label small" for="dtsBroadcastRetrieve">Retrieve</label>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="form-check">
+                            <input bind:checked={permissions['DTS.BROADCAST_ARCHIVE']} class="form-check-input" type="checkbox" id="dtsBroadcastArchive" />
+                            <label class="form-check-label small" for="dtsBroadcastArchive">Archive</label>
+                        </div>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>
@@ -471,8 +451,8 @@
                     </td>
                     <td>
                         <div class="form-check">
-                            <input bind:checked={permissions['DTS.ARCHIVE_RETRIEVE']} class="form-check-input" type="checkbox" id="dtsArchiveRetrieve" />
-                            <label class="form-check-label small" for="dtsArchiveRetrieve">Retrieve</label>
+                            <input bind:checked={permissions['DTS.ARCHIVE_UNARCHIVE']} class="form-check-input" type="checkbox" id="dtsArchiveUnarchive" />
+                            <label class="form-check-label small" for="dtsArchiveUnarchive">Unarchive</label>
                         </div>
                     </td>
                     <td>

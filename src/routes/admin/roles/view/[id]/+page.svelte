@@ -73,18 +73,17 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.DOCS_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_SIGN') == true ? checked : unchecked} me-2"></i>Sign</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_ROUTE') == true ? checked : unchecked} me-2"></i>Route</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                         <div class="small"><i class="bi {permissions.includes('DMS.DOCS_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
                     </td>
                     <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_ROUTE') == true ? checked : unchecked} me-2"></i>Route</div>
+                    </td>
+                    <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.DOCS_ARCHIVE') == true ? checked : unchecked} me-2"></i>Archive</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DOCS_SIGN') == true ? checked : unchecked} me-2"></i>Sign</div>
                     </td>
                 </tr>
                 <tr>
@@ -96,10 +95,10 @@
                         <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.REFCOPIES_ARCHIVE') == true ? checked : unchecked} me-2"></i>Archive</div>
@@ -110,11 +109,11 @@
                         <p class="small" for="dmsDocuments"><i class="bi bi-pencil-square me-2"></i>Drafts</p>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
                         <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_POST') == true ? checked : unchecked} me-2"></i>Post</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                         <div class="small"><i class="bi {permissions.includes('DMS.DRAFTS_REVIEW') == true ? checked : unchecked} me-2"></i>Review</div>
                     </td>
                     <td>
@@ -131,16 +130,15 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
-                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_UNARCHIVE') == true ? checked : unchecked} me-2"></i>Unarchive</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DOWNLOAD') == true ? checked : unchecked} me-2"></i>Download</div>
+                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="bi {permissions.includes('DMS.ARCHIVE_UNARCHIVE') == true ? checked : unchecked} me-2"></i>Unarchive</div>
                     </td>
                 </tr>
                 <tr>
@@ -168,10 +166,10 @@
                         <div class="small"><i class="bi {permissions.includes('DTS.INCOMING_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.INCOMING_REJECT') == true ? checked : unchecked} me-2"></i>Reject</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INCOMING_RECEIVE') == true ? checked : unchecked} me-2"></i>Receive</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.INCOMING_ACKNOWLEDGE') == true ? checked : unchecked} me-2"></i>Acknowledge</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INCOMING_REJECT') == true ? checked : unchecked} me-2"></i>Reject</div>
                     </td>
                     <td></td>
                 </tr>
@@ -181,15 +179,19 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.INBOX_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_TERMINATE') == true ? checked : unchecked} me-2"></i>Terminate</div>
                     </td>
                     <td>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_RECEIVE') == true ? checked : unchecked} me-2"></i>Receive</div>
                         <div class="small"><i class="bi {permissions.includes('DTS.INBOX_RETRIEVE') == true ? checked : unchecked} me-2"></i>Retrieve</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_FORWARD') == true ? checked : unchecked} me-2"></i>Forward</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_RELEASE') == true ? checked : unchecked} me-2"></i>Release</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_COPY') == true ? checked : unchecked} me-2"></i>Copy</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_TERMINATE') == true ? checked : unchecked} me-2"></i>Terminate</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_FORWARD') == true ? checked : unchecked} me-2"></i>Forward</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.INBOX_ARCHIVE') == true ? checked : unchecked} me-2"></i>Archive</div>
                     </td>
                 </tr>
                 <tr>
@@ -197,34 +199,16 @@
                         <p class="small" for="dmsDocuments"><i class="bi bi-send me-2"></i>Outgoing <span class="fst-italic">(Tracker)</span></p>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.OUTGOING_RECALL') == true ? checked : unchecked} me-2"></i>Recall</div>
                     </td>
                     <td></td>
                 </tr>
-                <!-- <tr>
-                    <td>
-                        <p class="small" for="dmsDocuments"><i class="bi bi-file-earmark-text me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></p>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
-                        <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_POST') == true ? checked : unchecked} me-2"></i>Post</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_CREATE') == true ? checked : unchecked} me-2"></i>Create</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_EDIT') == true ? checked : unchecked} me-2"></i>Edit</div>
-                    </td>
-                    <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.DRAFTS_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>
-                    </td>
-                </tr> -->
                 <tr>
                     <td>
                         <p class="small" for="dmsDocuments"><i class="bi bi-megaphone me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></p>
@@ -235,7 +219,9 @@
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.BROADCAST_RETRIEVE') == true ? checked : unchecked} me-2"></i>Retrieve</div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class="small"><i class="bi {permissions.includes('DTS.BROADCAST_ARCHIVE') == true ? checked : unchecked} me-2"></i>Archive</div>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>
@@ -246,7 +232,7 @@
                         <div class="small"><i class="bi {permissions.includes('DTS.ARCHIVE_VIEW') == true ? checked : unchecked} me-2"></i>View</div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {permissions.includes('DTS.ARCHIVE_RETRIEVE') == true ? checked : unchecked} me-2"></i>Retrieve</div>
+                        <div class="small"><i class="bi {permissions.includes('DTS.ARCHIVE_UNARCHIVE') == true ? checked : unchecked} me-2"></i>Unarchive</div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {permissions.includes('DTS.ARCHIVE_DELETE') == true ? checked : unchecked} me-2"></i>Delete</div>

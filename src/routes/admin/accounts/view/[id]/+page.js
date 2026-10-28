@@ -18,10 +18,9 @@ export async function load({ params }) {
         DEX6: false, // dts incoming
         DEX7: false, // dts inbox
         DEX8: false, // dts outgoing
-        // DEX9: false, // dts drafts
-        DEX10: false, // dts broadcast
-        DEX11: false, // dts archive
-        DEX12: false, // dts trash
+        DEX9: false, // dts broadcast
+        DEX10: false, // dts archive
+        DEX11: false, // dts trash
         SEND0: false, // send
         FORMS0: false, // forms
     };

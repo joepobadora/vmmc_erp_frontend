@@ -126,22 +126,21 @@
                     </td>
                     <td>
                         <div class="small"><i class="bi {modules.DEX1 == true ? checked : unchecked} me-2"></i>Documents</div>
-                        <div class="small"><i class="bi {modules.DEX4 == true ? checked : unchecked} me-2"></i>Archive</div>
-                        <div class="small"><i class="bi {modules.DEX10 == true ? checked : unchecked} me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></div>
-                        <!-- <div class="small"><i class="bi {modules.DEX9 == true ? checked : unchecked} me-2"></i>Drafts <span class="fst-italic">(Tracker)</span></div> -->
+                        <div class="small"><i class="bi {modules.DEX5 == true ? checked : unchecked} me-2"></i>Trash</div>
+                        <div class="small"><i class="bi {modules.DEX9 == true ? checked : unchecked} me-2"></i>Broadcast Inbox <span class="fst-italic">(Tracker)</span></div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {modules.DEX2 == true ? checked : unchecked} me-2"></i>Reference Copies</div>
                         <div class="small"><i class="bi {modules.DEX6 == true ? checked : unchecked} me-2"></i>Incoming <span class="fst-italic">(Tracker)</span></div>
-                        <div class="small"><i class="bi {modules.DEX11 == true ? checked : unchecked} me-2"></i>Archive <span class="fst-italic">(Tracker)</span></div>
+                        <div class="small"><i class="bi {modules.DEX10 == true ? checked : unchecked} me-2"></i>Archive <span class="fst-italic">(Tracker)</span></div>
                     </td>
                     <td>
                         <div class="small"><i class="bi {modules.DEX3 == true ? checked : unchecked} me-2"></i>Drafts</div>
                         <div class="small"><i class="bi {modules.DEX7 == true ? checked : unchecked} me-2"></i>Inbox <span class="fst-italic">(Tracker)</span></div>
-                        <div class="small"><i class="bi {modules.DEX12 == true ? checked : unchecked} me-2"></i>Trash <span class="fst-italic">(Tracker)</span></div>
+                        <div class="small"><i class="bi {modules.DEX11 == true ? checked : unchecked} me-2"></i>Trash <span class="fst-italic">(Tracker)</span></div>
                     </td>
                     <td>
-                        <div class="small"><i class="bi {modules.DEX5 == true ? checked : unchecked} me-2"></i>Trash</div>
+                        <div class="small"><i class="bi {modules.DEX4 == true ? checked : unchecked} me-2"></i>Archive</div>
                         <div class="small"><i class="bi {modules.DEX8 == true ? checked : unchecked} me-2"></i>Outgoing <span class="fst-italic">(Tracker)</span></div>
                     </td>
                 </tr>

@@ -6,7 +6,7 @@
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
-    import { docVariantMap } from '$lib/stores/docVariantMap';
+    import { docVariantMap } from '$lib/stores/statusMap';
 
     let { data } = $props();
 

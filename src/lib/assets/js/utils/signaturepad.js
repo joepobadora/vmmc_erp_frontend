@@ -161,7 +161,7 @@ class SignPad {
         });
     }
 
-    Valid(thresholdPercent = 1) {
+    ValidPercent(thresholdPercent = 1) {
         const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         const pixels = imageData.data;
         let inkedPixels = 0;
@@ -175,6 +175,20 @@ class SignPad {
         const coverage = (inkedPixels / totalPixels) * 100;
 
         return coverage >= thresholdPercent;
+    }
+
+    ValidPixel(minPixels = 10) {
+        const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const pixels = imageData.data;
+        let inkedPixels = 0;
+
+        for (let i = 0; i < pixels.length; i += 4) {
+            const a = pixels[i + 3]; // alpha channel
+            if (a > 0) inkedPixels++;
+        }
+
+        // Returns true as soon as it detects more than `minPixels` inked pixels
+        return inkedPixels >= minPixels;
     }
 
     // Explicitly stop signing and allow scrolling

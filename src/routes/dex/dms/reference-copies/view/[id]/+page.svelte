@@ -230,6 +230,13 @@
                         <hr class="text-muted" />
                     {/each}
                 </j.Col>
+
+                <j.Col auto>
+                    <h5>Lifecycle</h5>
+                    <j.RowCol>
+                        <DocumentLifecycleIndicator {lifecycles} />
+                    </j.RowCol>
+                </j.Col>
             </j.Row>
 
             {@render actionButtons()}

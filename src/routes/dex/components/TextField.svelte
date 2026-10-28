@@ -96,7 +96,7 @@
         const scaleY = canvas.height / canvasRect.height;
 
         const drawX = (textRect.left - canvasRect.left + 5) * scaleX;
-        const drawY = (textRect.top - canvasRect.top + 6) * scaleY;
+        const drawY = (textRect.top - canvasRect.top + Math.round(fontSize) / 2) * scaleY;
         const drawFontSize = fontSize * scaleY;
 
         ctx.save();

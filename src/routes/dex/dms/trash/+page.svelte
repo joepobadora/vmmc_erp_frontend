@@ -6,7 +6,7 @@
     import { goto } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
-    import { docVariantMap } from '$lib/stores/docVariantMap';
+    import { docVariantMap } from '$lib/stores/statusMap';
 
     let { data } = $props();
 
@@ -207,6 +207,16 @@
                     <div>
                         <span class="text-muted me-2">Doc. No.:</span>
                         <span>{item.document_no}</span>
+                    </div>
+                    <div>
+                        {#if $permissions.includes('DMS.TRASH_EDIT')}
+                            <span
+                                class="text-info custom-link"
+                                onclick={() => {
+                                    goto(page.url.pathname + `/edit/${item.id}${p.toString()}`);
+                                }}>Edit</span
+                            >
+                        {/if}
                     </div>
                 </div>
                 <div class="col">

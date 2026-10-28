@@ -17,15 +17,19 @@
     let loadingDocumentFile = $state(false);
     let pdfData = $state(null);
 
+    console.log(data);
+
     let documentNo = $state(data.document.document_no);
+    let parentDocumentNo = $state(data.document.parent.document_no);
+    let parentDocumentId = $state(data.document.parent.id);
     let currentStateCode = $state(data.document.state.state.code);
     let variant = $state(data.document.state.is_original);
     let type = $state(data.document.latest_version.document_type.name);
     let name = $state(data.document.latest_version.name);
     let details = $state(data.document.latest_version.details);
     let tags = $state(data.document.tags);
-    let reviewers = $state(data.document.actorProgress.reviewers);
-    let approvers = $state(data.document.actorProgress.approvers);
+    // let reviewers = $state(data.document.actorProgress.reviewers);
+    // let approvers = $state(data.document.actorProgress.approvers);
     let versions = $state(data.document.versions);
     let lifecycles = $state(data.document.lifecycles);
 
@@ -127,7 +131,12 @@
             <j.Row>
                 <j.Col>
                     <h5>{name}</h5>
-                    <span class="small text-muted">{documentNo}</span>
+                    <span class="small text-muted"
+                        >{documentNo}
+                        {#if parentDocumentNo}
+                            <span class="fst-italic ms-1">(Reference of Master: <span class="text-decoration-underline">{parentDocumentNo}</span>)</span>
+                        {/if}
+                    </span>
                 </j.Col>
                 <j.Col auto>
                     <span class="badge bg-{variant == true ? 'primary' : 'secondary'}">{variant == true ? 'Original' : 'Reference Copy'}</span>
@@ -190,7 +199,7 @@
                         <hr class="text-muted" />
                     {/each}
                     <div class="mb-4"></div>
-                    <h5>Draft Actors</h5>
+                    <!-- <h5>Draft Actors</h5>
                     <j.Row>
                         <j.Col>
                             <label for="exampleFormControlTextarea1" class="form-label small">Reviewers</label>
@@ -204,7 +213,7 @@
                                 <div class="small"><i class="bi {approver.acted == true ? checked : unchecked} me-2"></i>{approver.account.user.full_name_2}</div>
                             {/each}
                         </j.Col>
-                    </j.Row>
+                    </j.Row> -->
                 </j.Col>
 
                 <j.Col auto>

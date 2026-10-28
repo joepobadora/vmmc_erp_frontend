@@ -297,9 +297,29 @@
         activeComponentInstances.push({ instance: instanceRef });
     }
 
+    // ── Check if any signature or text has been added ─────────────────────
+
+    function hasValidAnnotations() {
+        // check if theres any pixel burnt in the canvas
+        for (let i = 0; i < signPads.length; i++) {
+            // check for atleast 300pixels of ink
+            if (signPads[i] && signPads[i].ValidPixel(300)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // ── Save action ────────────────────────────────────────────────────────
 
     async function save() {
+        // Abort if no valid signature or text annotation exists
+        if (!hasValidAnnotations()) {
+            Alert.show('warning', 'No Signature Detected', 'Please draw a signature, place a text box, or attach a saved signature before saving.');
+            return;
+        }
+
         saving = true;
         try {
             if (!(await authSave.confirm())) return;

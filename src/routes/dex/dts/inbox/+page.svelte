@@ -104,7 +104,7 @@
                 }
 
                 const eligibleTransactions = [
-                    'ACTION4', // Released
+                    'ACTION2', // Released
                 ];
 
                 if (eligibleTransactions.filter((x) => x == data.state.state_code).length == 0) {
@@ -231,6 +231,9 @@
                                         <strong>
                                             {item.document?.latest_version?.name}
                                         </strong>
+                                    {/if}
+                                    {#if item.state.has_document}
+                                        <i class="bi bi-paperclip ms-2"></i>
                                     {/if}
                                 </div>
                                 <div>
