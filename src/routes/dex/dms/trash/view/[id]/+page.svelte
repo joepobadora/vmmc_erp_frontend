@@ -17,11 +17,9 @@
     let loadingDocumentFile = $state(false);
     let pdfData = $state(null);
 
-    console.log(data);
-
     let documentNo = $state(data.document.document_no);
-    let parentDocumentNo = $state(data.document.parent.document_no);
-    let parentDocumentId = $state(data.document.parent.id);
+    let parentDocumentNo = $state(data.document.parent?.document_no);
+    let parentDocumentId = $state(data.document.parent?.id);
     let currentStateCode = $state(data.document.state.state.code);
     let variant = $state(data.document.state.is_original);
     let type = $state(data.document.latest_version.document_type.name);
@@ -131,8 +129,8 @@
             <j.Row>
                 <j.Col>
                     <h5>{name}</h5>
-                    <span class="small text-muted"
-                        >{documentNo}
+                    <span class="small text-muted">
+                        {documentNo}
                         {#if parentDocumentNo}
                             <span class="fst-italic ms-1">(Reference of Master: <span class="text-decoration-underline">{parentDocumentNo}</span>)</span>
                         {/if}

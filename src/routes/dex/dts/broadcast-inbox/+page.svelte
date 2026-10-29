@@ -182,9 +182,12 @@
                                             {item.document?.latest_version?.name}
                                         </strong>
                                     {/if}
+                                    {#if item.state.has_document}
+                                        <i class="bi bi-paperclip ms-2"></i>
+                                    {/if}
                                 </div>
                                 <div>
-                                    <span class="text-muted me-2">Doc. No.:</span>
+                                    <span class="text-muted me-2">Tran. No.:</span>
                                     <span>{item.transaction_no}</span>
                                 </div>
                             </div>

@@ -99,8 +99,10 @@ const account = writable({});
 
 const user = writable({});
 
+const office = writable({});
+
 const modules = writable([]);
 
 const permissions = writable([]);
 
-export { account, user, modules, permissions };
+export { account, user, office, modules, permissions };

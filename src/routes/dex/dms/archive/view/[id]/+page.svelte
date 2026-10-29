@@ -18,14 +18,16 @@
     let pdfData = $state(null);
 
     let documentNo = $state(data.document.document_no);
+    let parentDocumentNo = $state(data.document.parent?.document_no);
+    let parentDocumentId = $state(data.document.parent?.id);
     let currentStateCode = $state(data.document.state.state.code);
     let variant = $state(data.document.state.is_original);
     let type = $state(data.document.latest_version.document_type.name);
     let name = $state(data.document.latest_version.name);
     let details = $state(data.document.latest_version.details);
     let tags = $state(data.document.tags);
-    let reviewers = $state(data.document.actorProgress.reviewers);
-    let approvers = $state(data.document.actorProgress.approvers);
+    let reviewers = $state(data.document.actorProgress?.reviewers);
+    let approvers = $state(data.document.actorProgress?.approvers);
     let versions = $state(data.document.versions);
     let lifecycles = $state(data.document.lifecycles);
 
@@ -129,7 +131,12 @@
             <j.Row>
                 <j.Col>
                     <h5>{name}</h5>
-                    <span class="small text-muted">{documentNo}</span>
+                    <span class="small text-muted">
+                        {documentNo}
+                        {#if parentDocumentNo}
+                            <span class="fst-italic ms-1">(Reference of Master: <span class="text-decoration-underline">{parentDocumentNo}</span>)</span>
+                        {/if}
+                    </span>
                 </j.Col>
                 <j.Col auto>
                     <span class="badge bg-{variant == true ? 'primary' : 'secondary'}">{variant == true ? 'Original' : 'Reference Copy'}</span>

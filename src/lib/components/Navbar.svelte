@@ -4,7 +4,7 @@
     import { onMount } from 'svelte';
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
-    import { user } from '$lib/stores/access';
+    import { user, office } from '$lib/stores/access';
 
     let closeModalButton;
 
@@ -54,7 +54,8 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-label="menu dropdown">
                     <li class="px-4 py-2">
                         <p class="small text-secondary mb-1">Signed in as:</p>
-                        <h6>{$user.first_name}</h6>
+                        <span class="fs-2xl fw-semibold">{$user.first_name}</span>
+                        <p class="small text-secondary">{$office.short_name}</p>
                     </li>
                     {#if showHome}
                         <li>

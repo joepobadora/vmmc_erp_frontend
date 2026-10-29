@@ -166,7 +166,7 @@
                         {/if}
                     </div>
                     <div>
-                        <span class="text-muted me-2">Doc. No.:</span>
+                        <span class="text-muted me-2">Tran. No.:</span>
                         <span>{item.transaction_no}</span>
                     </div>
                 </div>

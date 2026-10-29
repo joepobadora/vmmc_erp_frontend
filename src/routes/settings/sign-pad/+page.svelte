@@ -37,7 +37,7 @@
     // update signature
     async function updateSignature() {
         // validate canvas
-        if (!signPad.Valid(1)) {
+        if (!signPad.ValidPercent(1)) {
             Alert.show('error', 'Update failed.', 'Signature empty or might be too little.');
             return;
         }

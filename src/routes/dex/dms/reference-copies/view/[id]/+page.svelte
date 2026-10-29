@@ -6,7 +6,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { permissions } from '$lib/stores/access';
+    import { account, permissions } from '$lib/stores/access';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
@@ -165,7 +165,13 @@
                     <span class="small text-muted"
                         >{documentNo}
                         {#if parentDocumentNo}
-                            <span class="fst-italic ms-1">(Reference of Master: <a href="/dex/dms/documents/view/{parentDocumentId}" class="text-decoration-underline">{parentDocumentNo}</a>)</span>
+                            <!-- check if the master document is in my custody and not routed -->
+                            {#if data.document.parent.state.office_id == $account.office_id && ['DOCSTATE6', 'DOCSTATE9', 'DOCSTATE11'].includes(data.document.parent.state.state.code)}
+                                <span class="fst-italic ms-1">(Reference of Master: <a href="/dex/dms/documents/view/{parentDocumentId}" class="text-decoration-underline">{parentDocumentNo}</a>)</span
+                                >
+                            {:else}
+                                <span class="fst-italic ms-1">(Reference of Master: <span class="text-decoration-underline">{parentDocumentNo}</span>)</span>
+                            {/if}
                         {/if}
                     </span>
                 </j.Col>

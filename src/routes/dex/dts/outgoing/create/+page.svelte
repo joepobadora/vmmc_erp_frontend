@@ -2,11 +2,12 @@
     import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import { Alert } from '$lib/stores/alert';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import j from '$lib/components/helper';
     import z from 'zod';
     import { page } from '$app/state';
     import Auth from '$lib/components/Auth.svelte';
+    import { draft } from '$lib/stores/dts';
 
     let auth = $state();
 
@@ -49,7 +50,7 @@
         },
     };
 
-    let selectedRoute = $state('ROUTING3');
+    let selectedRoute = $state('ROUTING2');
     let routeDesc = $state(routeListMap[selectedRoute].description);
 
     const schema = z
@@ -97,6 +98,20 @@
         supportingDoc: z.refine((val) => documentList.map((d) => d.id).includes(val), {
             message: 'Invalid document selected.',
         }),
+    });
+
+    // --- INITIALIZATION ---
+    onMount(() => {
+        if ($draft.doc_no) {
+            docNo = $draft.doc_no;
+            name = $draft.doc_name;
+            details = $draft.doc_details;
+        }
+    });
+
+    // Cleanup
+    onDestroy(() => {
+        $draft = {};
     });
 
     function chooseRoute(routeKey) {
@@ -438,7 +453,7 @@
 
     <j.RowCol endx>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-light border btn-sm px-3" onclick={() => goto('/dex/dts/drafts')}>Cancel</button>
+            <button type="button" class="btn btn-light border btn-sm px-3" onclick={() => goto('/dex/dts/outgoing')}>Cancel</button>
             <j.Button label="Post" loadinglabel="Posting" icon="bi-check-lg" loading={saving} onClick={save} />
         </div>
     </j.RowCol>

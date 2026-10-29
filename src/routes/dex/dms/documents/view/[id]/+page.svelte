@@ -8,6 +8,7 @@
     import { goto } from '$app/navigation';
     import { permissions } from '$lib/stores/access';
     import { user } from '$lib/stores/access';
+    import { draft as dtsDraft } from '$lib/stores/dts';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
@@ -314,6 +315,20 @@
                     }}
                     disabled={lockedByOthers}
                     title={lockedByOthers ? 'Document is currently locked by another user' : 'Sign document'}
+                />
+            {/if}
+
+            <!-- check if the user has permission to route and document can be routed -->
+            {#if $permissions.includes('DMS.DOCS_ROUTE') && data.docTransitions.includes('DOCSTATE10')}
+                <j.Button
+                    label="Route"
+                    icon="bi-send"
+                    onClick={() => {
+                        $dtsDraft.doc_no = data.document.document_no;
+                        $dtsDraft.doc_name = data.document.latest_version.name;
+                        $dtsDraft.doc_details = data.document.latest_version.details;
+                        goto('/dex/dts/outgoing/create');
+                    }}
                 />
             {/if}
 

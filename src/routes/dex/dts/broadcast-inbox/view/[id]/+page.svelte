@@ -181,7 +181,7 @@
         <j.Card>
             <j.Row>
                 <j.Col>
-                    <h5>{name}</h5>
+                    <h5>{name}<span class="fw-normal ms-2 text-muted fst-italic">({documentNo})</span></h5>
                     <span class="small text-muted">{transactionNo}</span>
                 </j.Col>
             </j.Row>

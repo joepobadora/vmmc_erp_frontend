@@ -5,6 +5,7 @@
     import { goto } from '$app/navigation';
     import App from '$lib/assets/js/bootstrap';
     import j from '$lib/components/helper';
+    import { modules } from '$lib/stores/access';
 
     let badges = $state({
         '/dex/dts/incoming': 0,
@@ -16,22 +17,22 @@
         {
             title: 'Document Manager',
             links: [
-                { href: '/dex/dms/documents', icon: 'bi-folder', label: 'Documents' },
-                { href: '/dex/dms/reference-copies', icon: 'bi-folder', label: 'Reference Copies' },
-                { href: '/dex/dms/drafts', icon: 'bi-pencil-square', label: 'Drafts' },
-                { href: '/dex/dms/archive', icon: 'bi-archive', label: 'Archive' },
-                { href: '/dex/dms/trash', icon: 'bi-trash', label: 'Trash' },
+                { href: '/dex/dms/documents', icon: 'bi-folder', label: 'Documents', code: 'DEX1' },
+                { href: '/dex/dms/reference-copies', icon: 'bi-folder', label: 'Reference Copies', code: 'DEX2' },
+                { href: '/dex/dms/drafts', icon: 'bi-pencil-square', label: 'Drafts', code: 'DEX3' },
+                { href: '/dex/dms/archive', icon: 'bi-archive', label: 'Archive', code: 'DEX4' },
+                { href: '/dex/dms/trash', icon: 'bi-trash', label: 'Trash', code: 'DEX5' },
             ],
         },
         {
             title: 'Tracker',
             links: [
-                { href: '/dex/dts/incoming', icon: 'bi-box-arrow-in-down', label: 'Incoming' },
-                { href: '/dex/dts/inbox', icon: 'bi-inbox', label: 'Inbox' },
-                { href: '/dex/dts/outgoing', icon: 'bi-send', label: 'Outgoing' },
-                { href: '/dex/dts/broadcast-inbox', icon: 'bi-megaphone', label: 'Broadcast Inbox' },
-                { href: '/dex/dts/archive', icon: 'bi-archive', label: 'Archive' },
-                { href: '/dex/dts/trash', icon: 'bi-trash', label: 'Trash' },
+                { href: '/dex/dts/incoming', icon: 'bi-box-arrow-in-down', label: 'Incoming', code: 'DEX6' },
+                { href: '/dex/dts/inbox', icon: 'bi-inbox', label: 'Inbox', code: 'DEX7' },
+                { href: '/dex/dts/outgoing', icon: 'bi-send', label: 'Outgoing', code: 'DEX8' },
+                { href: '/dex/dts/broadcast-inbox', icon: 'bi-megaphone', label: 'Broadcast Inbox', code: 'DEX9' },
+                { href: '/dex/dts/archive', icon: 'bi-archive', label: 'Archive', code: 'DEX10' },
+                { href: '/dex/dts/trash', icon: 'bi-trash', label: 'Trash', code: 'DEX11' },
             ],
         },
     ];
@@ -76,20 +77,22 @@
                 <strong>{section.title}</strong>
             </div>
             {#each section.links as link}
-                <div onclick={() => goto(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={page.url.pathname.startsWith(link.href)}>
-                    <j.Row mb="0">
-                        <j.Col>
-                            <span>
-                                <i class={`bi ${link.icon} me-2`}></i>{link.label}
-                            </span>
-                        </j.Col>
-                        {#if link.href == '/dex/dts/incoming' && badges[link.href] > 0}
-                            <j.Col span="auto">
-                                <span class="badge bg-danger">{badges[link.href]}</span>
+                {#if $modules.includes(link.code)}
+                    <div onclick={() => goto(link.href)} class="list-group-item list-group-item-action small cursor-pointer" class:active={page.url.pathname.startsWith(link.href)}>
+                        <j.Row mb="0">
+                            <j.Col>
+                                <span>
+                                    <i class={`bi ${link.icon} me-2`}></i>{link.label}
+                                </span>
                             </j.Col>
-                        {/if}
-                    </j.Row>
-                </div>
+                            {#if link.href == '/dex/dts/incoming' && badges[link.href] > 0}
+                                <j.Col span="auto">
+                                    <span class="badge bg-danger">{badges[link.href]}</span>
+                                </j.Col>
+                            {/if}
+                        </j.Row>
+                    </div>
+                {/if}
             {/each}
         {/each}
     </div>

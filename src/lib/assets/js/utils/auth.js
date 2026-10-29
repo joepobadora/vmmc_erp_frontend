@@ -1,5 +1,5 @@
 import App from '../bootstrap';
-import { account, user, modules, permissions } from '$lib/stores/access';
+import { account, user, office, modules, permissions } from '$lib/stores/access';
 
 class Auth {
     static async loggedIn() {
@@ -19,6 +19,7 @@ class Auth {
 
             account.set(meData.account);
             user.set(meData.user);
+            office.set(meData.office);
             modules.set(await meData.modules.map((m) => m.code));
             permissions.set(await meData.role.permissions.map((p) => p.code));
 

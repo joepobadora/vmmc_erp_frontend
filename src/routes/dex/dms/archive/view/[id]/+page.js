@@ -2,7 +2,7 @@ import App from '$lib/assets/js/bootstrap';
 
 export async function load({ params }) {
     try {
-        const documentResult = await App.API.get(`/dex/dms/documents/${params.id}`);
+        const documentResult = await App.API.get(`/dex/dms/archive/${params.id}`);
         const documentData = documentResult.data.data;
         if (!documentResult.data.success) {
             return {

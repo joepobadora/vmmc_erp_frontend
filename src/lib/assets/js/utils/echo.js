@@ -10,7 +10,8 @@ if (typeof window !== 'undefined') {
     WebSocket = new Echo({
         broadcaster: 'reverb',
         key: 'm7ykw4i6apawcihepzck', // Must match REVERB_APP_KEY in your Laravel .env
-        wsHost: 'localhost',
+        // wsHost: 'localhost',
+        wsHost: '172.16.4.230',
         wsPort: 8085,
         wssPort: 8085,
         forceTLS: false,

@@ -40,7 +40,7 @@
                             {#if trail.office_id == 0}
                                 Office: <span>On Pool</span>
                             {:else}
-                                Office: <span>{trail.office?.short_name}</span>
+                                Office: <span>{trail.office?.short_name} - {trail.creator?.user.last_name}</span>
                             {/if}
                         </div>
                     </div>
