@@ -146,7 +146,7 @@
             </j.Col>
         </j.Row>
         <j.RowCol mb="0">
-            <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by document no., name, or details..." id="docmngtMyDocumentsSearchInput" />
+            <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by document no., subject, or details..." id="docmngtMyDocumentsSearchInput" />
         </j.RowCol>
     </j.Col>
     <j.Col auto>
@@ -188,7 +188,7 @@
             <div slot="row" let:item class="row border-bottom custom-row small">
                 <div class="col">
                     <div>
-                        <span class="text-muted me-2">Name:</span>
+                        <span class="text-muted me-2">Subject:</span>
                         {#if $permissions.includes('DMS.ARCHIVE_VIEW')}
                             <strong
                                 class="custom-link text-muted"

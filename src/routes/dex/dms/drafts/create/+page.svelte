@@ -142,31 +142,58 @@
         tags = tags.filter((t) => t !== tag);
     }
 
+    function addParticipant(inputValue, currentList, schemaObj, fieldName) {
+        const matchedAccount = accountList.find((a) => a.id === inputValue || a.user?.full_name_2 === inputValue);
+        const candidateId = matchedAccount ? matchedAccount.id : inputValue;
+
+        const parsed = schemaObj.safeParse({ [fieldName]: candidateId });
+        if (!parsed.success) {
+            errors = {
+                ...errors,
+                [fieldName]: parsed.error.flatten().fieldErrors[fieldName],
+            };
+            return { list: currentList, reset: false };
+        }
+
+        // Clear any prior error for this field
+        const { [fieldName]: _, ...restErrors } = errors;
+        errors = restErrors;
+
+        if (!currentList.some((item) => item.id === matchedAccount.id)) {
+            return { list: [...currentList, matchedAccount], reset: true };
+        }
+
+        return { list: currentList, reset: true };
+    }
+
     function handleReviewerSelect() {
-        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === reviewer);
+        // const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === reviewer);
 
-        if (opt) {
-            reviewer = Number(opt.dataset.id);
-        }
+        // if (opt) {
+        //     reviewer = Number(opt.dataset.id);
+        // }
 
-        const obj = accountList.find((a) => a.id === reviewer);
+        // const obj = accountList.find((a) => a.id === reviewer);
 
-        const validate = reviewerSchema.safeParse({
-            reviewer,
-        });
+        // const validate = reviewerSchema.safeParse({
+        //     reviewer,
+        // });
 
-        if (!validate.success) {
-            errors = validate.error.flatten().fieldErrors;
-            return;
-        } else {
-            errors = {};
-        }
+        // if (!validate.success) {
+        //     errors = validate.error.flatten().fieldErrors;
+        //     return;
+        // } else {
+        //     errors = {};
+        // }
 
-        if (!reviewers.includes(obj)) {
-            reviewers = [...reviewers, obj];
-        }
+        // if (!reviewers.includes(obj)) {
+        //     reviewers = [...reviewers, obj];
+        // }
 
-        reviewer = null;
+        // reviewer = null;
+        const result = addParticipant(reviewer, reviewers, reviewerSchema, 'reviewer');
+        reviewers = result.list;
+        if (result.reset) reviewer = null;
     }
 
     function handleReviewerRemove(reviewer) {
@@ -174,30 +201,33 @@
     }
 
     function handleApproverSelect() {
-        const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === approver);
+        // const opt = [...document.querySelectorAll('#accountList option')].find((o) => o.value === approver);
 
-        if (opt) {
-            approver = Number(opt.dataset.id);
-        }
+        // if (opt) {
+        //     approver = Number(opt.dataset.id);
+        // }
 
-        const obj = accountList.find((a) => a.id === approver);
+        // const obj = accountList.find((a) => a.id === approver);
 
-        const validate = approverSchema.safeParse({
-            approver,
-        });
+        // const validate = approverSchema.safeParse({
+        //     approver,
+        // });
 
-        if (!validate.success) {
-            errors = validate.error.flatten().fieldErrors;
-            return;
-        } else {
-            errors = {};
-        }
+        // if (!validate.success) {
+        //     errors = validate.error.flatten().fieldErrors;
+        //     return;
+        // } else {
+        //     errors = {};
+        // }
 
-        if (!approvers.includes(obj)) {
-            approvers = [...approvers, obj];
-        }
+        // if (!approvers.includes(obj)) {
+        //     approvers = [...approvers, obj];
+        // }
 
-        approver = null;
+        // approver = null;
+        const result = addParticipant(approver, approvers, approverSchema, 'approver');
+        approvers = result.list;
+        if (result.reset) approver = null;
     }
 
     function handleApproverRemove(approver) {
@@ -268,8 +298,8 @@
     </j.Row>
     <j.Row>
         <j.Col>
-            <label for="password" class="form-label small">Name<span class="ms-1 text-danger">*</span></label>
-            <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="password" placeholder="Name" />
+            <label for="password" class="form-label small">Subject<span class="ms-1 text-danger">*</span></label>
+            <input bind:value={name} type="text" class="form-control form-control-sm {errors.name ? 'is-invalid' : ''}" id="password" placeholder="Subject" />
             <p class="text-danger small mb-auto {errors.name ? '' : 'd-none'}">{errors.name?.[0]}</p>
         </j.Col>
     </j.Row>

@@ -24,6 +24,8 @@
     let newPassword = $state('');
     let confirmNewPassword = $state('');
 
+    let office = $state(data.office ?? '');
+
     let updatingAccount = $state(false);
     let updatingPersonalInfo = $state(false);
     let loadingSignatureImage = $state(false);
@@ -231,6 +233,10 @@
                     <p class="text-danger small mb-auto {errors.confirmNewPassword ? '' : 'd-none'}">{errors.confirmNewPassword?.[0]}</p>
                 </j.Col>
             </j.Row>
+            <j.RowCol>
+                <label for="office" class="form-label small">Office</label>
+                <input type="text" class="form-control form-control-sm" id="office" placeholder="Office" bind:value={office} readonly />
+            </j.RowCol>
             <j.RowCol endx>
                 <j.Button label="Update" loadinglabel="Updating" icon="bi-arrow-repeat" loading={updatingAccount} onClick={updateAccount} />
             </j.RowCol>

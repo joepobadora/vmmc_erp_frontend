@@ -164,7 +164,17 @@
                     </div>
                 {:else}
                     <Table data={broadcastInbox} enableTotalCount enablePagination pageSize="10" bind:currentPage={tablePage}>
-                        <div slot="row" let:item class="row border-bottom custom-row small">
+                        <div slot="row" let:item class="row border-bottom custom-row small" class:unread-row={!item.state?.is_read}>
+                            <div class="col-auto pe-0 ps-3">
+                                {#if !item.state?.is_read}
+                                    <!-- Solid red closed envelope icon -->
+                                    <span class="bi bi-envelope-fill text-danger" title="Unread"></span>
+                                {:else}
+                                    <!-- Subtle grey open envelope icon -->
+                                    <i class="bi bi-envelope-open text-muted opacity-50" title="Read"></i>
+                                {/if}
+                            </div>
+
                             <div class="col">
                                 <div>
                                     <span class="text-muted me-2">Name:</span>

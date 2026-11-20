@@ -258,7 +258,7 @@
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dts/incoming${p.toString()}`);
+                    goto(`/dex/dts/broadcast-inbox${p.toString()}`);
                 }}>Okay</button
             >
         </div>

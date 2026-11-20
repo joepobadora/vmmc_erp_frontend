@@ -9,6 +9,7 @@
 
     let badges = $state({
         '/dex/dts/incoming': 0,
+        '/dex/dts/broadcast-inbox': 0,
     });
 
     let officeId = $state(0);
@@ -42,9 +43,14 @@
 
         // 1. Fetch initial badge count and current user/office in parallel
         try {
-            const [incomingResult, meResult] = await Promise.all([App.API.get('/dex/dts/incoming/unread-count'), App.API.get('/me')]);
+            const [incomingResult, broadcastInboxResult, meResult] = await Promise.all([
+                App.API.get('/dex/dts/incoming/unread-count'),
+                App.API.get('/dex/dts/broadcast-inbox/unread-count'),
+                App.API.get('/me'),
+            ]);
 
             badges['/dex/dts/incoming'] = incomingResult.data.data;
+            badges['/dex/dts/broadcast-inbox'] = broadcastInboxResult.data.data;
             officeId = meResult.data.data.account?.office_id;
         } catch (err) {
             console.error('Failed to initialize sidebar counts or office state:', err);
@@ -61,6 +67,10 @@
         // 4. Listen for real-time payload updates
         channel.listen('.dts.incoming', (payload) => {
             badges['/dex/dts/incoming'] = payload.count;
+        });
+
+        channel.listen('.dts.broadcastInbox', (payload) => {
+            badges['/dex/dts/broadcast-inbox'] = payload.count;
         });
 
         // 5. Cleanup on unmount (must pass the full private channel name)
@@ -85,7 +95,7 @@
                                     <i class={`bi ${link.icon} me-2`}></i>{link.label}
                                 </span>
                             </j.Col>
-                            {#if link.href == '/dex/dts/incoming' && badges[link.href] > 0}
+                            {#if (badges[link.href] ?? 0) > 0}
                                 <j.Col span="auto">
                                     <span class="badge bg-danger">{badges[link.href]}</span>
                                 </j.Col>

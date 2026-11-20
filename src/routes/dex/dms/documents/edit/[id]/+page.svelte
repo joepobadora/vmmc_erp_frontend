@@ -217,8 +217,8 @@
                 </j.Col>
             </j.Row>
             <j.RowCol>
-                <label for="password" class="form-label small">Name</label>
-                <input bind:value={doc.latest_version.name} type="text" class="form-control form-control-sm" id="password" placeholder="Name" disabled />
+                <label for="password" class="form-label small">Subject</label>
+                <input bind:value={doc.latest_version.name} type="text" class="form-control form-control-sm" id="password" placeholder="Subject" disabled />
             </j.RowCol>
             <j.RowCol>
                 <label for="exampleFormControlTextarea1" class="form-label small">Details</label>

@@ -12,6 +12,7 @@ export async function load() {
                 oldPassword: '',
                 newPassword: '',
                 confirmNewPassword: '',
+                office: data.office.short_name,
                 firstName: data.user.first_name,
                 middleName: data.user.middle_name,
                 lastName: data.user.last_name,

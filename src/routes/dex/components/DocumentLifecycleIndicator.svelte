@@ -44,7 +44,7 @@
                             {#if item.office_id == 0}
                                 Office: <span>On Pool</span>
                             {:else}
-                                Staff: <span>{item.creator.user.full_name_2}</span>
+                                By: <span>{item.creator?.user.full_name_2}</span>
                             {/if}
                         </div>
                     </div>

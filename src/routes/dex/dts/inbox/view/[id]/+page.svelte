@@ -9,6 +9,7 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { permissions } from '$lib/stores/access';
+    import { temporary } from '$lib/stores/dms';
 
     import TransactionTrailIndicator from '../../../../components/TransactionTrailIndicator.svelte';
 
@@ -353,6 +354,21 @@
             <!-- check if user has permission to save a copy of the document from a transaction -->
             {#if $permissions.includes('DTS.INBOX_COPY')}
                 <j.Button label="Save a Copy" loadinglabel="Copying" variant="light" icon="bi-download" loading={copying} onClick={copy} />
+            {/if}
+
+            <!-- check if user has permisison to sign a document and the transaction is not terminated -->
+            {#if $permissions.includes('DMS.DOCS_SIGN') && data.tranTransitions.includes('ACTION5')}
+                <j.Button
+                    label="Sign & Comment"
+                    icon="bi-chat-left-text"
+                    onClick={() => {
+                        // 1. Save data into the temporary store
+                        $temporary = { returnUrl: page.url.pathname + page.url.search, fromDTS: true };
+
+                        // 3. Navigate away
+                        goto(`/dex/dms/documents/view/${data.transaction.document.id}`);
+                    }}
+                />
             {/if}
 
             <!-- check if user has permisison to terminate a transaction and the transaction is not terminated -->

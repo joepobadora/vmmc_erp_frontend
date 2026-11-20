@@ -7,5 +7,6 @@ const tranTemplate = {
 };
 
 const draft = writable(tranTemplate);
+const temporary = writable({});
 
-export { draft };
+export { draft, temporary };

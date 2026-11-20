@@ -11,6 +11,7 @@
     let { data } = $props();
 
     let tagList = $state(data.tagList ?? []);
+    let stats = $state(data.stats ?? []);
 
     let loadingData = $state('false');
     let drafts = $state([]);
@@ -157,7 +158,7 @@
             </j.Col>
         </j.Row>
         <j.RowCol mb="0">
-            <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by document no., name, or details..." id="docmngtMyDocumentsSearchInput" />
+            <input bind:value={filter.search} type="text" class="form-control form-control-sm" placeholder="Search by document no., subject, or details..." id="docmngtMyDocumentsSearchInput" />
         </j.RowCol>
     </j.Col>
     <j.Col auto>
@@ -189,6 +190,26 @@
     {/each}
 </div>
 
+<j.RowCol>
+    <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-file-earmark-check me-2"></i>Approved / Retrieved</span>
+            <h3>{stats.approved}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>For Signing</span>
+            </div>
+        </div>
+
+        <div class="stat-card bg-white shadow-sm p-3">
+            <span class="small text-muted"><i class="bi bi-file-earmark-check me-2"></i>Signed</span>
+            <h3>{stats.signed}</h3>
+            <div class="d-flex justify-content-between">
+                <span class="text-success small"><i class="bi bi-check2-circle me-2"></i>Ready to Route</span>
+            </div>
+        </div>
+    </div>
+</j.RowCol>
+
 <!-- table -->
 <j.Card>
     {#if loadingData}
@@ -200,7 +221,7 @@
             <div slot="row" let:item class="row border-bottom custom-row small">
                 <div class="col">
                     <div>
-                        <span class="text-muted me-2">Name:</span>
+                        <span class="text-muted me-2">Subject:</span>
 
                         <!-- check if user has permission to view a document -->
                         {#if $permissions.includes('DMS.DOCS_VIEW')}
@@ -265,3 +286,9 @@
         </Table>
     {/if}
 </j.Card>
+
+<style>
+    .stat-card {
+        min-width: 250px;
+    }
+</style>

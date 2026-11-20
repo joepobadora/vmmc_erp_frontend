@@ -9,10 +9,13 @@
     import { permissions } from '$lib/stores/access';
     import { user } from '$lib/stores/access';
     import { draft as dtsDraft } from '$lib/stores/dts';
+    import { temporary } from '$lib/stores/dms';
+    import { Alert } from '$lib/stores/alert';
 
     import DocumentLifecycleIndicator from '../../../../components/DocumentLifecycleIndicator.svelte';
 
     let authDownload = $state();
+    let authAddNote = $state();
 
     let { data } = $props();
 
@@ -26,6 +29,8 @@
     let type = $state(data.document.latest_version.document_type.name);
     let name = $state(data.document.latest_version.name);
     let details = $state(data.document.latest_version.details);
+    let note = $state(null);
+    let notes = $state(data.document.notes);
     let tags = $state(data.document.tags);
     let reviewers = $state(data.document.actorProgress.reviewers);
     let approvers = $state(data.document.actorProgress.approvers);
@@ -35,6 +40,7 @@
     let activeTab = $state('overview');
 
     let downloading = $state(false);
+    let addingNote = $state(false);
 
     let checked = 'text-success bi-check-circle-fill';
     let unchecked = 'text-secondary bi-check-circle';
@@ -99,12 +105,46 @@
         }
     }
 
+    async function addNote() {
+        try {
+            // password auth
+            if (!(await authAddNote.confirm())) return;
+
+            // udpate button state
+            addingNote = true;
+
+            const result = await App.API.post(`/dex/dms/documents/add-note/${data.document.id}`, {
+                note: note,
+                from_dts: $temporary.fromDTS ?? false,
+            });
+
+            if (result.data.success) {
+                Alert.show('success', 'Adding success.', result.data.success_code);
+                refreshNotes();
+            } else {
+                Alert.show('error', 'Adding failed.', result.data.error_code);
+            }
+        } catch (err) {
+            Alert.show('error', 'Bad request.', err.message);
+        } finally {
+            addingNote = false;
+        }
+    }
+
+    async function refreshNotes() {
+        const result = await App.API.get(`/dex/dms/documents/${data.document.id}`);
+
+        notes = result.data.data.notes;
+        note = null;
+    }
+
     function handleOnloaded(data) {
         pdfData = data;
     }
 </script>
 
 <Auth bind:me={authDownload} warning="You are about to download a copy of the attached file." />
+<Auth bind:me={authAddNote} warning="You are about to add a note." />
 
 <!-- controls -->
 <j.RowCol>
@@ -154,6 +194,21 @@
                 }}
             >
                 File Preview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a
+                class="nav-link {activeTab === 'notes' ? 'active' : ''}"
+                href=""
+                onclick={(e) => {
+                    e.preventDefault();
+                    selectTab('notes');
+                }}
+            >
+                Notes
+                {#if notes.length > 0}
+                    <span class="badge bg-primary">{notes.length}</span>
+                {/if}
             </a>
         </li>
     </ul>
@@ -294,6 +349,59 @@
 
         {@render actionButtons()}
     </div>
+
+    <!-- NOTES -->
+    <div class="tab-pane {activeTab === 'notes' ? 'active' : 'd-none'}">
+        <j.Card>
+            <j.RowCol>
+                <h5 class="mb-3">Document Notes & Remarks</h5>
+                <p class="text-muted small fst-italic">Notes are independent of version history; they remain visible across all document versions and cannot be reverted.</p>
+
+                <textarea bind:value={note} class="form-control form-control-sm mb-3" rows="3" placeholder="Add official note to record..."></textarea>
+
+                <j.RowCol endx mb="5">
+                    <div class="d-flex gap-2">
+                        <!-- check if the user has permission to sign or note -->
+                        {#if $permissions.includes('DMS.DOCS_SIGN')}
+                            <j.Button label="Add Note" loadinglabel="Adding note" icon="bi-plus-lg" onClick={addNote} />
+                        {/if}
+                    </div>
+                </j.RowCol>
+
+                <!-- Timeline / List of Notes -->
+                <div class="small mb-3">
+                    {#each notes as note}
+                        <div class="p-2 bg-white mb-2">
+                            <!-- Header: Office, Author, and Route Badge -->
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-primary fw-semibold">
+                                        {note.office?.short_name ?? 'Office'} — {note.creator?.user.last_name}
+                                    </span>
+
+                                    {#if note.from_dts}
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle fw-normal">
+                                            <i class="bi bi-send me-1"></i> Attached on Route
+                                        </span>
+                                    {/if}
+                                </div>
+
+                                <span class="text-danger extra-small">
+                                    {App.Format.date(note.created_at).toDatetime()}
+                                </span>
+                            </div>
+
+                            <!-- Note Content with Safe Wrapping -->
+                            <div class="text-dark mt-2 ps-2 border-start border-3 border-primary-subtle" style="white-space: pre-wrap;">{note.note}</div>
+                        </div>
+                        <hr class="text-muted my-2" />
+                    {/each}
+                </div>
+                <div class="d-flex flex-column gap-3"></div>
+                {@render actionButtons()}
+            </j.RowCol>
+        </j.Card>
+    </div>
 </div>
 
 {#snippet actionButtons()}
@@ -336,7 +444,11 @@
                 type="button"
                 class="btn btn-primary btn-sm px-3"
                 onclick={() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    if ($temporary.returnUrl) {
+                        goto($temporary.returnUrl);
+                    } else {
+                        goto(`/dex/dms/documents${p.toString()}`);
+                    }
                 }}>Okay</button
             >
         </div>

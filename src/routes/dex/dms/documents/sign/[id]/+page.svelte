@@ -11,6 +11,7 @@
     import Auth from '$lib/components/Auth.svelte';
     import { goto } from '$app/navigation';
     import { user } from '$lib/stores/access';
+    import { temporary } from '$lib/stores/dms';
 
     let authSave = $state();
     let { data } = $props();
@@ -358,7 +359,11 @@
 
             if (signResult.data.success) {
                 setTimeout(() => {
-                    goto(`/dex/dms/documents${p.toString()}`);
+                    if ($temporary.returnUrl) {
+                        goto($temporary.returnUrl);
+                    } else {
+                        goto(`/dex/dms/documents${p.toString()}`);
+                    }
                     Alert.show('success', 'Signing success.', signResult.data.success_code);
                 }, 600);
             } else {

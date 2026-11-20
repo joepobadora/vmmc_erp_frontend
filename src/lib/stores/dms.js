@@ -14,5 +14,6 @@ const fileTemplate = {
 
 const draft = writable(fileTemplate);
 const draftEdit = writable(fileTemplate);
+const temporary = writable({});
 
-export { draft, draftEdit };
+export { draft, draftEdit, temporary };
