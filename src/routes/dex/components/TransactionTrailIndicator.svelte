@@ -40,7 +40,8 @@
                             {#if trail.office_id == 0}
                                 <span>On Pool</span>
                             {:else}
-                                By: <span>{trail.office?.short_name} - {trail.creator?.user.last_name}</span>
+                                To: <span>{trail.office?.short_name}</span><br />
+                                By: <span>{trail.creator?.office.short_name} - {trail.creator?.user.last_name}</span>
                             {/if}
                         </div>
                     </div>

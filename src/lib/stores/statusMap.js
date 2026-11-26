@@ -27,6 +27,12 @@ const docStatusMap = {
     DOCSTATE4: { label: 'DELETED', color: '#FEE2E2' }, // Soft Rose/Red
 };
 
+const tranVariantMap = {
+    ROUTING1: { label: 'BROADCAST', color: '#DBEAFE' }, // Soft Primary Blue
+    ROUTING2: { label: 'DIRECT', color: '#F1F5F9' }, // Soft Neutral Slate Gray
+    ROUTING3: { label: 'ON POOL', color: '#F1F5F9' }, // Soft Neutral Slate Gray
+};
+
 const tranStatusMap = {
     // Transactions in the inbox
     ACTION1: { label: 'BROADCASTED', color: '#DDD6FE' }, // Soft Purple
@@ -48,4 +54,4 @@ const tranStatusMap = {
     ACTION7: { label: 'DELETED', color: '#FECDD3' }, // Soft Rose
 };
 
-export { docVariantMap, docStatusMap, tranStatusMap };
+export { docVariantMap, docStatusMap, tranVariantMap, tranStatusMap };

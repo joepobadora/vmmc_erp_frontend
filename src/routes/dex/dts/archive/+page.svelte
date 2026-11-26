@@ -6,7 +6,7 @@
     import { goto, pushState } from '$app/navigation';
     import j from '$lib/components/helper';
     import { permissions } from '$lib/stores/access';
-    import { tranStatusMap } from '$lib/stores/statusMap';
+    import { tranStatusMap, tranVariantMap } from '$lib/stores/statusMap';
 
     let { data } = $props();
 
@@ -200,10 +200,10 @@
                             </div>
                             <div class="col">
                                 <div>
-                                    <span class="text-muted me-2">Status:</span>
+                                    <span class="text-muted me-2">Route Method:</span>
                                 </div>
                                 <div class="d-flex flex-row flex-wrap gap-2">
-                                    <j.Tag name={tranStatusMap[item.state.state_code].label} color={tranStatusMap[item.state.state_code].color} />
+                                    <j.Tag name={tranVariantMap[item.routing_method_code].label} color={tranVariantMap[item.routing_method_code].color} />
                                 </div>
                             </div>
                             <div class="col-auto ms-auto">
